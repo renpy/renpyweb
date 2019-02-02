@@ -1,0 +1,2 @@
+pygame_sdl2-cython_static_submodules.patch
+pygame_sdl2-no_threads.patch

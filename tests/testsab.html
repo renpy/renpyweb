@@ -1,0 +1,56 @@
+<html>
+<head><meta http-equiv="content-type" content="text/html;charset=UTF-8" /></head>
+<body>
+<script>
+if (!Atomics.notify) { Atomics.notify = Atomics.wake; }  // Firefox <63
+
+var worker = new Worker('testsab-worker.js');
+var sab = new SharedArrayBuffer(1024);
+// avoid this, local only, no error
+//sab[0] = 11;
+//sab[0] = 22;
+var uint8 = new Uint8Array(sab);
+//uint8[0] = 11;
+//uint8[1] = 22;
+Atomics.store(uint8, 0, 42);
+Atomics.store(uint8, 1, 43);
+
+console.log("SharedArrayBuffer: ");
+console.log(sab);
+
+worker.postMessage({type: 'init', sab: sab});
+worker.postMessage({type: 'print'});
+
+// No-op: will be run before 'init' completes and overwrites sab[0]
+var uint8 = new Uint8Array(sab);
+Atomics.store(uint8, 0, 44);
+worker.postMessage({type: 'print'});
+
+//worker.postMessage({type: 'main-activewait'});
+worker.postMessage({type: 'main-futexwait'});
+
+// This will be handled sequentially, i.e. not in parallel, i.e. only
+// after 'main' completes - major reason why we need SharedArrayBuffer
+worker.postMessage({type: 'test_non_parallel'});
+
+worker.onmessage = function(e) {
+    console.log('Message received from worker ' + e.data.type);
+    if (e.data.type == 'print') {
+        console.log('Atomics.load:');
+        console.log(Atomics.load(new Uint8Array(e.data.sab), 0));
+        console.log('Buffer:');
+        console.log(new Uint8Array(e.data.sab));
+    } else if (e.data.type == 'set0-activewait') {
+        // Taken into account by the worker
+        // Note: not taken into account until the Worker finishes
+        //   processing 'main' if run from the JavaScript Console (!?)
+        Atomics.store(uint8, 0, 255);
+    } else if (e.data.type == 'set0-futexwait') {
+	var buffer = new Int32Array(sab);  // Uint8Array not accepted
+        Atomics.store(buffer, 0, 255);
+        Atomics.notify(buffer, 0, Infinity);
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+diff --git a/src/pygame_sdl2/event.pyx b/src/pygame_sdl2/event.pyx
+index 91ad10a..40a0604 100644
+--- a/src/pygame_sdl2/event.pyx
++++ b/src/pygame_sdl2/event.pyx
+@@ -21,7 +21,7 @@ from cpython.ref cimport Py_INCREF, Py_DECREF
+ 
+ from sdl2 cimport *
+ from pygame_sdl2.display cimport Window, main_window
+-import threading
++#import threading
+ import pygame_sdl2
+ import sys
+ 
+@@ -269,7 +269,11 @@ cdef make_event(SDL_Event *e):
+ cdef public event_queue = list()
+ 
+ # The lock that protects the event queue.
+-lock = threading.RLock()
++#lock = threading.RLock()
++class RLockStub:
++    def __enter__(self): pass
++    def __exit__(self, type, value, traceback): pass
++lock = RLockStub()
+ 
+ # This is the object that is returned when no event exists.
+ NOEVENT_EVENT = EventType(0)
+diff --git a/src/pygame_sdl2/rwobject.pyx b/src/pygame_sdl2/rwobject.pyx
+index 2085db7..a0d3984 100644
+--- a/src/pygame_sdl2/rwobject.pyx
++++ b/src/pygame_sdl2/rwobject.pyx
+@@ -49,8 +49,8 @@ cdef extern from "SDL.h" nogil:
+     int SDL_RWclose(SDL_RWops* context)
+ 
+ 
+-cdef extern from "Python.h":
+-    void PyEval_InitThreads()
++#cdef extern from "Python.h":
++#    void PyEval_InitThreads()
+ 
+ 
+ cdef set_error(e):
+@@ -273,4 +273,4 @@ cdef SDL_RWops *to_rwops(filelike, mode="rb") except NULL:
+ cdef api SDL_RWops *RWopsFromPython(filelike) except NULL:
+     return to_rwops(filelike)
+ 
+-PyEval_InitThreads()
++#PyEval_InitThreads()
+diff --git a/src/pygame_sdl2/mixer.pyx b/src/pygame_sdl2/mixer.pyx
+index 7be81d9..da47ae4 100644
+--- a/src/pygame_sdl2/mixer.pyx
++++ b/src/pygame_sdl2/mixer.pyx
+@@ -22,7 +22,8 @@ from pygame_sdl2.rwobject cimport to_rwops
+ from libc.string cimport memset
+ 
+ import sys
+-import threading
++#import threading
++threading = None
+ from pygame_sdl2.error import error
+ 
+ import pygame_sdl2.mixer_music as music
+@@ -36,7 +37,8 @@ cdef dict channel_queued = {}
+ cdef dict current_sounds = {}
+ 
+ # The lock protects channel_queued and current_sounds.
+-_lock = threading.Lock()
++#_lock = threading.Lock()
++_lock = None
+ 
+ def _play_current(int channel):
+     """

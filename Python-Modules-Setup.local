@@ -1,0 +1,32 @@
+# This file appended to Modules/Setup.local before compiling Python
+
+# pygame_sdl2 deps:
+binascii binascii.c
+_struct _struct.c
+_collections _collectionsmodule.c
+operator operator.c
+itertools itertoolsmodule.c
+time timemodule.c
+math mathmodule.c _math.c
+
+# Ren'Py deps:
+cStringIO cStringIO.c
+cPickle cPickle.c
+_io -I$(srcdir)/Modules/_io _io/bufferedio.c _io/bytesio.c _io/fileio.c _io/iobase.c _io/_iomodule.c _io/stringio.c _io/textio.c
+_random _randommodule.c
+_functools _functoolsmodule.c
+datetime datetimemodule.c
+zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
+_md5 md5module.c md5.c
+array arraymodule.c
+
+# avoid warnings from hashlib module
+_sha shamodule.c
+_sha256 sha256module.c
+_sha512 sha512module.c
+
+# enable _struct and unicodedata, used by a Python script in 'make install' - or not
+#echo '_struct _struct.c
+#echo 'unicodedata unicodedata.c
+
+#echo 'strop stropmodule.c' >> Modules/Setup.local  # for platform module -> use sys.platform

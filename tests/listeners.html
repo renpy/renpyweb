@@ -1,0 +1,12 @@
+    <script>
+      canvas = document.getElementById('canvas');
+      canvas.addEventListener('click', function(event) { Module.print('JSclick'); console.log(event); });
+      canvas.addEventListener('mousedown', function(event) { Module.print('JSmousedown'); console.log(event); });
+      canvas.addEventListener('mouseup', function(event) { Module.print('JSmouseup'); console.log(event); });
+      canvas.addEventListener('mousemove', function(event) { Module.print('JSmousemove'); console.log(event); });
+      canvas.addEventListener('touchstart', function(event) { Module.print('JStouchstart'); console.log(event); });
+      canvas.addEventListener('touchend', function(event) { Module.print('JStouchend'); console.log(event); });
+      canvas.addEventListener('touchmove', function(event) { Module.print('JStouchmove'); console.log(event); });
+      canvas.addEventListener('scroll', function(event) { Module.print('JSscroll'); console.log(event); });
+      canvas.addEventListener('mousewheel', function(event) { Module.print('JSmousewheel'); console.log(event); });
+    </script>

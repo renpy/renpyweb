@@ -1,0 +1,23 @@
+https://github.com/renpy/renpy/pull/1662
+
+Index: renpy/renpy/__init__.py
+===================================================================
+--- renpy.orig/renpy/__init__.py
++++ renpy/renpy/__init__.py
+@@ -27,7 +27,6 @@ import sys
+ import os
+ import copy
+ import types
+-import threading
+ import cPickle
+ 
+ ################################################################################
+@@ -122,7 +121,7 @@ elif platform.mac_ver()[0]:
+     macintosh = True
+ elif "ANDROID_PRIVATE" in os.environ:
+     android = True
+-elif sys.platform == 'emscripten':
++elif sys.platform == 'emscripten' or "RENPY_EMSCRIPTEN" in os.environ:
+     emscripten = True
+ else:
+     linux = True

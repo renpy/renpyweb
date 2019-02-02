@@ -1,0 +1,229 @@
+Module.cwrap('Py_Initialize', 'number', [])();
+
+Module.ccall('PyRun_SimpleString', 'number', ['string'], ["import renpy"])
+Module.ccall('PyRun_SimpleString', 'number', ['string'], ["d = renpy.gl.gldraw.GLDraw(False)"])
+Module.ccall('PyRun_SimpleString', 'number', ['string'], ["print d.init()"])
+=> red square
+
+//Module.ccall('PyRun_SimpleString', 'number', ['string'], ["e = renpy.gl.glenviron_shader.ShaderEnviron()"])
+Module.ccall('PyRun_SimpleString', 'number', ['string'], ["e = d.get_environ()"])
+Module.ccall('PyRun_SimpleString', 'number', ['string'], ["e.init()"])
+Module.ccall('PyRun_SimpleString', 'number', ['string'], ["print renpy.gl.gltexture.test_texture_sizes(e, d)"])
+
+
+///////////////
+
+
+document.getElementById('canvas').getContext('2d')
+document.getElementById('canvas').getContext('webgl')
+
+
+///////////////
+
+
+gl = document.getElementById('canvas').getContext('webgl')
+pixel = new Uint8Array(8); gl.readPixels(0, 0, 2, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel); pixel
+gl.clearColor(0.5,0.5,0.5,0.5)
+gl.clear(gl.COLOR_BUFFER_BIT)
+pixel = new Uint8Array(8);
+gl.readPixels(0, 0, 2, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel); console.log(pixel)
+gl.readPixels(0, 0, 2, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel); console.log(pixel)
+// needs to be done in a single command on the console, but works
+
+
+///////////////
+
+
+// Check if WebGL context is operational
+gl = document.getElementById('canvas').getContext('webgl')
+
+res_texture = new Image();
+res_texture.src = 'pygame-icon.png';
+gl.activeTexture(gl.TEXTURE0)
+tex = gl.createTexture()
+gl.bindTexture(gl.TEXTURE_2D, tex)
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+//gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.BGRA, gl.UNSIGNED_INT_8_8_8_8_REV, res_texture);
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, res_texture);
+
+
+script = document.createElement('script');
+script.src='https://cdn.rawgit.com/humbletim/glm-js/31fd034/build/glm-js.min.js';
+document.body.appendChild(script);
+
+function printLog(object) {
+    var log = '';
+
+    console.log(object);
+    if (object instanceof WebGLShader)
+	log = gl.getShaderInfoLog(object);
+    else if (object instanceof WebGLProgram)
+	log = gl.getProgramInfoLog(object);
+    
+    console.log(log);
+}
+
+function createShader(source, type) {
+    var shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    var compileOk = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    if (!compileOk) {
+	console.error('Error in vertex shader\n');
+	printLog(shader);
+	return false;
+    }
+    return shader;
+}
+
+    var spriteVertices = [
+	  0,    0, 1,
+	128,    0, 1,
+	  0,  128, 1,
+	128,  128, 1,
+    ];
+    vboSpriteVertices = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vboSpriteVertices);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spriteVertices), gl.STATIC_DRAW);
+
+    var spriteTexCoords = [
+	0.0, 0.0,
+	1.0, 0.0,
+	0.0, 1.0,
+	1.0, 1.0,
+    ];
+    vboSpriteTexCoords = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vboSpriteTexCoords);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(spriteTexCoords), gl.STATIC_DRAW);
+
+    textureId = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, textureId);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texImage2D(gl.TEXTURE_2D,  // target
+        0,  // level, 0 = base, no minimap,
+        gl.RGBA, // internalformat
+        gl.RGBA,  // format
+        gl.UNSIGNED_BYTE, // type
+        res_texture);
+
+    var linkOk = false;
+
+vs = createShader(`
+#ifdef GL_ES
+precision highp float;
+#endif
+      attribute vec3 v_coord;
+      attribute vec2 v_texcoord;
+      varying vec2 f_texcoord;
+      uniform mat3 mvp;
+      void main(void) {
+        gl_Position = vec4(mvp * v_coord, 1);
+        f_texcoord = v_texcoord;
+      }
+`, gl.VERTEX_SHADER);
+
+fs = createShader(`
+#ifdef GL_ES
+precision highp float;
+#endif
+      varying vec2 f_texcoord;
+      uniform sampler2D mytexture;
+      void main(void) {
+        gl_FragColor = texture2D(mytexture, f_texcoord);
+      }
+`, gl.FRAGMENT_SHADER);
+
+    program = gl.createProgram();
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    var linkOk = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (!linkOk) {
+	console.error('glLinkProgram:');
+    }
+
+    var attributeName;
+    attributeName = 'v_coord';
+    attributeVCoord = gl.getAttribLocation(program, attributeName);
+    if (attributeVCoord == -1) {
+        console.error('Could not bind attribute ' + attributeName);
+    }
+    attributeName = 'v_texcoord';
+    attributeVTexCoord = gl.getAttribLocation(program, attributeName);
+    if (attributeVTexCoord == -1) {
+        console.error('Could not bind attribute ' + attributeName);
+    }
+    var uniformName;
+    uniformName = 'mvp';
+    uniformMVP = gl.getUniformLocation(program, uniformName);
+    if (uniformMVP == -1) {
+	console.error('Could not bind uniform_fade ' + uniformName);
+    }
+    uniformName = 'mytexture';
+    uniformMyTexture = gl.getUniformLocation(program, uniformName);
+    if (uniformMyTexture == -1) {
+	console.error('Could not bind uniform_fade ' + uniformName);
+    }
+
+
+
+
+
+    var scale = 1;
+    var projection = glm.ortho(0, 1280, 720, 0);
+    
+    var move = 128;
+    var angle = 0;
+    var axis_z = glm.vec3(0, 0, 1);
+    var mTransform = glm.translate(glm.mat4(1), glm.vec3(move, move, 0))['*'](
+	glm.rotate(glm.mat4(1), glm.radians(angle), axis_z))['*'](
+	    glm.translate(glm.mat4(1), glm.vec3(-256/2, -256/2, 0)));
+    
+    var mvp = projection['*'](mTransform); // * view * model * anim;
+    var mvp2D = glm.mat3(mvp[0].xyw, mvp[1].xyw, mvp[3].xyw);
+    gl.useProgram(program);
+    gl.uniformMatrix3fv(uniformMVP, false, mvp2D.array);
+
+
+
+
+
+
+    gl.useProgram(program);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.uniform1i(uniformMyTexture, /*GL_TEXTURE*/0);
+    gl.bindTexture(gl.TEXTURE_2D, textureId);
+
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.enableVertexAttribArray(attributeVCoord);
+    // Describe our vertices array to OpenGL (it can't guess its format automatically)
+    gl.bindBuffer(gl.ARRAY_BUFFER, vboSpriteVertices);
+    gl.vertexAttribPointer(
+	attributeVCoord,  // attribute
+	3,                // number of elements per vertex, here (x,y,w)
+	gl.FLOAT,         // the type of each element
+	false,            // take our values as-is
+	0,                // no extra data between each position
+	0                 // offset of first element
+    );
+
+    gl.enableVertexAttribArray(attributeVTexCoord);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vboSpriteTexCoords);
+    gl.vertexAttribPointer(
+	attributeVTexCoord, // attribute
+	2,                // number of elements per vertex, here (x,y)
+	gl.FLOAT,         // the type of each element
+	false,            // take our values as-is
+	0,                // no extra data between each position
+	0                 // offset of first element
+    );
+    
+    /* Push each element in buffer_vertices to the vertex shader */
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    
+    gl.disableVertexAttribArray(attributeVCoord);
+    gl.disableVertexAttribArray(attributeVTexCoord);

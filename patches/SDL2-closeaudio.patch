@@ -1,0 +1,23 @@
+https://github.com/emscripten-ports/SDL2/pull/63
+Remove when emscripten-ports/SDL2 is tagged version_16 and grabbed by emcc
+
+commit bc41280cf2c8618a0734e5ff04e3196de894c295
+Author: Sylvain Beucler <beuc@beuc.net>
+Date:   Thu Nov 15 19:11:24 2018 +0100
+
+    Emscripten: make CloseAudio actually close audio
+    
+    cf. https://bugzilla.libsdl.org/show_bug.cgi?id=4176
+
+diff --git a/src/audio/emscripten/SDL_emscriptenaudio.c b/src/audio/emscripten/SDL_emscriptenaudio.c
+index ee38e53be..9943eda83 100644
+--- a/src/audio/emscripten/SDL_emscriptenaudio.c
++++ b/src/audio/emscripten/SDL_emscriptenaudio.c
+@@ -246,6 +246,7 @@ EMSCRIPTENAUDIO_OpenDevice(_THIS, void *handle, const char *devname, int iscaptu
+     }
+     SDL_zerop(this->hidden);
+ #endif
++    this->hidden = (struct SDL_PrivateAudioData *)0x1;
+ 
+     /* limit to native freq */
+     this->spec.freq = EM_ASM_INT_V({ return SDL2.audioContext.sampleRate; });

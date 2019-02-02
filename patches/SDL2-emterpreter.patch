@@ -1,0 +1,56 @@
+https://github.com/emscripten-ports/SDL2/issues/70
+
+diff --git a/src/timer/unix/SDL_systimer.c b/src/timer/unix/SDL_systimer.c
+index 217fe327f..b6a2f0288 100644
+--- a/src/timer/unix/SDL_systimer.c
++++ b/src/timer/unix/SDL_systimer.c
+@@ -30,6 +30,8 @@
+ #include "SDL_timer.h"
+ #include "SDL_assert.h"
+ 
++#include <emscripten.h>
++
+ /* The clock_gettime provides monotonous time, so we should use it if
+    it's available. The clock_gettime function is behind ifdef
+    for __USE_POSIX199309
+@@ -186,6 +188,10 @@ SDL_GetPerformanceFrequency(void)
+ void
+ SDL_Delay(Uint32 ms)
+ {
++#ifdef __EMSCRIPTEN__
++    emscripten_sleep_with_yield(ms);
++    return;
++#else
+     int was_error;
+ 
+ #if HAVE_NANOSLEEP
+@@ -224,6 +230,7 @@ SDL_Delay(Uint32 ms)
+         was_error = select(0, NULL, NULL, NULL, &tv);
+ #endif /* HAVE_NANOSLEEP */
+     } while (was_error && (errno == EINTR));
++#endif /* __EMSCRIPTEN__ */
+ }
+ 
+ #endif /* SDL_TIMER_UNIX */
+diff --git a/src/video/emscripten/SDL_emscriptenopengles.c b/src/video/emscripten/SDL_emscriptenopengles.c
+index fe5e07342..6cd6a0e5f 100644
+--- a/src/video/emscripten/SDL_emscriptenopengles.c
++++ b/src/video/emscripten/SDL_emscriptenopengles.c
+@@ -95,9 +95,16 @@ Emscripten_GLES_DeleteContext(_THIS, SDL_GLContext context)
+ }
+ 
+ SDL_EGL_CreateContext_impl(Emscripten)
+-SDL_EGL_SwapWindow_impl(Emscripten)
+ SDL_EGL_MakeCurrent_impl(Emscripten)
+ 
++int
++Emscripten_GLES_SwapWindow(_THIS, SDL_Window * window)
++{
++    EGLBoolean ret = SDL_EGL_SwapBuffers(_this, ((SDL_WindowData *) window->driverdata)->egl_surface);
++    emscripten_sleep_with_yield(0);
++    return ret;
++}
++
+ void
+ Emscripten_GLES_GetDrawableSize(_THIS, SDL_Window * window, int * w, int * h)
+ {

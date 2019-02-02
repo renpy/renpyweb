@@ -1,0 +1,38 @@
+commit 2092befbcee6731c39c50a6ad4c78f3f2b1c9c17
+Author: Charlie Birks <charlie@daftgames.net>
+Date:   Fri Jan 11 15:49:24 2019 +0000
+
+    Emscripten: call emscripten_sample_gamepad_data
+
+diff --git a/src/joystick/emscripten/SDL_sysjoystick.c b/src/joystick/emscripten/SDL_sysjoystick.c
+index cd2fd56a4..a0926c538 100644
+--- a/src/joystick/emscripten/SDL_sysjoystick.c
++++ b/src/joystick/emscripten/SDL_sysjoystick.c
+@@ -166,13 +166,16 @@ SDL_SYS_JoystickInit(void)
+     EmscriptenGamepadEvent gamepadState;
+ 
+     numjoysticks = 0;
+-    numjs = emscripten_get_num_gamepads();
++
++    retval = emscripten_sample_gamepad_data();
+ 
+     /* Check if gamepad is supported by browser */
+-    if (numjs == EMSCRIPTEN_RESULT_NOT_SUPPORTED) {
++    if (retval == EMSCRIPTEN_RESULT_NOT_SUPPORTED) {
+         return SDL_SetError("Gamepads not supported");
+     }
+ 
++    numjs = emscripten_get_num_gamepads();
++
+     /* handle already connected gamepads */
+     if (numjs > 0) {
+         for(i = 0; i < numjs; i++) {
+@@ -313,6 +316,8 @@ SDL_SYS_JoystickUpdate(SDL_Joystick * joystick)
+     SDL_joylist_item *item = (SDL_joylist_item *) joystick->hwdata;
+     int i, result, buttonState;
+ 
++    emscripten_sample_gamepad_data();
++
+     if (item) {
+         result = emscripten_get_gamepad_status(item->index, &gamepadState);
+         if( result == EMSCRIPTEN_RESULT_SUCCESS) {

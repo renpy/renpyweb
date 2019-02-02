@@ -1,0 +1,25 @@
+Moved to SDL2 local patch
+
+diff --git a/src/pygame_sdl2/display.pyx b/src/pygame_sdl2/display.pyx
+index f0c5e24..fa202ea 100644
+--- a/src/pygame_sdl2/display.pyx
++++ b/src/pygame_sdl2/display.pyx
+@@ -29,6 +29,9 @@ import pygame_sdl2
+ import warnings
+ import os
+ 
++cdef extern from "emscripten.h":
++    void emscripten_sleep_with_yield(unsigned int ms);
++
+ # True if we are on ios.
+ ios = ("PYGAME_IOS" in os.environ)
+ 
+@@ -305,6 +308,8 @@ cdef class Window:
+ 
+             with nogil:
+                 SDL_UpdateWindowSurface(self.window)
++	# done here to minimize EMTERPRETIFY_WHITELIST
++        emscripten_sleep_with_yield(0)
+ 
+     def get_surface(self):
+         return self.surface

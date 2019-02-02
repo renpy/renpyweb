@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en-us">
+  <!-- Adapted for RenPyWeb from https://github.com/kripken/emscripten/blob/incoming/src/shell.html -->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RenPyWeb</title>
+    <style>
+      body {
+        font-family: arial;
+        margin: 0;
+        padding: none;
+      }
+
+      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      div.emscripten { text-align: center; }      
+      div.emscripten_border { border: 1px solid black; }
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      canvas.emscripten { border: 0px none; background-color: black; width: 100vw; height: 100vh; }
+
+      #emscripten_logo {
+        display: inline-block;
+        margin: 0;
+      }
+
+      .spinner {
+        height: 30px;
+        width: 30px;
+        vertical-align: top;
+        position: absolute;
+
+        -webkit-animation: rotation .8s linear infinite;
+        -moz-animation: rotation .8s linear infinite;
+        -o-animation: rotation .8s linear infinite;
+        animation: rotation 0.8s linear infinite;
+
+        border-left: 5px solid rgb(235, 235, 235);
+        border-right: 5px solid rgb(235, 235, 235);
+        border-bottom: 5px solid rgb(235, 235, 235);
+        border-top: 5px solid rgb(120, 120, 120);
+        
+        border-radius: 100%;
+        background-color: rgb(189, 215, 46);
+      }
+
+      @-webkit-keyframes rotation {
+        from {-webkit-transform: rotate(0deg);}
+        to {-webkit-transform: rotate(360deg);}
+      }
+      @-moz-keyframes rotation {
+        from {-moz-transform: rotate(0deg);}
+        to {-moz-transform: rotate(360deg);}
+      }
+      @-o-keyframes rotation {
+        from {-o-transform: rotate(0deg);}
+        to {-o-transform: rotate(360deg);}
+      }
+      @keyframes rotation {
+        from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}
+      }
+
+      #statusbar_container {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        margin: auto;
+      }
+
+      #statusbar {
+        width: 50%;
+        margin: auto;
+        min-width: 340px;
+        padding: 10px;
+        height: 40px;
+        background-color: rgb(40, 40, 40);
+      }
+
+      #status {
+        vertical-align: top;
+        font-weight: bold;
+        color: rgb(120, 120, 120);
+        width: 100%;
+        padding-bottom: 2px;
+        text-align: left;
+      }
+
+      #progress {
+        height: 20px;
+        width: 100%;
+      }
+
+
+      #ContextContainer {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        color: white;
+      }
+      #ContextButton {
+        text-decoration: none;
+        color: grey;
+        font-size: xx-large;
+        cursor: pointer;
+        user-select: none;
+        -moz-user-select: none;
+      }
+      #ContextButton:focus {
+        outline: none;
+      }
+      #ContextMenu a {
+        text-decoration: none;
+        color: lightgrey;
+      }
+      #ContextMenu a:hover {
+        text-decoration: nsone;
+        color: grey;
+      }
+      #ContextMenu {
+        background-color: rgb(40,40,40);
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="statusbar_container">
+      <div id="statusbar">
+        <div class="spinner" id='spinner'></div>
+        <div style="margin-left: 50px;">
+          <div class="emscripten" id="status">Downloading...</div>
+          <progress value="0" max="100" id="progress" hidden=1></progress>
+        </div>
+      </div>
+    </div>
+    
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1
+      onmouseenter="window.focus()" onclick="window.focus()"></canvas>
+
+    <div id="DivOpen" style="position: absolute; top: 82px; visibility: hidden; width: 100%; text-align: center;">
+        <input id="ButtonOpen" type="file" onchange="onOpen()"
+          accept="application/zip" style="display: none;"></input>
+        <button onclick="document.getElementById('ButtonOpen').click()"
+          style="font-size: larger;">Open local Game</button>
+    </div>
+
+    <div id="ContextContainer">
+      <a id="ContextButton">≡</a><br />
+      <div id="ContextMenu" style="display: none;">
+        <input id="ID_SavegamesImport" type="file" onchange="onSavegamesImport(this)" accept="application/zip" style=display:none></input>
+        <a href="javascript:document.getElementById('ID_SavegamesImport').click();">Import saves</a><br />
+        <a href="javascript:onSavegamesExport();">Export saves</a><br />
+        <a href="javascript:FSDownload('/log.txt');">Ren'Py log</a><br />
+        <a href="https://renpy.beuc.net/" target="_blank">
+          <span style="font-size: smaller">
+            <span style="color: dimgrey">Powered by</span>
+            RenPyWeb
+          </span>
+        </a>
+        </span>
+      </div>
+    </div>
+
+    <script type='text/javascript'>
+      /* Copyright (C) 2018  Sylvain Beucler */
+
+      /* Redirect to asmjs version if no WebAssembly support */
+      if ((typeof WebAssembly !== 'object')
+          && location.href.search('asmjs.html') == -1) {
+        location.href = 'asmjs.html' + location.search;
+      }
+
+      /* Context menu */
+      document.getElementById('ContextButton').addEventListener('click', function (e) {
+        var menu = document.getElementById('ContextMenu');
+        if (menu.style.display == 'none')
+          menu.style.display = 'block';
+        else
+          menu.style.display = 'none';
+        e.preventDefault();
+      });
+
+      function onSavegamesImport(input) {
+        reader = new FileReader();
+        reader.onload = function(e) {
+          FS.writeFile('savegames.zip', new Uint8Array(e.target.result));
+          Module._emSavegamesImport();
+          FS.syncfs(false, function(err) {
+            if (err) { console.trace(); console.log(err); }
+          });
+          Module.print("Saves imported - restart game to apply.\n");
+        }
+        reader.readAsArrayBuffer(input.files[0])
+      }
+
+      function onSavegamesExport() {
+        ret = Module._emSavegamesExport();
+        if (ret) {
+          FSDownload('savegames.zip');
+        }
+      }
+
+      function onOpen() {
+        Module.print("Extracting, please wait...\n");
+
+        window.setTimeout(function() {
+          input = document.getElementById('ButtonOpen')
+          reader = new FileReader();
+          reader.onload = function(e) {
+            FS.writeFile('game.zip', new Uint8Array(e.target.result));
+            gameExtract();
+          }
+          reader.readAsArrayBuffer(input.files[0])
+        }, 10);
+      }
+
+      function gameExtract() {
+        start = Date.now();
+        Module.ccall('PyRun_SimpleString', 'number', ['string'], [
+          "import zipfile\n" +
+          "zip_ref = zipfile.ZipFile('game.zip', 'r')\n" +
+          "zip_ref.extractall('.')\n" +
+          "zip_ref.close()\n"
+        ])
+        FS.unlink('/game.zip')
+        Module.print("Extracted in " + (Date.now()-start)/1000.0 + "s\n");
+        disableGUI();
+
+        if (FS.readdir('/').indexOf('game') < 0) {
+            Module.setStatus("Invalid .zip (no top-level 'game' directory).");
+            return;
+        }
+
+        // presplash
+        if (FS.readdir('game').indexOf('presplash.png') >= 0) {
+          presplash = FS.readFile('/game/presplash.png');
+        } else if (FS.readdir('game').indexOf('presplash.jpg') >= 0) {
+          presplash = FS.readFile('/game/presplash.jpg');
+        } else if (FS.readdir('/').indexOf('presplash.png') >= 0) {
+          presplash = FS.readFile('/presplash.png');
+        } else if (FS.readdir('/').indexOf('presplash.jpg') >= 0) {
+          presplash = FS.readFile('/presplash.jpg');
+        }
+
+        if (presplash) {
+          obj_url = window.URL.createObjectURL(new Blob([presplash]));
+          img = document.createElement('img');
+          img.src = obj_url;
+          img.style = 'display: block; margin: auto; max-width: 100vw; max-height: 100vh;';
+          div = document.createElement('div');
+          div.id = 'presplash';  // used by renpy.display.presplash.end()
+          div.style = 'position: absolute; width: 100%;';
+          div.appendChild(img)
+          //body = document.getElementsByTagName('body')[0];
+          //body.appendChild(div);
+          c = document.getElementById('canvas');
+          c.parentElement.prepend(div);
+        } else {
+          Module.print("Loading game, please wait...");
+        }
+
+        // give control back to webui before running main
+        window.setTimeout(function() {
+          Module.ccall('pyapp_runmain', '', [], [], {async: true})
+        }, 200);  // smaller delay doesn't update the DOM, esp. on mobile
+      }
+
+      // hook for Ren'Py
+      function presplashEnd() {
+        document.getElementById('presplash').remove();
+      }
+      function FSDownload(filename) {
+        console.log('download', filename);
+        a = document.createElement('a');
+        a.download = filename.replace(/.*\//, '');
+        try {
+          a.href = window.URL.createObjectURL(new Blob([FS.readFile(filename)]));
+        } catch(e) {
+          Module.print("Error opening " + filename + "\n");
+          return;
+        }
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(a.href);
+        document.body.removeChild(a);
+      }
+
+      // called from pre.js
+      function enableGUI() {
+        Module.print("Welcome! Click Open and load your zipped game/ folder!");
+        document.getElementById('DivOpen').style.visibility = 'visible';
+      }
+      function disableGUI() {
+        document.getElementById('DivOpen').style.visibility = 'hidden';
+      }
+    </script>
+    <script type='text/javascript'>
+      var statusElement = document.getElementById('status');
+      var progressElement = document.getElementById('progress');
+      var spinnerElement = document.getElementById('spinner');
+
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+          var element = document.getElementById('status');
+          return function(text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            console.log(text);
+            // These replacements are necessary if you render to raw HTML
+            text = String(text);
+            text = text.replace(/&/g, "&amp;");
+            text = text.replace(/</g, "&lt;");
+            text = text.replace(/>/g, "&gt;");
+            text = text.replace('\n', '<br />', 'g');
+            element.innerHTML += text;
+            
+            statusbar = document.getElementById('statusbar');
+            statusbar.hidden = false;
+            var print_date = new Date();
+            statusbar.date = print_date;
+            window.setTimeout(function() {
+              // Hide status bar after a few seconds - only if setStatus isn't active
+              if (Module.setStatus.last && Module.setStatus.last.text == ''
+                  && statusbar.date == print_date) {
+                element.innerHTML = ''; statusbar.hidden = true;
+              }
+            }, 3000);
+          };
+        })(),
+        printErr: function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          if (0) { // XXX disabled for safety typeof dump == 'function') {
+            dump(text + '\n'); // fast, straight to the real console
+          } else {
+            console.error(text);
+          }
+        },
+        canvas: (function() {
+          var canvas = document.getElementById('canvas');
+
+          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+          // application robust, you may want to override this behavior before shipping!
+          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+          return canvas;
+        })(),
+        setStatus: function(text) {
+          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+          if (text === Module.setStatus.last.text) return;
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var now = Date.now();
+          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+          Module.setStatus.last.time = now;
+          Module.setStatus.last.text = text;
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2])*100;
+            progressElement.max = parseInt(m[4])*100;
+            progressElement.hidden = false;
+            spinnerElement.hidden = false;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+            if (!text) spinnerElement.style.display = 'none';
+          }
+          if (text == '') {
+            statusElement.innerHTML = '';
+            document.getElementById('statusbar').hidden = true;
+          } else {
+            statusElement.innerHTML = text + '<br />';
+            document.getElementById('statusbar').hidden = false;
+          }
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function(event) {
+        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        //Module.setStatus('Exception thrown, see JavaScript console');
+        Module.setStatus('Error: ' + event.split('\n')[0] + ' (see JavaScript console for details)');
+        spinnerElement.style.display = 'none';
+        Module.setStatus = function(text) {
+          if (text) Module.printErr('[post-exception status] ' + text);
+        };
+      };
+    </script>    
+    <script type='text/javascript' src="pythonhome-data.js"></script>
+    <script type='text/javascript' src="pyapp-data.js"></script>
+    <script type='text/javascript'>
+      function create_persistent() {
+        // populate savegames
+        try {
+          FS.mkdir('/home/web_user/.renpy');
+          FS.mount(IDBFS, {}, '/home/web_user/.renpy');
+        } catch(e) {
+          Module.print("Could not create ~/.renpy/");
+        }
+        FS.syncfs(true, function(err) {
+          if (err) { console.trace(); console.log(err); }
+        });
+      }
+      if (Module['calledRun']) {
+        create_persistent();
+      } else {
+        if (!Module['preRun']) Module['preRun'] = [];
+        Module["preRun"].push(create_persistent); // FS is not initialized yet, wait for it
+      }
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

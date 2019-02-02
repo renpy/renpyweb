@@ -1,0 +1,13 @@
+Index: renpy/renpy/bootstrap.py
+===================================================================
+--- renpy.orig/renpy/bootstrap.py
++++ renpy/renpy/bootstrap.py
+@@ -352,6 +352,8 @@ You may be using a system install of pyt
+         if renpy.display.draw:
+             renpy.display.draw.quit()
+ 
++        renpy.audio.audio.quit()
++
+         # Prevent subprocess from throwing errors while trying to run it's
+         # __del__ method during shutdown.
+         subprocess.Popen.__del__ = popen_del

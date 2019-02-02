@@ -1,0 +1,16 @@
+Index: renpy/renpy/gl/gldraw.pyx
+===================================================================
+--- renpy.orig/renpy/gl/gldraw.pyx
++++ renpy/renpy/gl/gldraw.pyx
+@@ -221,8 +221,9 @@ cdef class GLDraw:
+         pwidth *= self.dpi_scale
+         pheight *= self.dpi_scale
+ 
+-        pwidth = max(vwidth / 2, pwidth)
+-        pheight = max(vheight / 2, pheight)
++        # Too low, emscripten on Android phone has 640x280/360x560 non-fullscreen
++        #pwidth = max(vwidth / 2, pwidth)
++        #pheight = max(vheight / 2, pheight)
+ 
+         window_args = { }
+ 
