@@ -70,9 +70,12 @@ COMMON_LDFLAGS = \
 	-lpython2.7 \
 	-s USE_SDL=2 \
 	-lSDL2_image -ljpeg -lpng -lwebp -lz
+# Using llvm-nm to target all __Pyx_PyObject_CallNoArg homonym functions
+# https://github.com/emscripten-core/emscripten/issues/7988
+# Move to wildcard matching if available in a future Emscripten
 EMTERPRETER_LDFLAGS = \
 	-s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_30draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_31draw_screen", "___Pyx_PyObject_CallNoArg_387", "___Pyx_PyObject_CallNoArg_6345", "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"]'
+	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_30draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_31draw_screen", $(shell llvm-nm build/t/index.bc | grep -Po '__Pyx_PyObject_CallNoArg\.\d+' | sed -e 's/\./_/' -e 's/.*/"&"/' | tr '\n' ',') "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"]'
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
 	    -s USE_SDL_TTF=2 \
@@ -212,6 +215,10 @@ pygame-example-static-asmjs: check_emscripten $(BUILD)/python.built common-pygam
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html -s WASM=0
 pygame-example-static-emterpreter-wasm: check_emscripten $(BUILD)/python.built common-pygame-example-static
+	# 2-step compilation to populate EMTERPRETER_WHITELIST
+	emcc $(BUILD)/main-pygame_sdl2-static.bc \
+	    $(PYGAME_SDL2_STATIC_OBJS) \
+	    -o $(BUILD)/t/index.bc
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -275,7 +282,10 @@ pygame-example-worker: check_emscripten $(BUILD)/python.built common-pygame-exam
 # renpyweb-static-emterpreter-wasm/asmjs
 ##
 wasm: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+	# 2-step compilation to populate EMTERPRETER_WHITELIST
 	emcc $(RENPY_OBJS) \
+	    -o $(BUILD)/t/index.bc
+	emcc $(BUILD)/t/index.bc \
 	    $(RENPY_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    -s EMTERPRETIFY_FILE=$(BUILD)/t/index.em \
@@ -379,7 +389,10 @@ check_emscripten:
 # Compress and factor files before uploading to a decent host
 # (note: gzip broken for itch.io though)
 preupload-clean:
-	rm -f $(BUILD)/t/index.js.orig.js $(BUILD)/t/index.wasm.pre $(BUILD)/t/index.wast
+	rm -f \
+		$(BUILD)/t/index.js.orig.js \
+		$(BUILD)/t/index.wasm.pre $(BUILD)/t/index.wast \
+		$(BUILD)/t/index.bc
 
 hosting-nogzip-zip: preupload-clean
 	rm -f $(CURDIR)/hosting.zip

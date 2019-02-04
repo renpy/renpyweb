@@ -31,15 +31,3 @@ Emscripten behavior.
 ## How to make the devkit
 
     make hosting-nogzip-zip
-
-
-## Troubleshootings
-
-If you get a weird stack trace referencing things like
-`___Pyx_PyObject_CallNoArg_387` or `___Pyx_PyObject_CallNoArg_6345`,
-this means some offsets changed in the code and the functions are not
-whitelisted for the Emterpreter anymore.  Pick the new function names
-from the stacktrace, update the `EMTERPRETIFY_WHITELIST` and
-recompile.
-
-This is ugly but out of our control for now.
