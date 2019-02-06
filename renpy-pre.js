@@ -40,7 +40,13 @@ Module['onRuntimeInitialized'] = function() {
     
     if (_GET['game']) {
         show_error = true;
-	url = _GET['game'];
+	if (_GET['game'].match(/^[0-9a-z._-]+$/i)) {
+	    url = _GET['game'];
+	} else {
+	    // XSS: prevent executing untrusted remote/relative Python code
+	    // (that could steal or modify same-origin data)
+	    throw "Invalid game filename.";
+	}
     }
 
     var xhr = new XMLHttpRequest();
