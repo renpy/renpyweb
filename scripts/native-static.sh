@@ -26,7 +26,7 @@ PYTHON=$(pwd)/python-emscripten/2.7.10/build/hostpython/bin/python
 PYTHONHOME=$(pwd)/python-emscripten/2.7.10/build/hostpython/
 
 (
-    cd build/pygame_sdl2/
+    cd build/pygame_sdl2-static/
     $PYTHON setup.py build_ext -b native-static/build-lib -t native-static/build-temp
     $PYTHON setup.py install_headers
 )
@@ -40,7 +40,7 @@ PYTHONHOME=$(pwd)/python-emscripten/2.7.10/build/hostpython/
 )
 
 cython python-emscripten/mock/emscripten.pyx -o build/mock_emscripten.c
-gcc -DSTATIC -DMOCK -DRENPY main.c build/mock_emscripten.c -I $PYTHONHOME/include/python2.7 $(ls build/pygame_sdl2/native-static/build-temp/*/*.o | grep -v mixer) build/renpy/module/native-static/build-temp/*/*.o build/renpy/module/native-static/build-temp/*.o $PYTHONHOME/lib/libpython2.7.a -lm -ljpeg -lpng -lz -lSDL2 -lSDL2_image -lSDL2_ttf -lfreetype -lfribidi -lGL -lGLEW -lavcodec -lavformat -lavutil -lswresample -lswscale -ldl -lutil -o build/renpy/main
+gcc -DSTATIC -DMOCK -DRENPY main.c build/mock_emscripten.c -I $PYTHONHOME/include/python2.7 $(ls build/pygame_sdl2-static/native-static/build-temp/*/*.o | grep -v mixer) build/renpy/module/native-static/build-temp/*/*.o build/renpy/module/native-static/build-temp/*.o $PYTHONHOME/lib/libpython2.7.a -lm -ljpeg -lpng -lz -lSDL2 -lSDL2_image -lSDL2_ttf -lfreetype -lfribidi -lGL -lGLEW -lavcodec -lavformat -lavutil -lswresample -lswscale -ldl -lutil -o build/renpy/main
 
 # note: make sure the resulting executable is run from the Ren'Py folder, Ren'Py uses dirname(argv[0])
 # PYTHONHOME=$HOME/workdir/emtests/renpyweb/install ./main
