@@ -1,19 +1,19 @@
 https://github.com/emscripten-ports/SDL2/issues/70
 
 diff --git a/src/timer/unix/SDL_systimer.c b/src/timer/unix/SDL_systimer.c
-index 217fe327f..b6a2f0288 100644
+index 159bda5c5..222a7455b 100644
 --- a/src/timer/unix/SDL_systimer.c
 +++ b/src/timer/unix/SDL_systimer.c
-@@ -30,6 +30,8 @@
- #include "SDL_timer.h"
+@@ -31,6 +31,8 @@
  #include "SDL_assert.h"
+ #include "../SDL_timer_c.h"
  
 +#include <emscripten.h>
 +
  /* The clock_gettime provides monotonous time, so we should use it if
     it's available. The clock_gettime function is behind ifdef
     for __USE_POSIX199309
-@@ -186,6 +188,10 @@ SDL_GetPerformanceFrequency(void)
+@@ -187,6 +189,10 @@ SDL_GetPerformanceFrequency(void)
  void
  SDL_Delay(Uint32 ms)
  {
@@ -24,7 +24,7 @@ index 217fe327f..b6a2f0288 100644
      int was_error;
  
  #if HAVE_NANOSLEEP
-@@ -224,6 +230,7 @@ SDL_Delay(Uint32 ms)
+@@ -225,6 +231,7 @@ SDL_Delay(Uint32 ms)
          was_error = select(0, NULL, NULL, NULL, &tv);
  #endif /* HAVE_NANOSLEEP */
      } while (was_error && (errno == EINTR));
@@ -33,10 +33,10 @@ index 217fe327f..b6a2f0288 100644
  
  #endif /* SDL_TIMER_UNIX */
 diff --git a/src/video/emscripten/SDL_emscriptenopengles.c b/src/video/emscripten/SDL_emscriptenopengles.c
-index fe5e07342..6cd6a0e5f 100644
+index 9b29bb275..c7f5f51c8 100644
 --- a/src/video/emscripten/SDL_emscriptenopengles.c
 +++ b/src/video/emscripten/SDL_emscriptenopengles.c
-@@ -95,9 +95,16 @@ Emscripten_GLES_DeleteContext(_THIS, SDL_GLContext context)
+@@ -82,9 +82,16 @@ Emscripten_GLES_LoadLibrary(_THIS, const char *path) {
  }
  
  SDL_EGL_CreateContext_impl(Emscripten)

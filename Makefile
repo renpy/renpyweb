@@ -58,7 +58,7 @@ RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc \
 # Ensure all builds use the same (locally patched) SDL2 instead of
 # placing the default one in cache
 # 'unexport' has the same global reach as 'export' T_T
-EMCC_LOCAL_PORTS = sdl2emterpreter=$(BUILD)/SDL2-version_15|SDL2-version_15
+EMCC_LOCAL_PORTS = sdl2emterpreter=$(BUILD)/SDL2
 export EMCC_LOCAL_PORTS
 
 COMMON_LDFLAGS = \
@@ -66,16 +66,15 @@ COMMON_LDFLAGS = \
 	$(BUILD)/emscripten.bc \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1 \
 	-s FORCE_FILESYSTEM=1 \
-	-s MEMFS_APPEND_TO_TYPED_ARRAYS=1 \
 	-lpython2.7 \
 	-s USE_SDL=2 \
 	-lSDL2_image -ljpeg -lpng -lwebp -lz
-# Using llvm-nm to target all __Pyx_PyObject_CallNoArg homonym functions
+# Using wildcard to target all __Pyx_PyObject_CallNoArg homonymous functions
 # https://github.com/emscripten-core/emscripten/issues/7988
-# Move to wildcard matching if available in a future Emscripten
+# https://github.com/emscripten-core/emscripten/pull/8056
 EMTERPRETER_LDFLAGS = \
 	-s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_30draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_31draw_screen", '`llvm-nm build/t/index.bc | grep -Po '__Pyx_PyObject_CallNoArg\.\d+' | sed -e 's/\./_/' -e 's/.*/"_&"/' | tr '\n' ','`' "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"]'
+	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_30draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_31draw_screen", "___Pyx_PyObject_CallNoArg_*", "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"]'
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
 	    -s USE_SDL_TTF=2 \
@@ -95,7 +94,6 @@ RENPY_LDFLAGS = \
 # Compile our own SDL2_image because Emscripten has no jpg/webp ports.
 
 #	EMCC_FORCE_STDLIBS=gl -> attempt to force GL symbols
-#	-s EXPORTED_RUNTIME_METHODS='["Pointer_stringify"]' -> if compiling one's own SDL2
 #	-s SDL2_IMAGE_FORMATS='["png","jpg","webp"]' -> not compiling properly + expect conflicts with direct uses of libjpg/libpng from pygame_sdl2
 
 # OpenGL: deprecated client-side buffers, not a single use of
@@ -117,8 +115,6 @@ RENPY_LDFLAGS = \
 # TOTAL_MEMORY=64MB is enough to run 'the_question' (on desktop) but not 'tutorial'
 # TOTAL_MEMORY=128MB is a good compromise and fails early if e.g. a mobile platform doesn't have that much RAM
 # ALLOW_MEMORY_GROWTH=1 so we can run any game; documented as efficient with WASM
-# Note: the FS is in memfs/RAM
-# -s MEMFS_APPEND_TO_TYPED_ARRAYS=1 avoids taking 8x the space for unzip'd files
 
 # Emterpreter:
 # -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=$(BUILD)/main.em
@@ -154,11 +150,11 @@ $(BUILD)/main-renpyweb-static.bc: main.c
 $(BUILD)/importexport.bc: importexport.c $(BUILD)/libzip.built
 	emcc $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
 
-common-pygame-example: dirs $(BUILD)/emscripten.bc
+common-pygame-example: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
 common-pygame-example-static: common-pygame-example package-pygame-example-static $(BUILD)/pygame_sdl2-static.built $(BUILD)/main-pygame_sdl2-static.bc
 common-pygame-example-dynamic: common-pygame-example $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/main-pygame_sdl2-dynamic.bc
 
-common-renpyweb: dirs $(BUILD)/emscripten.bc $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb
+common-renpyweb: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb
 
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
@@ -201,11 +197,11 @@ pygame-example-static-wasm: check_emscripten $(BUILD)/python.built common-pygame
 	    -o $(BUILD)/t/index.html
 	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
 	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
-	# broken in 1.38.5??
-	# exception thrown: TypeError: Module.asm.dynCall_jiji is not a function,ftCall_jiji@http://localhost:8000/index.js:13247:10
-	# invoke_jiji@http://localhost:8000/index.js:13119:12
-	# legalfunc$invoke_jiji@http://localhost:8000/index.js line 1592 > WebAssembly.instantiate:wasm-function[8192]:0x4f2148
-	# _IMG_LoadPNG_RW@http://localhost:8000/index.js line 1592 > WebAssembly.instantiate:wasm-function[5056]:0x342008
+	# currently broken (tested in 1.38.25, 1.38.27)
+	# exception thrown: TypeError: cannot pass i64 to or from JS,ftCall_jiji@http://localhost:8000/index.js:13391:10
+	# invoke_jiji@http://localhost:8000/index.js:13263:12
+	# legalfunc$invoke_jiji@http://localhost:8000/index.js line 1557 > WebAssembly.instantiate:wasm-function[8183]:0x4fb0cf
+	# _IMG_LoadPNG_RW@http://localhost:8000/index.js line 1557 > WebAssembly.instantiate:wasm-function[5051]:0x349f95
 pygame-example-static-asmjs: check_emscripten $(BUILD)/python.built common-pygame-example-static
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
@@ -215,10 +211,6 @@ pygame-example-static-asmjs: check_emscripten $(BUILD)/python.built common-pygam
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html -s WASM=0
 pygame-example-static-emterpreter-wasm: check_emscripten $(BUILD)/python.built common-pygame-example-static
-	# 2-step compilation to populate EMTERPRETER_WHITELIST
-	emcc $(BUILD)/main-pygame_sdl2-static.bc \
-	    $(PYGAME_SDL2_STATIC_OBJS) \
-	    -o $(BUILD)/t/index.bc
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -282,10 +274,7 @@ pygame-example-worker: check_emscripten $(BUILD)/python.built common-pygame-exam
 # renpyweb-static-emterpreter-wasm/asmjs
 ##
 wasm: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
-	# 2-step compilation to populate EMTERPRETER_WHITELIST
 	emcc $(RENPY_OBJS) \
-	    -o $(BUILD)/t/index.bc
-	emcc $(BUILD)/t/index.bc \
 	    $(RENPY_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    -s EMTERPRETIFY_FILE=$(BUILD)/t/index.em \
@@ -488,11 +477,10 @@ $(CACHEROOT)/ffmpeg-3.0.tar.bz2:
 # => USE_SDL=2 for now, it has lots of Emscripten fixes
 
 $(BUILD)/SDL2.built:
-	-git clone https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2-version_15
-	cd $(BUILD)/SDL2-version_15; \
-                git checkout a8a4fdee312efffb6bea85e0a5aa913e49bf0810; \
+	-git clone https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
+	cd $(BUILD)/SDL2; \
+                git checkout version_17; \
                 patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch; \
-                patch -p1 < $(PATCHESDIR)/SDL2-glclear.patch;
 	touch $(BUILD)/SDL2.built
 
 # TODO: move to 2.0.3 but depends on latest SDL2 (> USE_SDL=2 port)

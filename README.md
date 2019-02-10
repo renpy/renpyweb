@@ -4,8 +4,8 @@ This is the build environment for RenPyWeb.
 
 ## How to build
 
-- Install emscripten 1.38.25 and apply
-  `patches/emscripten-ports-sdl2emterpreter.patch`
+- Install emscripten 1.38.27 and apply
+  `patches/emscripten.patch`
 
 - Adapt `env.sh` and `source` it
 
