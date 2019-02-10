@@ -436,10 +436,10 @@ index 77e2f4c7..3fc86789 100644
  
      if (!thread) {
 diff --git a/renpy/audio/audio.py b/renpy/audio/audio.py
-index 919da52c..430880e2 100644
+index 2be494cf..ebe34f4c 100644
 --- a/renpy/audio/audio.py
 +++ b/renpy/audio/audio.py
-@@ -33,7 +33,7 @@ import time
+@@ -34,7 +34,7 @@ import time
  import pygame_sdl2  # @UnusedImport
  import os
  import re
@@ -448,7 +448,7 @@ index 919da52c..430880e2 100644
  import sys
  
  # Import the appropriate modules, or set them to None if we cannot.
-@@ -141,7 +141,11 @@ class MusicContext(renpy.python.RevertableObject):
+@@ -142,7 +142,11 @@ class MusicContext(renpy.python.RevertableObject):
  next_channel_number = 0
  
  # the lock that mediates between the periodic and main threads.
@@ -461,7 +461,7 @@ index 919da52c..430880e2 100644
  
  
  class Channel(object):
-@@ -839,9 +843,9 @@ def init():
+@@ -840,9 +844,9 @@ def init():
  
          periodic_thread_quit = False
  
@@ -474,24 +474,7 @@ index 919da52c..430880e2 100644
  
  
  def quit():  # @ReservedAssignment
-@@ -852,13 +856,13 @@ def quit():  # @ReservedAssignment
-     global pcm_ok
-     global mix_ok
- 
--    with periodic_condition:
-+    if periodic_thread is not None:
-+        with periodic_condition:
- 
--        if periodic_thread is not None:
-             periodic_thread_quit = True
-             periodic_condition.notify()
- 
--            periodic_thread.join()
-+        periodic_thread.join()
- 
-     if not pcm_ok:
-         return
-@@ -969,7 +973,15 @@ periodic_exc = None
+@@ -970,7 +974,15 @@ periodic_exc = None
  run_periodic = False
  
  # The condition the perodic thread runs on.
@@ -509,7 +492,7 @@ index 919da52c..430880e2 100644
  
  def periodic_thread_main():
 diff --git a/renpy/debug.py b/renpy/debug.py
-index ea5b3355..1b8e4ac1 100644
+index 90094db9..a9c35ded 100644
 --- a/renpy/debug.py
 +++ b/renpy/debug.py
 @@ -26,7 +26,7 @@ from __future__ import print_function
@@ -522,7 +505,7 @@ index ea5b3355..1b8e4ac1 100644
  import traceback
  import os
 diff --git a/renpy/display/core.py b/renpy/display/core.py
-index 991a48be..8007ee3d 100644
+index 4dfc3266..def73308 100644
 --- a/renpy/display/core.py
 +++ b/renpy/display/core.py
 @@ -34,7 +34,7 @@ import sys
@@ -534,7 +517,7 @@ index 991a48be..8007ee3d 100644
  import copy
  import gc
  import inspect
-@@ -1642,7 +1642,7 @@ class Interface(object):
+@@ -1645,7 +1645,7 @@ class Interface(object):
          self.last_resize = None
  
          # The thread that can do display operations.
@@ -543,7 +526,7 @@ index 991a48be..8007ee3d 100644
  
          # Initialize audio.
          renpy.audio.audio.init()
-@@ -1670,7 +1670,14 @@ class Interface(object):
+@@ -1673,7 +1673,14 @@ class Interface(object):
          self.bgscreenshot_needed = False
  
          # Event used to signal background screenshot taken.
@@ -559,7 +542,7 @@ index 991a48be..8007ee3d 100644
  
          # The background screenshot surface.
          self.bgscreenshot_surface = None
-@@ -2105,7 +2112,7 @@ class Interface(object):
+@@ -2115,7 +2122,7 @@ class Interface(object):
          if not self.started:
              return
  
@@ -568,7 +551,7 @@ index 991a48be..8007ee3d 100644
              self.bgscreenshot_event.clear()
              self.bgscreenshot_needed = True
  
-@@ -2181,6 +2188,9 @@ class Interface(object):
+@@ -2191,6 +2198,9 @@ class Interface(object):
  
          try:
              renpy.display.scale.image_save_unscaled(window, filename)
@@ -579,7 +562,7 @@ index 991a48be..8007ee3d 100644
          except:
              if renpy.config.debug:
 diff --git a/renpy/display/im.py b/renpy/display/im.py
-index ee771e9b..520a482b 100644
+index 0a763e64..93ea2745 100644
 --- a/renpy/display/im.py
 +++ b/renpy/display/im.py
 @@ -29,7 +29,7 @@ import renpy.display
@@ -671,7 +654,7 @@ index ee771e9b..520a482b 100644
          self.load_log.insert(0, (time.time(), filename, preload))
  
 diff --git a/renpy/display/pgrender.py b/renpy/display/pgrender.py
-index 14e18d9d..20674251 100644
+index c293895c..bce7811a 100644
 --- a/renpy/display/pgrender.py
 +++ b/renpy/display/pgrender.py
 @@ -26,7 +26,7 @@ from __future__ import print_function
@@ -698,7 +681,7 @@ index 14e18d9d..20674251 100644
  
  def load_image(f, filename):
 diff --git a/renpy/display/presplash.py b/renpy/display/presplash.py
-index 338af38e..73df8ed0 100644
+index cbb9b904..15237c34 100644
 --- a/renpy/display/presplash.py
 +++ b/renpy/display/presplash.py
 @@ -25,7 +25,7 @@
@@ -726,7 +709,7 @@ index 338af38e..73df8ed0 100644
  
      global start_time
      start_time = time.time()
-@@ -120,15 +120,21 @@ def end():
+@@ -120,7 +120,7 @@ def end():
      """
  
      global keep_running
@@ -734,14 +717,8 @@ index 338af38e..73df8ed0 100644
 +    #global event_thread
      global window
  
-+    if renpy.emscripten:
-+        # presplash handled on the JavaScript side, because emscripten
-+        # currently does not support destroying/recreating GL contexts
-+        import emscripten
-+        emscripten.run_script(r"""presplashEnd();""")
-+
-     if window is None:
-         return
+     if renpy.emscripten:
+@@ -134,7 +134,7 @@ def end():
  
      keep_running = False
  
@@ -751,7 +728,7 @@ index 338af38e..73df8ed0 100644
      window.destroy()
      window = None
 diff --git a/renpy/display/render.pyx b/renpy/display/render.pyx
-index 235eab11..425f71a9 100644
+index 1b79728e..70dce02c 100644
 --- a/renpy/display/render.pyx
 +++ b/renpy/display/render.pyx
 @@ -24,7 +24,7 @@ from __future__ import print_function
@@ -780,34 +757,8 @@ index 235eab11..425f71a9 100644
  
  # This is a dictionary containing all the renders that we know of. It's a
  # map from displayable to dictionaries containing the render of that
-diff --git a/renpy/display/video.py b/renpy/display/video.py
-index 896b883d..162ab853 100644
---- a/renpy/display/video.py
-+++ b/renpy/display/video.py
-@@ -520,7 +520,7 @@ def frequent():
- 
-         return False
- 
--    elif fullscreen and not (renpy.mobile and renpy.config.hw_video):
-+    elif fullscreen and not ((renpy.android or renpy.ios) and renpy.config.hw_video):
- 
-         c = renpy.audio.audio.get_channel("movie")
- 
-diff --git a/renpy/exports.py b/renpy/exports.py
-index 8e6dc3b0..b4b10f4e 100644
---- a/renpy/exports.py
-+++ b/renpy/exports.py
-@@ -1783,8 +1783,6 @@ except:
-         platform = "Android"
-     elif renpy.ios:
-         platform = "iOS"
--    elif sys.platform == "emscripten":
--        platform = "emscripten"
-     else:
-         platform = "Unknown"
- 
 diff --git a/renpy/loader.py b/renpy/loader.py
-index a4e7a518..8d69550a 100644
+index c256d19a..dea5069b 100644
 --- a/renpy/loader.py
 +++ b/renpy/loader.py
 @@ -26,7 +26,7 @@ from pickle import loads
@@ -837,7 +788,7 @@ index a4e7a518..8d69550a 100644
  # Used to indicate that this file is blacklisted.
  auto_blacklisted = renpy.object.Sentinel("auto_blacklisted")
 diff --git a/renpy/loadsave.py b/renpy/loadsave.py
-index 22c37cec..72815b1e 100644
+index 7860100f..bb03e048 100644
 --- a/renpy/loadsave.py
 +++ b/renpy/loadsave.py
 @@ -30,7 +30,7 @@ from cStringIO import StringIO
@@ -849,7 +800,7 @@ index 22c37cec..72815b1e 100644
  import types
  import shutil
  import os
-@@ -440,8 +440,14 @@ def save(slotname, extra_info='', mutate_flag=False):
+@@ -441,8 +441,14 @@ def save(slotname, extra_info='', mutate_flag=False):
  
  
  # Flag that lets us know if an autosave is in progress.
@@ -866,7 +817,7 @@ index 22c37cec..72815b1e 100644
  
  # The number of times autosave has been called without a save occuring.
  autosave_counter = 0
-@@ -473,6 +479,9 @@ def autosave_thread(take_screenshot):
+@@ -474,6 +480,9 @@ def autosave_thread(take_screenshot):
  
      finally:
          autosave_not_running.set()
@@ -876,7 +827,7 @@ index 22c37cec..72815b1e 100644
  
  
  def autosave():
-@@ -527,9 +536,13 @@ def force_autosave(take_screenshot=False):
+@@ -528,9 +537,13 @@ def force_autosave(take_screenshot=False):
          return
  
      autosave_not_running.clear()
@@ -894,10 +845,10 @@ index 22c37cec..72815b1e 100644
  
  ################################################################################
 diff --git a/renpy/main.py b/renpy/main.py
-index 9dca2b9e..f9adf904 100644
+index fce3ca58..6c03fd39 100644
 --- a/renpy/main.py
 +++ b/renpy/main.py
-@@ -524,7 +524,7 @@ def main():
+@@ -531,7 +531,7 @@ def main():
                  renpy.display.interface.finish_pending()
  
                  # Give Ren'Py a couple of seconds to finish saving.
@@ -907,7 +858,7 @@ index 9dca2b9e..f9adf904 100644
      finally:
  
 diff --git a/renpy/savelocation.py b/renpy/savelocation.py
-index 3979c457..7429c966 100644
+index 63fad724..b3b94498 100644
 --- a/renpy/savelocation.py
 +++ b/renpy/savelocation.py
 @@ -36,7 +36,12 @@ import threading
@@ -924,42 +875,20 @@ index 3979c457..7429c966 100644
  
  # A suffix used to disambguate temporary files being written by multiple
  # processes.
-@@ -90,6 +95,15 @@ class FileLocation(object):
+@@ -92,7 +97,7 @@ class FileLocation(object):
  
-         return os.path.join(self.directory, renpy.exports.fsencode(slotname + renpy.savegame_suffix))
- 
-+    def sync(self):
-+        """
-+        Called to indicate that the HOME filesystem was changed.
-+        """
-+
-+        if renpy.emscripten:
-+            import emscripten  # @UnresolvedImport
-+            emscripten.syncfs()
-+
-     def scan(self):
+     def sync(self):
          """
-         Scan for files that are added or removed.
-@@ -148,6 +162,7 @@ class FileLocation(object):
-         with disk_lock:
-             record.write_file(filename)
+-        Called to indicate that the filesystem was changed.
++        Called to indicate that the HOME filesystem was changed.
+         """
  
-+        self.sync()
-         self.scan()
- 
-     def list(self):
-@@ -266,6 +281,7 @@ class FileLocation(object):
-             if os.path.exists(filename):
-                 os.unlink(filename)
- 
-+            self.sync()
-             self.scan()
- 
-     def rename(self, old, new):
-@@ -286,6 +302,10 @@ class FileLocation(object):
+         if renpy.emscripten:
+@@ -297,7 +302,10 @@ class FileLocation(object):
  
              os.rename(old, new)
  
+-            self.sync()
 +            # Cf. loadsave.autosave_thread()
 +            #if renpy.emscripten:
 +            #    emscripten.syncfs()
@@ -967,33 +896,7 @@ index 3979c457..7429c966 100644
              self.scan()
  
      def copy(self, old, new):
-@@ -302,6 +322,7 @@ class FileLocation(object):
- 
-             shutil.copyfile(old, new)
- 
-+            self.sync()
-             self.scan()
- 
-     def load_persistent(self):
-@@ -337,6 +358,8 @@ class FileLocation(object):
-             safe_rename(fn_tmp, fn_new)
-             safe_rename(fn_new, fn)
- 
-+            self.sync()
-+
-     def unlink_persistent(self):
- 
-         if not self.active:
-@@ -344,6 +367,8 @@ class FileLocation(object):
- 
-         try:
-             os.unlink(self.persistent)
-+
-+            self.sync()
-         except:
-             pass
- 
-@@ -495,8 +520,15 @@ scan_thread = None
+@@ -512,8 +520,15 @@ scan_thread = None
  quit_scan_thread = False
  
  # The condition we wait on.
@@ -1011,7 +914,7 @@ index 3979c457..7429c966 100644
  
  def run_scan_thread():
      global quit_scan_thread
-@@ -521,7 +553,7 @@ def quit():  # @ReservedAssignment
+@@ -538,7 +553,7 @@ def quit():  # @ReservedAssignment
          quit_scan_thread = True
          scan_thread_condition.notifyAll()
  
@@ -1020,7 +923,7 @@ index 3979c457..7429c966 100644
  
  
  def init():
-@@ -542,5 +574,5 @@ def init():
+@@ -559,5 +574,5 @@ def init():
  
      renpy.loadsave.location = location
  
@@ -1029,7 +932,7 @@ index 3979c457..7429c966 100644
 +    #scan_thread = threading.Thread(target=run_scan_thread)
 +    #scan_thread.start()
 diff --git a/renpy/script.py b/renpy/script.py
-index cba993e1..ffb09d7b 100644
+index d11a7dd0..fba91566 100644
 --- a/renpy/script.py
 +++ b/renpy/script.py
 @@ -263,6 +263,11 @@ class Script(object):

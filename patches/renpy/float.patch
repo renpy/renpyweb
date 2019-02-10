@@ -2,7 +2,7 @@ Index: renpy/renpy/gl/gldraw.pyx
 ===================================================================
 --- renpy.orig/renpy/gl/gldraw.pyx
 +++ renpy/renpy/gl/gldraw.pyx
-@@ -1477,7 +1477,7 @@ cdef class Environ(object):
+@@ -1479,7 +1479,7 @@ cdef class Environ(object):
          Sets the array of texture coordinates for unit `unit`.
          """
  

@@ -2,9 +2,9 @@ Index: renpy/renpy/bootstrap.py
 ===================================================================
 --- renpy.orig/renpy/bootstrap.py
 +++ renpy/renpy/bootstrap.py
-@@ -352,6 +352,8 @@ You may be using a system install of pyt
-         if renpy.display.draw:
-             renpy.display.draw.quit()
+@@ -355,6 +355,8 @@ You may be using a system install of pyt
+         renpy.audio.audio.quit()
+ 
  
 +        renpy.audio.audio.quit()
 +

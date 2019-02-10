@@ -2,7 +2,7 @@ Index: renpy/renpy/__init__.py
 ===================================================================
 --- renpy.orig/renpy/__init__.py
 +++ renpy/renpy/__init__.py
-@@ -532,8 +532,8 @@ def post_import():
+@@ -535,8 +535,8 @@ def post_import():
      renpy.exports.store = renpy.store
      sys.modules['renpy.store'] = sys.modules['store']
  
@@ -26,7 +26,7 @@ Index: renpy/renpy/bootstrap.py
  import io
  
  FSENCODING = sys.getfilesystemencoding() or "utf-8"
-@@ -356,4 +356,4 @@ You may be using a system install of pyt
+@@ -359,4 +359,4 @@ You may be using a system install of pyt
  
          # Prevent subprocess from throwing errors while trying to run it's
          # __del__ method during shutdown.

@@ -2,5 +2,3 @@ float.patch
 static.patch
 audioquit.patch
 subprocess.py
-threading.patch
-drop_screen_constraint_1661.patch

@@ -36,7 +36,7 @@ HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpy
 PYGAME_SDL2_ROOT=$BUILD/pygame_sdl2-static
 if [ ! -d "$PYGAME_SDL2_ROOT/.git" ]; then
     git clone https://github.com/renpy/pygame_sdl2 $PYGAME_SDL2_ROOT
-    (cd "$PYGAME_SDL2_ROOT" && git checkout f2b6ff38d5793a1904970daa192915da377bb315)  # master as of 2018-11-19
+    (cd "$PYGAME_SDL2_ROOT" && git checkout 8bfc1ba9b98011004667ab6771c0923e493fb52b)  # master as of 2019-02-10
 else
     : #(cd "$PYGAME_SDL2_ROOT" && git pull)
 fi

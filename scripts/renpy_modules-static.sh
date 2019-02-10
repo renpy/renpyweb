@@ -37,8 +37,8 @@ RENPY_MODULES_ROOT=$BUILD/renpy
 if [ ! -d "$RENPY_MODULES_ROOT/.git" ]; then
     git clone https://github.com/renpy/renpy $RENPY_MODULES_ROOT
     #(cd "$RENPY_MODULES_ROOT" && git checkout 7.1.1.929)
-    # 88722c18dc87a6b6a14369d2cef861ce0315d525 7.1.4pre2
-    (cd "$RENPY_MODULES_ROOT" && git checkout f2376c02e80de963bb47ac9975cdda835c6b083) # 7.1.3
+    #f2376c02e80de963bb47ac9975cdda835c6b083  # 7.1.3
+    (cd "$RENPY_MODULES_ROOT" && git checkout 88722c18dc87a6b6a14369d2cef861ce0315d525) # 7.1.4pre2
     echo "vc_version=1092" > $RENPY_MODULES_ROOT/renpy/vc_version.py
 else
     : #(cd "$RENPY_MODULES_ROOT" && git pull)
@@ -46,12 +46,12 @@ fi
 
 (
     cd $RENPY_MODULES_ROOT/
+    if [ ! -e .patched ]; then
+       patch -p1 < $PATCHESDIR/renpy_TOSPLIT-7.1.4pre2.patch
+       touch .patched
+    fi
     if [ ! -e .pc ]; then
 	QUILT_PATCHES=$PATCHESDIR/renpy quilt push -a
-    fi
-    if [ ! -e .patched ]; then
-       patch -p1 < $PATCHESDIR/renpy_TOSPLIT-7.1.3.1092.patch
-       touch .patched
     fi
     cd module/
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
