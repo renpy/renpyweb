@@ -40,7 +40,8 @@ if [ ! -d "$RENPY_MODULES_ROOT/.git" ]; then
     #f2376c02e80de963bb47ac9975cdda835c6b083  # 7.1.3
     (cd "$RENPY_MODULES_ROOT" && git checkout 88722c18dc87a6b6a14369d2cef861ce0315d525) # 7.1.4pre2
     (cd "$RENPY_MODULES_ROOT" && git checkout 2eea4a442c9f40cbc87c5f5e86b7933a55bd2ea6) # 7.1.4pre20190224
-    echo "vc_version=1092" > $RENPY_MODULES_ROOT/renpy/vc_version.py
+    #generate vc_version.py
+    python -O distribute.py || true
 else
     : #(cd "$RENPY_MODULES_ROOT" && git pull)
 fi
