@@ -15,8 +15,13 @@ This is the build environment for RenPyWeb.
 
 ## How to run locally
 
-    cd build/t/
-    python3 -m http.server 8000
+- Firefox: double-click on `build/t/index.html`
+
+- Firefox or Chromium:
+
+        cd build/t/
+        python3 -m http.server 8000
+        chromium http://localhost:8000/
 
 
 ## How to make small-scale tests
@@ -30,4 +35,18 @@ Emscripten behavior.
 
 ## How to make the devkit
 
-    make hosting-nogzip-zip
+    make devkit
+
+
+## How to update Ren'Py
+
+    cd build/renpy/
+    quilt pop -a
+    git stash
+    git pull
+    git checkout ...
+    git stash pop
+    quilt push / quilt refresh
+
+Edit `scripts/renpy_modules-static.sh` and update the Git commit or
+tag accordingly.

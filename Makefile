@@ -383,7 +383,8 @@ preupload-clean:
 		$(BUILD)/t/index.wasm.pre $(BUILD)/t/index.wast \
 		$(BUILD)/t/index.bc
 
-hosting-nogzip-zip: preupload-clean
+devkit: hosting-nogzip-zip
+hosting-nogzip-zip: preupload-clean gunzip
 	rm -f $(CURDIR)/hosting.zip
 	cd $(BUILD)/t && zip -r $(CURDIR)/hosting.zip .
 
