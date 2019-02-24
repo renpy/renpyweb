@@ -46,6 +46,7 @@ Emscripten behavior.
     git pull
     git checkout ...
     git stash pop
+    git diff > .../patches/renpy_TOSPLIT-xxx.patch
     quilt push / quilt refresh
 
 Edit `scripts/renpy_modules-static.sh` and update the Git commit or

@@ -505,7 +505,7 @@ index 90094db9..a9c35ded 100644
  import traceback
  import os
 diff --git a/renpy/display/core.py b/renpy/display/core.py
-index 4dfc3266..def73308 100644
+index fefd8ef3..b003aee6 100644
 --- a/renpy/display/core.py
 +++ b/renpy/display/core.py
 @@ -34,7 +34,7 @@ import sys
@@ -728,7 +728,7 @@ index cbb9b904..15237c34 100644
      window.destroy()
      window = None
 diff --git a/renpy/display/render.pyx b/renpy/display/render.pyx
-index 1b79728e..70dce02c 100644
+index b3b95972..a2969e4e 100644
 --- a/renpy/display/render.pyx
 +++ b/renpy/display/render.pyx
 @@ -24,7 +24,7 @@ from __future__ import print_function
@@ -788,7 +788,7 @@ index c256d19a..dea5069b 100644
  # Used to indicate that this file is blacklisted.
  auto_blacklisted = renpy.object.Sentinel("auto_blacklisted")
 diff --git a/renpy/loadsave.py b/renpy/loadsave.py
-index 7860100f..bb03e048 100644
+index d7e7583b..73204cbe 100644
 --- a/renpy/loadsave.py
 +++ b/renpy/loadsave.py
 @@ -30,7 +30,7 @@ from cStringIO import StringIO
@@ -827,7 +827,7 @@ index 7860100f..bb03e048 100644
  
  
  def autosave():
-@@ -528,9 +537,13 @@ def force_autosave(take_screenshot=False):
+@@ -550,9 +559,13 @@ def force_autosave(take_screenshot=False, block=False):
          return
  
      autosave_not_running.clear()
@@ -858,7 +858,7 @@ index fce3ca58..6c03fd39 100644
      finally:
  
 diff --git a/renpy/savelocation.py b/renpy/savelocation.py
-index 63fad724..b3b94498 100644
+index 2966fdec..b3b94498 100644
 --- a/renpy/savelocation.py
 +++ b/renpy/savelocation.py
 @@ -36,7 +36,12 @@ import threading
@@ -875,15 +875,6 @@ index 63fad724..b3b94498 100644
  
  # A suffix used to disambguate temporary files being written by multiple
  # processes.
-@@ -92,7 +97,7 @@ class FileLocation(object):
- 
-     def sync(self):
-         """
--        Called to indicate that the filesystem was changed.
-+        Called to indicate that the HOME filesystem was changed.
-         """
- 
-         if renpy.emscripten:
 @@ -297,7 +302,10 @@ class FileLocation(object):
  
              os.rename(old, new)
