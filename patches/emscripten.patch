@@ -1,16 +1,7 @@
 diff --git a/tools/emterpretify.py b/tools/emterpretify.py
-index 45b87cd7e..b516888cb 100755
+index 5335badb4..68f2548e2 100755
 --- a/tools/emterpretify.py
 +++ b/tools/emterpretify.py
-@@ -11,7 +11,7 @@ Currently this requires the asm.js code to have been built with -s FINALIZE_ASM_
- '''
- 
- from __future__ import print_function
--import os, sys, re, json, shutil
-+import os, sys, re, json, shutil, fnmatch
- 
- sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
- 
 @@ -21,7 +21,8 @@ from tools import asm_module, shared
  
  INNERTERPRETER_LAST_OPCODE = 0 # 'CONDD'
@@ -20,29 +11,6 @@ index 45b87cd7e..b516888cb 100755
 +EMT_STACK_MAX = 2*1024*1024
  
  LOG_CODE = os.environ.get('EMCC_LOG_EMTERPRETER_CODE')
- 
-@@ -50,6 +51,13 @@ def handle_arg(arg):
-     return False
-   return True
- 
-+# https://github.com/emscripten-core/emscripten/pull/8056
-+def wildcards_match(func, whitelist):
-+  for w in whitelist:
-+    if fnmatch.fnmatch(func, w):
-+      return True
-+  return False
-+
- DEBUG = os.environ.get('EMCC_DEBUG')
- 
- config = shared.Configuration()
-@@ -782,7 +790,7 @@ if __name__ == '__main__':
- 
-   if len(WHITELIST):
-     # we are using a whitelist: fill the blacklist with everything not whitelisted
--    BLACKLIST = set([func for func in asm.funcs if func not in WHITELIST])
-+    BLACKLIST = set([func for func in asm.funcs if not wildcards_match(func, WHITELIST)])
- 
-   # decide which functions will be emterpreted, and find which are externally reachable (from outside other emterpreted code; those will need trampolines)
  
 diff --git a/tools/ports/__init__.py b/tools/ports/__init__.py
 index 998e5f6f5..a103a77c8 100644
@@ -54,7 +22,7 @@ index 998e5f6f5..a103a77c8 100644
    ports_by_name[name] = port
 +ports_by_name['sdl2emterpreter']=sdl2
 diff --git a/tools/ports/sdl2.py b/tools/ports/sdl2.py
-index 9877b34fa..7cf64718f 100644
+index ee0dbf04a..ad46d0528 100644
 --- a/tools/ports/sdl2.py
 +++ b/tools/ports/sdl2.py
 @@ -8,6 +8,38 @@ import os, shutil, logging
@@ -89,7 +57,7 @@ index 9877b34fa..7cf64718f 100644
 +        o_s.append(o)
 +      ports.run_commands(commands)
 +      final = os.path.join(ports.get_build_dir(), 'sdl2emterpreter', 'libsdl2.bc')
-+      shared.Building.link(o_s, final)
++      shared.Building.link_to_object(o_s, final)
 +      return final
 +    return [shared.Cache.get('sdl2emterpreter', create, what='port')]
 +
@@ -98,7 +66,7 @@ index 9877b34fa..7cf64718f 100644
      # get the port
 @@ -37,7 +69,11 @@ def get(ports, settings, shared):
        final = os.path.join(ports.get_build_dir(), 'sdl2', 'libsdl2.bc')
-       shared.Building.link(o_s, final)
+       shared.Building.link_to_object(o_s, final)
        return final
 -    return [shared.Cache.get('sdl2', create, what='port')]
 +    # always build vanilla sdl2 port whose paths sdl2_* depend on
@@ -108,20 +76,4 @@ index 9877b34fa..7cf64718f 100644
 +    return sdl2vanilla
    else:
      return []
- 
-diff --git a/tools/system_libs.py b/tools/system_libs.py
-index b12795b31..5021cd42a 100755
---- a/tools/system_libs.py
-+++ b/tools/system_libs.py
-@@ -842,8 +842,9 @@ class Ports(object):
-           shutil.copytree(path, os.path.join(fullname, subdir))
-           Ports.clear_project_build(name)
-           return
--      logging.error('could not find port %s' % name)
--      sys.exit(1)
-+      # https://github.com/emscripten-core/emscripten/pull/8054
-+      #logging.error('could not find port %s' % name)
-+      #sys.exit(1)
- 
-     fullpath = fullname + ('.tar.bz2' if is_tarbz2 else '.zip')
  
