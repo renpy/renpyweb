@@ -383,10 +383,11 @@ preupload-clean:
 		$(BUILD)/t/index.wasm.pre $(BUILD)/t/index.wast \
 		$(BUILD)/t/index.bc
 
+RENPY_VERSION=$(shell (cat build/renpy/renpy/__init__.py; echo 'print(".".join(str(i) for i in version_tuple))')|python -)
 devkit: hosting-nogzip-zip
 hosting-nogzip-zip: preupload-clean gunzip
 	rm -f $(CURDIR)/hosting.zip
-	cd $(BUILD)/t && zip -r $(CURDIR)/hosting.zip .
+	cd $(BUILD)/t && zip -r $(CURDIR)/renpyweb-$(RENPY_VERSION)-$(shell date +%Y%m%d).zip . -x \*.zip
 
 hosting-gzip: preupload-clean
 	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html,wasm} $(BUILD)/t/pythonhome{.data,-data.js} $(BUILD)/t/pyapp{.data,-data.js}"
