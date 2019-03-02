@@ -385,6 +385,7 @@
       window.onerror = function(event) {
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
         //Module.setStatus('Exception thrown, see JavaScript console');
+        // Explicitly display meaningful errors such as "uncaught exception: out of memory":
         Module.setStatus('Error: ' + event.split('\n')[0] + ' (see JavaScript console for details)');
         spinnerElement.style.display = 'none';
         Module.setStatus = function(text) {
