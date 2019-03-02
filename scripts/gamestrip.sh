@@ -31,7 +31,7 @@ mv common renpy/
 (
     cd renpy/common
     find \! \( -name "*.rpyc" -o -name "*.rpymc" \) -print0 | xargs -r0 rm
-    rmdir *
+    rmdir */
 )
 # Not for tutorial:
 find -name "*.rpy" -print0 | xargs -r0 rm
@@ -39,8 +39,8 @@ find -name "*.rpy" -print0 | xargs -r0 rm
 # rm game/script_version.txt
 # Only for the_question
 # mkdir -p launcher/game/fonts/
-# cp -a ../launcher/game/fonts/NanumGothic.ttf ../launcher/game/fonts/SourceHanSans-Light-Lite.ttf launcher/game/fonts/
-zip -r ../game.zip game/ renpy/
+# cp -a ../../launcher/game/fonts/NanumGothic.ttf ../../launcher/game/fonts/SourceHanSans-Light-Lite.ttf launcher/game/fonts/
+zip -r ../game.zip *
 
 # Note: Don't remove .py, in-game .pyo are not found as RenpyImporter doesn't check for them by default
 #find game/ -name "*.py" -print0 | xargs -r0 python -OO -m py_compile

@@ -38,10 +38,9 @@ if [ ! -d "$RENPY_MODULES_ROOT/.git" ]; then
     git clone https://github.com/renpy/renpy $RENPY_MODULES_ROOT
     #(cd "$RENPY_MODULES_ROOT" && git checkout 7.1.1.929)
     #f2376c02e80de963bb47ac9975cdda835c6b083  # 7.1.3
-    (cd "$RENPY_MODULES_ROOT" && git checkout 88722c18dc87a6b6a14369d2cef861ce0315d525) # 7.1.4pre2
-    (cd "$RENPY_MODULES_ROOT" && git checkout 2eea4a442c9f40cbc87c5f5e86b7933a55bd2ea6) # 7.1.4pre20190224
-    #generate vc_version.py
-    python -O distribute.py || true
+    (cd "$RENPY_MODULES_ROOT" && git checkout 6c09b387a3d130df5560772ad09020cf6271becd) # 7.2.0.419
+    # Generate vc_version.py (git describe --tags --dirty --match start-7.2)
+    (cd "$RENPY_MODULES_ROOT" && python -O distribute.py || true)
 else
     : #(cd "$RENPY_MODULES_ROOT" && git pull)
 fi
@@ -49,7 +48,7 @@ fi
 (
     cd $RENPY_MODULES_ROOT/
     if [ ! -e .patched ]; then
-       patch -p1 < $PATCHESDIR/renpy_TOSPLIT-7.1.4.0.patch
+       patch -p1 < $PATCHESDIR/renpy_TOSPLIT-7.2.0.patch
        touch .patched
     fi
     if [ ! -e .pc ]; then

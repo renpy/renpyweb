@@ -505,7 +505,7 @@ index 90094db9..a9c35ded 100644
  import traceback
  import os
 diff --git a/renpy/display/core.py b/renpy/display/core.py
-index fefd8ef3..b003aee6 100644
+index 64955d8d..fd2e40dd 100644
 --- a/renpy/display/core.py
 +++ b/renpy/display/core.py
 @@ -34,7 +34,7 @@ import sys
@@ -728,7 +728,7 @@ index cbb9b904..15237c34 100644
      window.destroy()
      window = None
 diff --git a/renpy/display/render.pyx b/renpy/display/render.pyx
-index b3b95972..a2969e4e 100644
+index a93c8123..411af1ee 100644
 --- a/renpy/display/render.pyx
 +++ b/renpy/display/render.pyx
 @@ -24,7 +24,7 @@ from __future__ import print_function

@@ -2,7 +2,7 @@ Index: renpy/renpy/__init__.py
 ===================================================================
 --- renpy.orig/renpy/__init__.py
 +++ renpy/renpy/__init__.py
-@@ -535,8 +535,8 @@ def post_import():
+@@ -537,8 +537,8 @@ def post_import():
      renpy.exports.store = renpy.store
      sys.modules['renpy.store'] = sys.modules['store']
  
