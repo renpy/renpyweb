@@ -4,7 +4,7 @@ This is the build environment for RenPyWeb.
 
 ## How to build
 
-- Install emscripten 1.38.28 and apply
+- [Install emscripten](https://emscripten.org/docs/building_from_source/building_emscripten_from_source_on_linux.html) 1.38.28 and apply
   `patches/emscripten.patch`
 
 - Adapt `env.sh` and `source` it
