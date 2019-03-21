@@ -6,3 +6,4 @@ python-emscripten
 python-emscripten.fossil
 *.pyo
 *~
+toolchain
