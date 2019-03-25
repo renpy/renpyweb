@@ -505,7 +505,7 @@ index 90094db9..a9c35ded 100644
  import traceback
  import os
 diff --git a/renpy/display/core.py b/renpy/display/core.py
-index 64955d8d..fd2e40dd 100644
+index 330b8a7c..8ffbcef5 100644
 --- a/renpy/display/core.py
 +++ b/renpy/display/core.py
 @@ -34,7 +34,7 @@ import sys
@@ -517,7 +517,7 @@ index 64955d8d..fd2e40dd 100644
  import copy
  import gc
  import inspect
-@@ -1645,7 +1645,7 @@ class Interface(object):
+@@ -1648,7 +1648,7 @@ class Interface(object):
          self.last_resize = None
  
          # The thread that can do display operations.
@@ -526,7 +526,7 @@ index 64955d8d..fd2e40dd 100644
  
          # Initialize audio.
          renpy.audio.audio.init()
-@@ -1673,7 +1673,14 @@ class Interface(object):
+@@ -1676,7 +1676,14 @@ class Interface(object):
          self.bgscreenshot_needed = False
  
          # Event used to signal background screenshot taken.
@@ -542,7 +542,7 @@ index 64955d8d..fd2e40dd 100644
  
          # The background screenshot surface.
          self.bgscreenshot_surface = None
-@@ -2115,7 +2122,7 @@ class Interface(object):
+@@ -2118,7 +2125,7 @@ class Interface(object):
          if not self.started:
              return
  
@@ -551,7 +551,7 @@ index 64955d8d..fd2e40dd 100644
              self.bgscreenshot_event.clear()
              self.bgscreenshot_needed = True
  
-@@ -2191,6 +2198,9 @@ class Interface(object):
+@@ -2194,6 +2201,9 @@ class Interface(object):
  
          try:
              renpy.display.scale.image_save_unscaled(window, filename)
@@ -728,7 +728,7 @@ index cbb9b904..15237c34 100644
      window.destroy()
      window = None
 diff --git a/renpy/display/render.pyx b/renpy/display/render.pyx
-index a93c8123..411af1ee 100644
+index 6934b58b..cc3ff8ef 100644
 --- a/renpy/display/render.pyx
 +++ b/renpy/display/render.pyx
 @@ -24,7 +24,7 @@ from __future__ import print_function
@@ -788,7 +788,7 @@ index c256d19a..dea5069b 100644
  # Used to indicate that this file is blacklisted.
  auto_blacklisted = renpy.object.Sentinel("auto_blacklisted")
 diff --git a/renpy/loadsave.py b/renpy/loadsave.py
-index d7e7583b..73204cbe 100644
+index d1b146bb..b581978f 100644
 --- a/renpy/loadsave.py
 +++ b/renpy/loadsave.py
 @@ -30,7 +30,7 @@ from cStringIO import StringIO
@@ -845,10 +845,10 @@ index d7e7583b..73204cbe 100644
  
  ################################################################################
 diff --git a/renpy/main.py b/renpy/main.py
-index fce3ca58..6c03fd39 100644
+index aa34d88d..c360257a 100644
 --- a/renpy/main.py
 +++ b/renpy/main.py
-@@ -531,7 +531,7 @@ def main():
+@@ -535,7 +535,7 @@ def main():
                  renpy.display.interface.finish_pending()
  
                  # Give Ren'Py a couple of seconds to finish saving.
@@ -858,7 +858,7 @@ index fce3ca58..6c03fd39 100644
      finally:
  
 diff --git a/renpy/savelocation.py b/renpy/savelocation.py
-index 2966fdec..b3b94498 100644
+index 0a5d28fa..366693a1 100644
 --- a/renpy/savelocation.py
 +++ b/renpy/savelocation.py
 @@ -36,7 +36,12 @@ import threading
@@ -887,7 +887,7 @@ index 2966fdec..b3b94498 100644
              self.scan()
  
      def copy(self, old, new):
-@@ -512,8 +520,15 @@ scan_thread = None
+@@ -519,8 +527,15 @@ scan_thread = None
  quit_scan_thread = False
  
  # The condition we wait on.
@@ -905,7 +905,7 @@ index 2966fdec..b3b94498 100644
  
  def run_scan_thread():
      global quit_scan_thread
-@@ -538,7 +553,7 @@ def quit():  # @ReservedAssignment
+@@ -545,7 +560,7 @@ def quit():  # @ReservedAssignment
          quit_scan_thread = True
          scan_thread_condition.notifyAll()
  
@@ -914,7 +914,7 @@ index 2966fdec..b3b94498 100644
  
  
  def init():
-@@ -559,5 +574,5 @@ def init():
+@@ -566,5 +581,5 @@ def init():
  
      renpy.loadsave.location = location
  

@@ -26,7 +26,7 @@ Index: renpy/renpy/bootstrap.py
  import io
  
  FSENCODING = sys.getfilesystemencoding() or "utf-8"
-@@ -359,4 +359,4 @@ You may be using a system install of pyt
+@@ -357,4 +357,4 @@ You may be using a system install of pyt
  
          # Prevent subprocess from throwing errors while trying to run it's
          # __del__ method during shutdown.
