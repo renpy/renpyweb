@@ -397,7 +397,8 @@ gunzip:
 	-gunzip $(BUILD)/t/*.gz
 
 
-$(BUILD)/python.built: dirs
+$(BUILD)/python.built:
+	$(MAKE) dirs
 	if [ ! -d python-emscripten ]; then \
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
