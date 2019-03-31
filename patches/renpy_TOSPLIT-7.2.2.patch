@@ -758,7 +758,7 @@ index 6934b58b..cc3ff8ef 100644
  # This is a dictionary containing all the renders that we know of. It's a
  # map from displayable to dictionaries containing the render of that
 diff --git a/renpy/loader.py b/renpy/loader.py
-index c256d19a..dea5069b 100644
+index 31c8d6b2..9e06e6ed 100644
 --- a/renpy/loader.py
 +++ b/renpy/loader.py
 @@ -26,7 +26,7 @@ from pickle import loads
@@ -770,7 +770,7 @@ index c256d19a..dea5069b 100644
  import zlib
  import re
  
-@@ -794,7 +794,15 @@ auto_thread = None
+@@ -795,7 +795,15 @@ auto_thread = None
  auto_quit_flag = True
  
  # The lock used by auto_thread.
@@ -845,10 +845,10 @@ index d1b146bb..b581978f 100644
  
  ################################################################################
 diff --git a/renpy/main.py b/renpy/main.py
-index aa34d88d..c360257a 100644
+index 2dba3624..be1fd31b 100644
 --- a/renpy/main.py
 +++ b/renpy/main.py
-@@ -535,7 +535,7 @@ def main():
+@@ -536,7 +536,7 @@ def main():
                  renpy.display.interface.finish_pending()
  
                  # Give Ren'Py a couple of seconds to finish saving.

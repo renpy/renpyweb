@@ -38,8 +38,9 @@ if [ ! -d "$RENPY_MODULES_ROOT/.git" ]; then
     git clone https://github.com/renpy/renpy $RENPY_MODULES_ROOT
     #(cd "$RENPY_MODULES_ROOT" && git checkout 7.1.1.929)
     #f2376c02e80de963bb47ac9975cdda835c6b083  # 7.1.3
-    #6c09b387a3d130df5560772ad09020cf6271becd) # 7.2.0.419
-    (cd "$RENPY_MODULES_ROOT" && git checkout 7.2.1.457)
+    #6c09b387a3d130df5560772ad09020cf6271becd # 7.2.0.419
+    #7.2.1.457
+    (cd "$RENPY_MODULES_ROOT" && git checkout 1bea3fc006e97270a93273b5ff5c9dc0a9c8b8b7)  # 7.2.2.491
     # Generate vc_version.py (git describe --tags --dirty --match start-7.2)
     (cd "$RENPY_MODULES_ROOT" && python -O distribute.py || true)
 else
