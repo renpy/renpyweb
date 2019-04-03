@@ -7,3 +7,5 @@ python-emscripten.fossil
 *.pyo
 *~
 toolchain
+/renpy
+/pygame_sdl2
