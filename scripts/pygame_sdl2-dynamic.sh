@@ -22,25 +22,17 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+ROOT=$(dirname $(readlink -f $0))/..
 CACHEROOT=$(dirname $(readlink -f $0))/../cache
 BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
 HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/bin/python
 
-PYGAME_SDL2_ROOT=$BUILD/pygame_sdl2-dynamic
-if [ ! -d "$PYGAME_SDL2_ROOT/.git" ]; then
-    git clone https://github.com/renpy/pygame_sdl2 $PYGAME_SDL2_ROOT
-    (cd "$PYGAME_SDL2_ROOT" && git checkout f2b6ff38d5793a1904970daa192915da377bb315)  # master as of 2018-11-19
-else
-    : #(cd "$PYGAME_SDL2_ROOT" && git pull)
-fi
+PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 
 (
     cd $PYGAME_SDL2_ROOT/
-    if [ ! -e .pc ]; then
-	QUILT_SERIES=series-dynamic QUILT_PATCHES=$PATCHESDIR/pygame_sdl2 quilt push -a
-    fi
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
     CC=emcc LDSHARED=emcc \
@@ -54,7 +46,7 @@ fi
         build \
 	install -O2 --prefix $INSTALLDIR
     $HOSTPYTHON setup.py install_headers -d $INSTALLDIR/include/
-    
+
     # https://github.com/emscripten-core/emscripten/wiki/Linking
     # https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone
     (

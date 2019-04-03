@@ -27,25 +27,16 @@
 # Cf. https://mdqinc.com/blog/2011/08/statically-linking-python-with-cython-generated-modules-and-packages/
 # + patches for setuplib.py
 
+ROOT=$(dirname $(readlink -f $0))/..
 CACHEROOT=$(dirname $(readlink -f $0))/../cache
 BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
 HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/bin/python
 
-PYGAME_SDL2_ROOT=$BUILD/pygame_sdl2-static
-if [ ! -d "$PYGAME_SDL2_ROOT/.git" ]; then
-    git clone https://github.com/renpy/pygame_sdl2 $PYGAME_SDL2_ROOT
-    (cd "$PYGAME_SDL2_ROOT" && git checkout 8bfc1ba9b98011004667ab6771c0923e493fb52b)  # master as of 2019-02-10
-else
-    : #(cd "$PYGAME_SDL2_ROOT" && git pull)
-fi
-
+PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 (
     cd $PYGAME_SDL2_ROOT/
-    if [ ! -e .pc ]; then
-	QUILT_PATCHES=$PATCHESDIR/pygame_sdl2 quilt push -a
-    fi
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
     CC=emcc LDSHARED=emcc \

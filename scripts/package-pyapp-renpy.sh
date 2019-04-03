@@ -20,13 +20,13 @@ mkdir -p $PACKAGEDIR
 
 # Compile Ren'Py Python scripts
 for i in $(cd build/renpy/renpy/ && find . -name "*.py"); do
-    if [ build/renpy/renpy/$i -nt build/renpy/renpy/${i%.py}.pyo ]; then
-	python -OO -m py_compile build/renpy/renpy/$i
+    if [ renpy/renpy/$i -nt renpy/renpy/${i%.py}.pyo ]; then
+	python -OO -m py_compile renpy/renpy/$i
     fi
 done
 
 # Copy Ren'Py data and remove source files
-cp -a build/renpy/renpy $PACKAGEDIR/
+cp -a renpy/renpy $PACKAGEDIR/
 # pygame_sdl2-static
 mkdir -p $PACKAGEDIR/lib/python2.7/site-packages/pygame_sdl2/threads
 for i in $(cd install && find lib/python2.7/site-packages/pygame_sdl2/ -name "*.pyo"); do
@@ -47,7 +47,7 @@ find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 rm
 
 # Entry point
 # TODO: Python doesn't like .pyo entry points?
-cp -a build/renpy/renpy.py $PACKAGEDIR/main.py
+cp -a renpy/renpy.py $PACKAGEDIR/main.py
 
 # RenPyWeb-specific files
 cp -a presplash.png $PACKAGEDIR/
