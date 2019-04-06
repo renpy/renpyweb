@@ -24,6 +24,15 @@ This is the build environment for RenPyWeb.
         chromium http://localhost:8000/
 
 
+## ASMJS version
+
+Use `asmjs.html` instead of `index.html`.
+
+ASMJS is deprecated in favor of WebAssembly.  It can be used for older
+browsers, but it is most useful as a debugging tool because WASM
+sometimes fails to provide enough information.
+
+
 ## How to make small-scale tests
 
 Check the `pygame-example-*` targets. Symlink `pygame-example/main.py`
