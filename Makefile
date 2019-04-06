@@ -392,8 +392,10 @@ hosting-nogzip-zip: preupload-clean gunzip
 hosting-gzip: preupload-clean
 	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html,wasm} $(BUILD)/t/pythonhome{.data,-data.js} $(BUILD)/t/pyapp{.data,-data.js}"
 	-bash -c "gzip -f $(BUILD)/t/asmjs.{em,html,html.mem,js}"
+	cp -a htaccess.txt $(BUILD)/t/.htaccess
 
 gunzip:
+	rm -f $(BUILD)/t/.htaccess
 	-gunzip $(BUILD)/t/*.gz
 
 
