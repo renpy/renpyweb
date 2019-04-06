@@ -65,7 +65,7 @@ COMMON_LDFLAGS = \
 	-L $(INSTALLDIR)/lib $(LDFLAGS) \
 	$(BUILD)/emscripten.bc \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1 \
-	-s FORCE_FILESYSTEM=1 \
+	-s FORCE_FILESYSTEM=1 -s LZ4=1 \
 	-lpython2.7 \
 	-s USE_SDL=2 \
 	-lSDL2_image -ljpeg -lpng -lwebp -lz
@@ -77,8 +77,7 @@ EMTERPRETER_LDFLAGS = \
 	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_30draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_31draw_screen", "___Pyx_PyObject_CallNoArg_*", "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"]'
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
-	    -s USE_SDL_TTF=2 \
-	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1
+	    -s USE_SDL_TTF=2
 RENPY_LDFLAGS = \
 	$(COMMON_LDFLAGS) \
 	$(EMTERPRETER_LDFLAGS) \

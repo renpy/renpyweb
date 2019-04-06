@@ -55,4 +55,4 @@ cp -a presplash.png $PACKAGEDIR/
 $FILE_PACKAGER \
     $OUTDIR/pyapp.data --js-output=$OUTDIR/pyapp-data.js \
     --preload $PACKAGEDIR@/ \
-    --use-preload-cache --no-heap-copy
+    --use-preload-cache --no-heap-copy --lz4
