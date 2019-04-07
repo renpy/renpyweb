@@ -1,3 +1,4 @@
+# https://emscripten.org/docs/compiling/WebAssembly.html#web-server-setup
 RemoveType .gz
 AddEncoding x-gzip .gz
 AddType application/octet-stream .data
