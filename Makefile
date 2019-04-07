@@ -385,7 +385,7 @@ preupload-clean:
 RENPY_VERSION=$(shell cd build/renpy && (cat renpy/__init__.py; echo 'print(".".join(str(i) for i in version_tuple))')|python -)
 devkit: hosting-nogzip-zip
 hosting-nogzip-zip: preupload-clean gunzip
-	rm -f $(CURDIR)/hosting.zip
+	rm -f $(CURDIR)/renpyweb-$(RENPY_VERSION)-$(shell date +%Y%m%d).zip
 	cd $(BUILD)/t && zip -r $(CURDIR)/renpyweb-$(RENPY_VERSION)-$(shell date +%Y%m%d).zip . -x \*.zip
 
 hosting-gzip: preupload-clean
