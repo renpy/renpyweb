@@ -91,7 +91,7 @@ Python.  Complex tasks hence take longer.
 To fix this, we need full threading support in the browser, so we can
 run Ren'Py in a thread without interrupting it (so we can ditch
 Emterpreter and reclaim perfs), and run background tasks in their own
-threads (so they don't block execution and cause delay - fix other
+threads (so they don't block execution and cause delay - plus fix other
 shortcomings such as video support).
 
 Full threading support in the browser requires:
