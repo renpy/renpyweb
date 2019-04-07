@@ -71,7 +71,8 @@ stream.  This means the audio needs not be faster, but every else
 needs to!
 
 When we say "certain actions", this can be running background tasks
-such as image prediction and autosave, or rendering a complex Screen.
+such as sound decoding, image prediction and autosave; or complex
+tasks like rendering a detailed Screen.
 
 In desktop/mobile Ren'Py, background tasks are run in threads.
 However the browser's JavaScript and WebAssembly are mono-threaded;
