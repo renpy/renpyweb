@@ -60,3 +60,58 @@ Emscripten behavior.
 
 Edit `scripts/renpy_modules-static.sh` and update the Git commit or
 tag accordingly.
+
+## Performances and sound jitter
+
+Sound tends to jitter, especially with Chromium and Edge.
+
+What happens is that RenPyWeb takes too much time for certain actions,
+and the browser just waits for it at the cost of breaking the audio
+stream.  This means the audio needs not be faster, but every else
+needs to!
+
+When we say "certain actions", this can be running background tasks
+such as image prediction and autosave, or rendering a complex Screen.
+
+In desktop/mobile Ren'Py, background tasks are run in threads.
+However the browser's JavaScript and WebAssembly are mono-threaded;
+those background tasks need to be done along with rendering the
+current frame, causing random delays.
+
+In addition, normally your computer runs the game and let it do what
+it wants until it quits.  However the browser only gives control to
+the game to render a single image - and the game needs to give control
+back as soon as possible, ideally 60 times per second.  Ren'Py's main
+loop is strongly recursive, and cannot be interrupted without
+rewriting half of Ren'Py.  We could add specific stop/resume points
+with the Emterpreter technology, at the cost of performances in
+Python.  Complex tasks hence take long.
+
+To fix this, we need full threading support in the browser, so we can
+run Ren'Py in a thread without interrupting it (so we can ditch
+Emterpreter and reclaim perfs), and run background tasks in their own
+threads (so they don't block execution and cause delay - fix other
+shortcomings such as video support).
+
+Full threading support in the browser requires:
+
+- [Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API):
+  present in modern browsers
+
+- [SharedArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer):
+  present in Chrome, present but disabled by default in Firefox
+
+- [pthread emulation](https://emscripten.org/docs/porting/pthreads.html):
+  to mimic thread by running 2 separate Worker apps with all the
+  memory in SharedArrayBuffer, while proxying text and graphic output
+  to the main thread; in progress
+
+- threaded version of the SDL2/OpenGL stack as ported to Emscripten; not started AFAIK
+
+Alternatively, audio itself could be threaded.  There is work in
+progress with
+[AudioWorklet](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API#Audio_processing_in_JavaScript).
+Since there is no shared filesystem, one issue is sharing the music
+files responsively between the main Ren'Py thread and the AudioWorklet.
+
+If you have suggestions, feel free to file a bug report :)
