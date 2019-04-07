@@ -84,9 +84,9 @@ it wants until it quits.  However the browser only gives control to
 the game to render a single image - and the game needs to give control
 back as soon as possible, ideally 60 times per second.  Ren'Py's main
 loop is strongly recursive, and cannot be interrupted without
-rewriting half of Ren'Py.  We could add specific stop/resume points
-with the Emterpreter technology, at the cost of performances in
-Python.  Complex tasks hence take long.
+rewriting half of Ren'Py.  We were able to add specific stop/resume points
+using the Emterpreter technology, at the cost of performances in
+Python.  Complex tasks hence take longer.
 
 To fix this, we need full threading support in the browser, so we can
 run Ren'Py in a thread without interrupting it (so we can ditch
