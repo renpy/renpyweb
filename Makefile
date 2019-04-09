@@ -49,11 +49,11 @@ LDFLAGS=-O2 -s ASSERTIONS=0
 
 all: wasm asmjs
 
-PYGAME_SDL2_STATIC_OBJS=$(BUILD)/pygame_sdl2-static/emscripten-static/build-temp/gen/*.o $(BUILD)/pygame_sdl2-static/emscripten-static/build-temp/src/*.o
+PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen/*.o pygame_sdl2/emscripten-static/build-temp/src/*.o
 
 RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc \
 	$(PYGAME_SDL2_STATIC_OBJS) \
-	$(BUILD)/renpy/module/emscripten-static/build-temp/*.o $(BUILD)/renpy/module/emscripten-static/build-temp/gen/*.o
+	renpy/module/emscripten-static/build-temp/*.o renpy/module/emscripten-static/build-temp/gen/*.o
 
 # Ensure all builds use the same (locally patched) SDL2 instead of
 # placing the default one in cache

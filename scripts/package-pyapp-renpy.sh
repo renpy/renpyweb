@@ -19,7 +19,7 @@ rm -rf $PACKAGEDIR/
 mkdir -p $PACKAGEDIR
 
 # Compile Ren'Py Python scripts
-for i in $(cd build/renpy/renpy/ && find . -name "*.py"); do
+for i in $(cd renpy/renpy/ && find . -name "*.py"); do
     if [ renpy/renpy/$i -nt renpy/renpy/${i%.py}.pyo ]; then
 	python -OO -m py_compile renpy/renpy/$i
     fi
