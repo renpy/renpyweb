@@ -18,12 +18,21 @@ OUTDIR=build/t
 rm -rf $PACKAGEDIR/
 mkdir -p $PACKAGEDIR
 
-# Compile Ren'Py Python scripts
-for i in $(cd renpy/renpy/ && find . -name "*.py"); do
-    if [ renpy/renpy/$i -nt renpy/renpy/${i%.py}.pyo ]; then
-	python -OO -m py_compile renpy/renpy/$i
-    fi
-done
+# # Compile Ren'Py Python scripts
+# for i in $(cd renpy/renpy/ && find . -name "*.py"); do
+#     if [ renpy/renpy/$i -nt renpy/renpy/${i%.py}.pyo ]; then
+# 	python -OO -m py_compile renpy/renpy/$i
+#     fi
+# done
+
+if [ ! -e renpy/lib ];  then
+    echo renpy/lib does not exist. Please symlink or copy it in.
+    exit 1
+fi
+
+# This compiles the .pyo files and any .rpyc files that need it.
+renpy/renpy.sh renpy/the_question quit
+
 
 # Copy Ren'Py data and remove source files
 cp -a renpy/renpy $PACKAGEDIR/
