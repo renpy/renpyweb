@@ -42,7 +42,7 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     CC=emcc LDSHARED=emcc \
       CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2" \
       LDFLAGS="" \
-      PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' \
+      PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' PYGAME_SDL2_STATIC=1 \
       $HOSTPYTHON \
       setup.py \
         build_ext --include-dirs $INSTALLDIR/include/python2.7 \
