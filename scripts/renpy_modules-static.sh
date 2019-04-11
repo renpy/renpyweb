@@ -36,6 +36,9 @@ HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpy
 
 RENPY_MODULES_ROOT="$ROOT/renpy"
 
+unset RENPY_STEAM_PLATFORM
+unset RENPY_STEAM_SDK
+
 # TODO: Generate vc_version.py (git describe --tags --dirty --match start-7.2)
 # (cd "$RENPY_MODULES_ROOT" && python -O distribute.py || true)
 
