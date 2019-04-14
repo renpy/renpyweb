@@ -135,8 +135,32 @@
       </div>
     </div>
     
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1
-      onmouseenter="window.focus()" onclick="window.focus()"></canvas>
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+
+    <script>
+      // Work-around iframe focus
+      // https://github.com/emscripten-core/emscripten/pull/7631
+      document.getElementById('canvas').addEventListener('mouseenter', function(e) { window.focus() });
+      document.getElementById('canvas').addEventListener('click', function(e) { window.focus() });
+
+      // Work-around chromium autoplay policy
+      // https://github.com/emscripten-core/emscripten/issues/6511
+      function resumeAudio(e) {
+	  if (typeof Module === 'undefined'
+	      || typeof Module.SDL2 == 'undefined'
+	      || typeof Module.SDL2.audioContext == 'undefined')
+	      return;
+	  if (Module.SDL2.audioContext.state == 'suspended') {
+	      Module.SDL2.audioContext.resume();
+	  }
+	  if (Module.SDL2.audioContext.state == 'running') {
+	      document.getElementById('canvas').removeEventListener('click', resumeAudio);
+	      document.removeEventListener('keydown', resumeAudio);
+	  }
+      }
+      document.getElementById('canvas').addEventListener('click', resumeAudio);
+      document.addEventListener('keydown', resumeAudio);
+    </script>
 
     <div id="DivOpen" style="position: absolute; top: 82px; visibility: hidden; width: 100%; text-align: center;">
         <input id="ButtonOpen" type="file" onchange="onOpen()"
