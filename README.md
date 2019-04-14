@@ -61,14 +61,14 @@ Emscripten behavior.
 Edit `scripts/renpy_modules-static.sh` and update the Git commit or
 tag accordingly.
 
-## Performances and sound jitter
+## Performances
 
-Sound tends to jitter, especially with Chromium and Edge.
+RenPyWeb could be faster.
 
-What happens is that RenPyWeb takes too much time for certain actions,
-and the browser just waits for it at the cost of breaking the audio
-stream.  This means the audio needs not be faster, but every else
-needs to!
+Whenever RenPyWeb takes too much time for certain actions, the browser
+just waits for it at the cost of slightly freezing the game or
+breaking the audio stream (for audio, a larger buffer/latency was used
+as a temporary work-around).
 
 When we say "certain actions", this can be running background tasks
 such as sound decoding, image prediction and autosave; or complex
@@ -109,10 +109,5 @@ Full threading support in the browser requires:
 
 - threaded version of the SDL2/OpenGL stack as ported to Emscripten; not started AFAIK
 
-Alternatively, audio itself could be threaded.  There is work in
-progress with
-[AudioWorklet](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API#Audio_processing_in_JavaScript).
-Since there is no shared filesystem, one issue is sharing the music
-files responsively between the main Ren'Py thread and the AudioWorklet.
 
 If you have suggestions, feel free to file a bug report :)
