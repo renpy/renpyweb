@@ -38,3 +38,13 @@ class Thread(object):
     def join(self): pass
 
     def setDaemon(self, value): pass
+
+    def isAlive(self):
+        return False
+
+
+_current_thread = Thread()
+
+
+def current_thread():
+    return _current_thread
