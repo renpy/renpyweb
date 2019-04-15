@@ -46,10 +46,10 @@ find $PACKAGEDIR/renpy/ \( -name "*.py" -o -name "*.pyc" \
     -o -name "*.rpy" -o -name "*.rpym" \) -print0 \
   | xargs -r0 rm
 
-# Stub out these two libs so we can run unmodified renpy/common/**.rpym
+# Stub out these two libs.
 mkdir -p $PACKAGEDIR/lib/python2.7
-echo -e "class Thread:\n    pass" > $PACKAGEDIR/lib/python2.7/threading.py
-echo > $PACKAGEDIR/lib/python2.7/subprocess.py
+cp pystub/*.py  $PACKAGEDIR/lib/python2.7
+
 # Compile manually added Python scripts
 find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 python -OO -m py_compile
 find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 rm
