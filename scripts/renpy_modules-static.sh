@@ -50,7 +50,7 @@ fi
 (
     cd $RENPY_MODULES_ROOT/
     if [ ! -e .patched ]; then
-       patch -p1 < $PATCHESDIR/renpy_TOSPLIT-7.2.0.patch
+       patch -p1 < $PATCHESDIR/renpy_TOSPLIT-7.2.2.patch
        touch .patched
     fi
     if [ ! -e .pc ]; then
