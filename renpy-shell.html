@@ -233,13 +233,13 @@
           reader = new FileReader();
           reader.onload = function(e) {
             FS.writeFile('game.zip', new Uint8Array(e.target.result));
-            gameExtract();
+            gameExtractAndRun();
           }
           reader.readAsArrayBuffer(input.files[0])
         }, 10);
       }
 
-      function gameExtract() {
+      function gameExtractAndRun() {
         start = Date.now();
         Module.ccall('PyRun_SimpleString', 'number', ['string'], [
           "import zipfile\n" +
@@ -439,6 +439,7 @@
         Module["preRun"].push(create_persistent); // FS is not initialized yet, wait for it
       }
     </script>
+    <script type="text/javascript" src="zee.js"></script>
     {{{ SCRIPT }}}
   </body>
 </html>

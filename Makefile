@@ -153,7 +153,7 @@ common-pygame-example: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
 common-pygame-example-static: common-pygame-example package-pygame-example-static $(BUILD)/pygame_sdl2-static.built $(BUILD)/main-pygame_sdl2-static.bc
 common-pygame-example-dynamic: common-pygame-example $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/main-pygame_sdl2-dynamic.bc
 
-common-renpyweb: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb
+common-renpyweb: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built $(BUILD)/zee.js.built $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb
 
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
@@ -280,6 +280,9 @@ wasm: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpywe
 	    -o $(BUILD)/t/index.html
 	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
 	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
+	# fallback compression
+	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
+	gzip -f $(BUILD)/t/index.wasm
 
 asmjs: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# Using asmjs.html instead of asmjs/index.html because
@@ -389,13 +392,20 @@ hosting-nogzip-zip: preupload-clean gunzip
 	cd $(BUILD)/t && zip -r $(CURDIR)/renpyweb-$(RENPY_VERSION)-$(shell date +%Y%m%d).zip . -x \*.zip
 
 hosting-gzip: preupload-clean
-	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html,wasm} $(BUILD)/t/pythonhome{.data,-data.js} $(BUILD)/t/pyapp{.data,-data.js}"
+	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html}"
+	-bash -c "gzip -f $(BUILD)/t/pythonhome{.data,-data.js}"
+	-bash -c "gzip -f $(BUILD)/t/pyapp{.data,-data.js}"
 	-bash -c "gzip -f $(BUILD)/t/asmjs.{em,html,html.mem,js}"
+	-gzip -f $(BUILD)/t/zee.js
 	cp -a htaccess.txt $(BUILD)/t/.htaccess
 
 gunzip:
+	-bash -c "gunzip $(BUILD)/t/index.{em,js,html}.gz"
+	-bash -c "gunzip $(BUILD)/t/pythonhome{.data,-data.js}.gz"
+	-bash -c "gunzip $(BUILD)/t/pyapp{.data,-data.js}.gz"
+	-bash -c "gunzip $(BUILD)/t/asmjs.{em,html,html.mem,js}.gz"
+	-gunzip $(BUILD)/t/zee.js.gz
 	rm -f $(BUILD)/t/.htaccess
-	-gunzip $(BUILD)/t/*.gz
 
 
 $(BUILD)/python.built:
@@ -482,10 +492,17 @@ $(CACHEROOT)/ffmpeg-3.0.tar.bz2:
 
 $(BUILD)/SDL2.built:
 	-git clone https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
-	cd $(BUILD)/SDL2; \
-                git checkout version_17; \
-                patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch; \
+	cd $(BUILD)/SDL2 && \
+                git checkout version_17 && \
+                patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch
 	touch $(BUILD)/SDL2.built
+
+$(BUILD)/zee.js.built:
+	-git clone https://github.com/kripken/zee.js $(BUILD)/zee.js
+	cd $(BUILD)/zee.js && \
+		git checkout 83873a460f53ae80488cd73d6d5740102fa94e00 && \
+		make -j$(nproc)
+	touch $(BUILD)/zee.js.built
 
 # TODO: move to 2.0.3 but depends on latest SDL2 (> USE_SDL=2 port)
 $(CACHEROOT)/SDL2_image-2.0.2.tar.gz:
