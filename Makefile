@@ -158,7 +158,7 @@ common-renpyweb: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built $(BUILD)/zee.js
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
-	  python-emscripten/2.7.10/package-pythonhome.sh --lz4
+	  python-emscripten/2.7.10/package-pythonhome.sh
 package-pygame-example-static: package-python-minimal
 	$(CURDIR)/scripts/package-pyapp-pygame-example-static.sh
 package-pygame-example-dynamic-asmjs: package-python-minimal $(BUILD)/pygame_sdl2-dynamic.built
@@ -174,7 +174,7 @@ package-renpyweb:
 	# webbrowser.py + shlex.py dep: click on URLs within Ren'Py
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
-	  python-emscripten/2.7.10/package-pythonhome.sh \
+	  python-emscripten/2.7.10/package-pythonhome.sh --lz4 \
 	  repr.py \
 	  encodings/raw_unicode_escape.py base64.py \
 	  encodings/utf_32_be.py \
