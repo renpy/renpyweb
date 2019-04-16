@@ -36,6 +36,10 @@ find $PACKAGEDIR/renpy/ \( -name "*.py" -o -name "*.pyc" \
     -o -name "*.pyx" -o -name "*.pxd" \
     -o -name "*.rpy" -o -name "*.rpym" \) -print0 \
   | xargs -r0 rm
+# For now, .rpyc/.rpymc in common/ will be replaced by those in game.zip
+# (possibly change this logic with Ren'Py launcher integration)
+find $PACKAGEDIR/renpy/common/ \( -name "*.rpyc" -o -name "*.rpymc" \) -print0 \
+  | xargs -r0 rm
 
 # Stub out these two libs so we can run unmodified renpy/common/**.rpym
 mkdir -p $PACKAGEDIR/lib/python2.7
