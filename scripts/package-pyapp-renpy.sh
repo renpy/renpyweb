@@ -66,4 +66,7 @@ cp -a presplash.png $PACKAGEDIR/
 $FILE_PACKAGER \
     $OUTDIR/pyapp.data --js-output=$OUTDIR/pyapp-data.js \
     --preload $PACKAGEDIR@/ \
-    --use-preload-cache --no-heap-copy --lz4
+    --use-preload-cache --no-heap-copy
+# No --lz4 because this implies read-only, hence can't be overwritten
+# by game.zip.
+# https://github.com/emscripten-core/emscripten/issues/8450

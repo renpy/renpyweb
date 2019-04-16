@@ -99,6 +99,9 @@ RENPY_LDFLAGS = \
 # glGenBuffers or glBindBuffer in all of Ren'Py (boo)...
 # -s FULL_ES2=1
 
+# LZ4: support file_packager.py --lz4 (beware: creates read-only files, stored compressed in-memory)
+# -s LZ4=1
+
 # Debug:
 # compilation process: EMCC_DEBUG=2
 # webgl tracing: -s GL_ASSERTIONS=1 -s GL_UNSAFE_OPTS=0 -s TRACE_WEBGL_CALLS=1 -s GL_DEBUG=1
@@ -174,7 +177,7 @@ package-renpyweb:
 	# webbrowser.py + shlex.py dep: click on URLs within Ren'Py
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
-	  python-emscripten/2.7.10/package-pythonhome.sh --lz4 \
+	  python-emscripten/2.7.10/package-pythonhome.sh \
 	  repr.py \
 	  encodings/raw_unicode_escape.py base64.py \
 	  encodings/utf_32_be.py \
