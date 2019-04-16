@@ -40,7 +40,7 @@ for i in $(cd install && find lib/python2.7/site-packages/pygame_sdl2/ -name "*.
 done
 # Only keep .pyo and data files
 find $PACKAGEDIR/renpy/ \( -name "*.py" -o -name "*.pyc" \
-    -o -name "*.pyx" -o -name "*.pxd" \
+    -o -name "*.pyx" -o -name "*.pxd" -o -name "*.pxi" \
     -o -name "*.rpy" -o -name "*.rpym" \) -print0 \
   | xargs -r0 rm
 # For now, .rpyc/.rpymc in common/ will be replaced by those in game.zip
