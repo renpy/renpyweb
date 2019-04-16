@@ -9,6 +9,12 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
+# Goals:
+# - Provide size-optimized Ren'Py
+# - Provide RenPyWeb-patched Ren'Py (C modules in index.wasm though)
+
+# Note: with proper Ren'Py launcher integration, we could place
+# everything in game.zip instead, for simplicity and compression.
 
 FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
 PACKAGEDIR=build/package-pyapp-renpy
@@ -32,6 +38,7 @@ mkdir -p $PACKAGEDIR/lib/python2.7/site-packages/pygame_sdl2/threads
 for i in $(cd install && find lib/python2.7/site-packages/pygame_sdl2/ -name "*.pyo"); do
    cp -a install/$i $PACKAGEDIR/$i
 done
+# Only keep .pyo and data files
 find $PACKAGEDIR/renpy/ \( -name "*.py" -o -name "*.pyc" \
     -o -name "*.pyx" -o -name "*.pxd" \
     -o -name "*.rpy" -o -name "*.rpym" \) -print0 \
