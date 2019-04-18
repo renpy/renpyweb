@@ -65,7 +65,7 @@ COMMON_LDFLAGS = \
 	-L $(INSTALLDIR)/lib $(LDFLAGS) \
 	$(BUILD)/emscripten.bc \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1 \
-	-s FORCE_FILESYSTEM=1 \
+	-s FORCE_FILESYSTEM=1 -s LZ4=1 \
 	-lpython2.7 \
 	-s USE_SDL=2 \
 	-lSDL2_image -ljpeg -lpng -lwebp -lz
@@ -74,11 +74,10 @@ COMMON_LDFLAGS = \
 # https://github.com/emscripten-core/emscripten/pull/8056
 EMTERPRETER_LDFLAGS = \
 	-s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_30draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_31draw_screen", "___Pyx_PyObject_CallNoArg_*", "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"]'
+	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_30draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_31draw_screen", "___Pyx_PyObject_CallNoArg_*", "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init", "_builtin_eval"]'
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
-	    -s USE_SDL_TTF=2 \
-	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1
+	    -s USE_SDL_TTF=2
 RENPY_LDFLAGS = \
 	$(COMMON_LDFLAGS) \
 	$(EMTERPRETER_LDFLAGS) \
@@ -99,6 +98,9 @@ RENPY_LDFLAGS = \
 # OpenGL: deprecated client-side buffers, not a single use of
 # glGenBuffers or glBindBuffer in all of Ren'Py (boo)...
 # -s FULL_ES2=1
+
+# LZ4: support file_packager.py --lz4 (beware: creates read-only files, stored compressed in-memory)
+# -s LZ4=1
 
 # Debug:
 # compilation process: EMCC_DEBUG=2
@@ -154,7 +156,7 @@ common-pygame-example: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
 common-pygame-example-static: common-pygame-example package-pygame-example-static $(BUILD)/pygame_sdl2-static.built $(BUILD)/main-pygame_sdl2-static.bc
 common-pygame-example-dynamic: common-pygame-example $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/main-pygame_sdl2-dynamic.bc
 
-common-renpyweb: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb
+common-renpyweb: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built $(BUILD)/zee.js.built $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb
 
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
@@ -281,6 +283,9 @@ wasm: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpywe
 	    -o $(BUILD)/t/index.html
 	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
 	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
+	# fallback compression
+	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
+	gzip -f $(BUILD)/t/index.wasm
 
 asmjs: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# Using asmjs.html instead of asmjs/index.html because
@@ -386,15 +391,24 @@ preupload-clean:
 RENPY_VERSION=$(shell cd build/renpy && (cat renpy/__init__.py; echo 'print(".".join(str(i) for i in version_tuple))')|python -)
 devkit: hosting-nogzip-zip
 hosting-nogzip-zip: preupload-clean gunzip
-	rm -f $(CURDIR)/hosting.zip
+	rm -f $(CURDIR)/renpyweb-$(RENPY_VERSION)-$(shell date +%Y%m%d).zip
 	cd $(BUILD)/t && zip -r $(CURDIR)/renpyweb-$(RENPY_VERSION)-$(shell date +%Y%m%d).zip . -x \*.zip
 
 hosting-gzip: preupload-clean
-	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html,wasm} $(BUILD)/t/pythonhome{.data,-data.js} $(BUILD)/t/pyapp{.data,-data.js}"
+	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html}"
+	-bash -c "gzip -f $(BUILD)/t/pythonhome{.data,-data.js}"
+	-bash -c "gzip -f $(BUILD)/t/pyapp{.data,-data.js}"
 	-bash -c "gzip -f $(BUILD)/t/asmjs.{em,html,html.mem,js}"
+	-gzip -f $(BUILD)/t/zee.js
+	cp -a htaccess.txt $(BUILD)/t/.htaccess
 
 gunzip:
-	-gunzip $(BUILD)/t/*.gz
+	-bash -c "gunzip $(BUILD)/t/index.{em,js,html}.gz"
+	-bash -c "gunzip $(BUILD)/t/pythonhome{.data,-data.js}.gz"
+	-bash -c "gunzip $(BUILD)/t/pyapp{.data,-data.js}.gz"
+	-bash -c "gunzip $(BUILD)/t/asmjs.{em,html,html.mem,js}.gz"
+	-gunzip $(BUILD)/t/zee.js.gz
+	rm -f $(BUILD)/t/.htaccess
 
 
 $(BUILD)/python.built:
@@ -481,10 +495,17 @@ $(CACHEROOT)/ffmpeg-3.0.tar.bz2:
 
 $(BUILD)/SDL2.built:
 	-git clone https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
-	cd $(BUILD)/SDL2; \
-                git checkout version_17; \
-                patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch; \
+	cd $(BUILD)/SDL2 && \
+                git checkout version_17 && \
+                patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch
 	touch $(BUILD)/SDL2.built
+
+$(BUILD)/zee.js.built:
+	-git clone https://github.com/kripken/zee.js $(BUILD)/zee.js
+	cd $(BUILD)/zee.js && \
+		git checkout 83873a460f53ae80488cd73d6d5740102fa94e00 && \
+		make -j$(nproc)
+	touch $(BUILD)/zee.js.built
 
 # TODO: move to 2.0.3 but depends on latest SDL2 (> USE_SDL=2 port)
 $(CACHEROOT)/SDL2_image-2.0.2.tar.gz:

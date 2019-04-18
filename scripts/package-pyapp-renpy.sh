@@ -9,6 +9,12 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
+# Goals:
+# - Provide size-optimized Ren'Py
+# - Provide RenPyWeb-patched Ren'Py (C modules in index.wasm though)
+
+# Note: with proper Ren'Py launcher integration, we could place
+# everything in game.zip instead, for simplicity and compression.
 
 FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
 PACKAGEDIR=build/package-pyapp-renpy
@@ -41,9 +47,14 @@ mkdir -p $PACKAGEDIR/lib/python2.7/site-packages/pygame_sdl2/threads
 for i in $(cd install && find lib/python2.7/site-packages/pygame_sdl2/ -name "*.pyo"); do
    cp -a install/$i $PACKAGEDIR/$i
 done
+# Only keep .pyo and data files
 find $PACKAGEDIR/renpy/ \( -name "*.py" -o -name "*.pyc" \
-    -o -name "*.pyx" -o -name "*.pxd" \
+    -o -name "*.pyx" -o -name "*.pxd" -o -name "*.pxi" \
     -o -name "*.rpy" -o -name "*.rpym" \) -print0 \
+  | xargs -r0 rm
+# For now, .rpyc/.rpymc in common/ will be replaced by those in game.zip
+# (possibly change this logic with Ren'Py launcher integration)
+find $PACKAGEDIR/renpy/common/ \( -name "*.rpyc" -o -name "*.rpymc" \) -print0 \
   | xargs -r0 rm
 
 # Stub out these two libs.
@@ -65,3 +76,6 @@ $FILE_PACKAGER \
     $OUTDIR/pyapp.data --js-output=$OUTDIR/pyapp-data.js \
     --preload $PACKAGEDIR@/ \
     --use-preload-cache --no-heap-copy
+# No --lz4 because this implies read-only, hence can't be overwritten
+# by game.zip.
+# https://github.com/emscripten-core/emscripten/issues/8450

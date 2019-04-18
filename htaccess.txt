@@ -1,0 +1,9 @@
+# https://emscripten.org/docs/compiling/WebAssembly.html#web-server-setup
+RemoveType .gz
+AddEncoding x-gzip .gz
+AddType application/octet-stream .data
+AddType application/octet-stream .em
+AddType application/wasm .wasm
+
+# CPU-intensive, better pre-gzip
+#AddOutputFilterByType DEFLATE application/wasm

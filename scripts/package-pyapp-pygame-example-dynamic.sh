@@ -48,9 +48,8 @@ preloadso=''
 if [ "$1" == "wasm" ]; then
     preloadso='--use-preload-plugins'
 fi
-    preloadso='--use-preload-plugins'
 $FILE_PACKAGER \
     $OUTDIR/pyapp.data --js-output=$OUTDIR/pyapp-data.js \
     --preload $PACKAGEDIR@/ \
     $preloadso \
-    --use-preload-cache --no-heap-copy
+    --use-preload-cache --no-heap-copy --lz4
