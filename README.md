@@ -5,12 +5,22 @@ This is the build environment for RenPyWeb.
 ## How to build
 
 - [Install emscripten](https://emscripten.org/docs/building_from_source/building_emscripten_from_source_on_linux.html) 1.38.30 and apply
-  `patches/emscripten.patch`.  You can use `build_toolchain.sh` for this.
+  `patches/emscripten.patch`.  You can use `scripts/build_toolchain.sh` for this.
 
-- Adapt `env.sh` and `source` it
+- Install Ren'Py to `renpy/` and pygame\_sdl2 to `pygame_sdl2/`. It's also necessary
+  to either build Ren'Py for the host computer, or copy a lib directory from
+  a similar Ren'Py version to `renpy/lib/`. This can be done for you with
+  `scripts/checkout_renpy.sh`.
+
+- Adapt `env.sh` and `source` it. If you used `scripts/build_toolchain.sh`,
+  then `source toolchain/env.sh` will suffice.
 
 - Type:
   `make`
+
+- Package the game using `scripts/distribute_game.sh`. This will run Ren'Py
+  to compile and distribute the game. It takes an optional argument, a path
+  to a Ren'Py game's base directory.
 
 
 ## How to run locally
@@ -46,20 +56,6 @@ Emscripten behavior.
 
     make devkit
 
-
-## How to update Ren'Py
-
-    cd build/renpy/
-    quilt pop -a
-    git stash
-    git pull
-    git checkout ...
-    git stash pop
-    git diff > .../patches/renpy_TOSPLIT-xxx.patch
-    quilt push / quilt refresh
-
-Edit `scripts/renpy_modules-static.sh` and update the Git commit or
-tag accordingly.
 
 ## Performances
 
