@@ -2,7 +2,7 @@
 
 set -ex
 
-RENPYWEB="$(dirname $(readlink -f $0))"
+RENPYWEB="$(dirname $(readlink -f $0))/.."
 
 cd "$RENPYWEB"
 
