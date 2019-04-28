@@ -434,7 +434,9 @@ $(BUILD)/fribidi.built: $(CACHEROOT)/fribidi-0.19.2.tar.gz
 
 # avformat avcodec avutil swresample swscale
 $(BUILD)/ffmpeg.built: $(CACHEROOT)/ffmpeg-3.0.tar.bz2
-	$(SCRIPTSDIR)/ffmpeg.sh
+	# Video currently unavailable, let's optimize size and (compilation) speed
+	#$(SCRIPTSDIR)/ffmpeg.sh
+	$(SCRIPTSDIR)/ffmpeg-audioonly.sh
 	touch $(BUILD)/ffmpeg.built
 
 $(BUILD)/pygame_sdl2-static.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng.built $(BUILD)/SDL2_image.built $(BUILD)/SDL2_mixer.built
