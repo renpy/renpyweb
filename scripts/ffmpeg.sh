@@ -106,6 +106,13 @@ emconfigure ../configure --prefix=$INSTALLDIR \
        --disable-vdpau \
        --disable-videotoolbox \
        --disable-iconv \
+       \
+       --disable-programs \
+       --disable-avdevice \
+       --disable-postproc \
+       --disable-avfilter \
+       --disable-protocols \
+       --disable-network \
        --arch=emscripten --disable-asm --disable-stripping
 # --enable-cross-compile: requests specifying target and host OS,
 #   let's rely on emconfigure instead
