@@ -436,7 +436,7 @@ index 77e2f4c7..3fc86789 100644
  
      if (!thread) {
 diff --git a/renpy/audio/audio.py b/renpy/audio/audio.py
-index 2be494cf..b4c69684 100644
+index 2be494cf..694ea87d 100644
 --- a/renpy/audio/audio.py
 +++ b/renpy/audio/audio.py
 @@ -34,7 +34,7 @@ import time
@@ -467,8 +467,8 @@ index 2be494cf..b4c69684 100644
          bufsize = 2048
 +        if renpy.emscripten:
 +            # Large buffer (and latency) as compromise to avoid sound jittering
-+            #bufsize = 8192  # works for me
-+            bufsize = 16384  # should work with slow computers
++            bufsize = 8192  # works for me
++            #bufsize = 16384  # jitter/silence right after starting a sound
  
          if 'RENPY_SOUND_BUFSIZE' in os.environ:
              bufsize = int(os.environ['RENPY_SOUND_BUFSIZE'])
