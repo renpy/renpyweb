@@ -1,3 +1,6 @@
+Merged in master.
+Enable static compilation of Cython modules.
+
 Index: renpy/module/setuplib.py
 ===================================================================
 --- renpy.orig/module/setuplib.py

@@ -1,3 +1,6 @@
+Merged/stubbed in master.
+There's no working subprocess in python-emscripten, comment it out for now.
+
 Index: renpy/renpy/__init__.py
 ===================================================================
 --- renpy.orig/renpy/__init__.py

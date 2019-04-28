@@ -49,50 +49,50 @@ emconfigure ../configure --prefix=$INSTALLDIR \
        --disable-muxers \
        --disable-bzlib \
        --disable-demuxers \
-       --enable-demuxer=au \
-       --enable-demuxer=avi \
+       --disable-demuxer=au \
+       --disable-demuxer=avi \
        --enable-demuxer=flac \
-       --enable-demuxer=m4v \
-       --enable-demuxer=matroska \
-       --enable-demuxer=mov \
+       --disable-demuxer=m4v \
+       --disable-demuxer=matroska \
+       --disable-demuxer=mov \
        --enable-demuxer=mp3 \
-       --enable-demuxer=mpegps \
-       --enable-demuxer=mpegts \
-       --enable-demuxer=mpegtsraw \
-       --enable-demuxer=mpegvideo \
+       --disable-demuxer=mpegps \
+       --disable-demuxer=mpegts \
+       --disable-demuxer=mpegtsraw \
+       --disable-demuxer=mpegvideo \
        --enable-demuxer=ogg \
        --enable-demuxer=wav \
        --disable-decoders \
        --enable-decoder=flac \
-       --enable-decoder=mp2 \
+       --disable-decoder=mp2 \
        --enable-decoder=mp3 \
-       --enable-decoder=mp3on4 \
-       --enable-decoder=mpeg1video \
-       --enable-decoder=mpeg2video \
-       --enable-decoder=mpegvideo \
-       --enable-decoder=msmpeg4v1 \
-       --enable-decoder=msmpeg4v2 \
-       --enable-decoder=msmpeg4v3 \
-       --enable-decoder=mpeg4 \
-       --enable-decoder=pcm_dvd \
+       --disable-decoder=mp3on4 \
+       --disable-decoder=mpeg1video \
+       --disable-decoder=mpeg2video \
+       --disable-decoder=mpegvideo \
+       --disable-decoder=msmpeg4v1 \
+       --disable-decoder=msmpeg4v2 \
+       --disable-decoder=msmpeg4v3 \
+       --disable-decoder=mpeg4 \
+       --disable-decoder=pcm_dvd \
        --enable-decoder=pcm_s16be \
        --enable-decoder=pcm_s16le \
        --enable-decoder=pcm_s8 \
        --enable-decoder=pcm_u16be \
        --enable-decoder=pcm_u16le \
        --enable-decoder=pcm_u8 \
-       --enable-decoder=theora \
+       --disable-decoder=theora \
        --enable-decoder=vorbis \
        --enable-decoder=opus \
-       --enable-decoder=vp3 \
-       --enable-decoder=vp8 \
-       --enable-decoder=vp9 \
+       --disable-decoder=vp3 \
+       --disable-decoder=vp8 \
+       --disable-decoder=vp9 \
        --disable-parsers \
        --enable-parser=mpegaudio \
-       --enable-parser=mpegvideo \
-       --enable-parser=mpeg4video \
-       --enable-parser=vp3 \
-       --enable-parser=vp8 \
+       --disable-parser=mpegvideo \
+       --disable-parser=mpeg4video \
+       --disable-parser=vp3 \
+       --disable-parser=vp8 \
        --disable-protocols \
        --disable-devices \
        --disable-vdpau \

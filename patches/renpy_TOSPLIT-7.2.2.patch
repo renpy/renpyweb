@@ -502,6 +502,19 @@ index 2be494cf..b4c69684 100644
  
  
  def periodic_thread_main():
+diff --git a/renpy/common/00gltest.rpy b/renpy/common/00gltest.rpy
+index 6b6ded59..2cef460c 100644
+--- a/renpy/common/00gltest.rpy
++++ b/renpy/common/00gltest.rpy
+@@ -373,7 +373,7 @@ init -1500 python:
+         if not _preferences.performance_test and not performance_test:
+             return
+ 
+-        # Don't bother on android or ios - there's nothing the user can do.
++        # Don't bother on android or ios or emscripten - there's nothing the user can do.
+         if renpy.mobile:
+             return
+ 
 diff --git a/renpy/debug.py b/renpy/debug.py
 index 90094db9..a9c35ded 100644
 --- a/renpy/debug.py

@@ -101,20 +101,22 @@ PyMODINIT_FUNC initrenpy_text_ftfont(void);
 void pyapp_runmain();
 
 int main(int argc, char* argv[]) {
-        // Load additional modules installed relative to current directory
+	// Load additional modules installed relative to current directory
 	// Note: Python already looks for a PYTHONHOME structure in '.' by default
-        setenv("PYTHONPATH", ".", 0);
+	setenv("PYTHONPATH", ".", 0);
 
-        // Trace modules loading
-        setenv("PYTHONVERBOSE", "1", 0);
+	// Trace modules loading
+	setenv("PYTHONVERBOSE", "1", 0);
 	// Trace GL calls and throw exception on error
-        //setenv("RENPY_GL_CHECK_ERRORS", "7", 0);
+	//setenv("RENPY_GL_CHECK_ERRORS", "7", 0);
+	// Force using FrameBufferObjects for RenderToTexture
+	//setenv("RENPY_GL_RTT", "fbo", 1);
 
 	// Logs all SDL_SetError (at least in SDL 2.0.5)
 	//SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 
-        //printf("Welcome!\n");
-        //fprintf(stderr, "Test stderr\n");
+	//printf("Welcome!\n");
+	//fprintf(stderr, "Test stderr\n");
 
 	// look for .pyo rather than .pyc
 	Py_OptimizeFlag = 2;
@@ -128,34 +130,34 @@ int main(int argc, char* argv[]) {
 #endif
 #ifdef STATIC
 	  {"pygame_sdl2.event", initpygame_sdl2_event},
-          {"pygame_sdl2.error", initpygame_sdl2_error},
-          {"pygame_sdl2.color", initpygame_sdl2_color},
-          {"pygame_sdl2.controller", initpygame_sdl2_controller},
-          {"pygame_sdl2.rect", initpygame_sdl2_rect},
-          {"pygame_sdl2.rwobject", initpygame_sdl2_rwobject},
-          {"pygame_sdl2.surface", initpygame_sdl2_surface},
-          {"pygame_sdl2.display", initpygame_sdl2_display},
-          {"pygame_sdl2.event", initpygame_sdl2_event},
-          {"pygame_sdl2.locals", initpygame_sdl2_locals},
-          {"pygame_sdl2.key", initpygame_sdl2_key},
-          {"pygame_sdl2.mouse", initpygame_sdl2_mouse},
-          {"pygame_sdl2.joystick", initpygame_sdl2_joystick},
-          {"pygame_sdl2.power", initpygame_sdl2_power},
-          {"pygame_sdl2.pygame_time", initpygame_sdl2_pygame_time},
-          {"pygame_sdl2.image", initpygame_sdl2_image},
-          {"pygame_sdl2.transform", initpygame_sdl2_transform},
+	  {"pygame_sdl2.error", initpygame_sdl2_error},
+	  {"pygame_sdl2.color", initpygame_sdl2_color},
+	  {"pygame_sdl2.controller", initpygame_sdl2_controller},
+	  {"pygame_sdl2.rect", initpygame_sdl2_rect},
+	  {"pygame_sdl2.rwobject", initpygame_sdl2_rwobject},
+	  {"pygame_sdl2.surface", initpygame_sdl2_surface},
+	  {"pygame_sdl2.display", initpygame_sdl2_display},
+	  {"pygame_sdl2.event", initpygame_sdl2_event},
+	  {"pygame_sdl2.locals", initpygame_sdl2_locals},
+	  {"pygame_sdl2.key", initpygame_sdl2_key},
+	  {"pygame_sdl2.mouse", initpygame_sdl2_mouse},
+	  {"pygame_sdl2.joystick", initpygame_sdl2_joystick},
+	  {"pygame_sdl2.power", initpygame_sdl2_power},
+	  {"pygame_sdl2.pygame_time", initpygame_sdl2_pygame_time},
+	  {"pygame_sdl2.image", initpygame_sdl2_image},
+	  {"pygame_sdl2.transform", initpygame_sdl2_transform},
 #  ifndef RENPY
-          {"pygame_sdl2.gfxdraw", initpygame_sdl2_gfxdraw},
+	  {"pygame_sdl2.gfxdraw", initpygame_sdl2_gfxdraw},
 #  endif
-          {"pygame_sdl2.draw", initpygame_sdl2_draw},
+	  {"pygame_sdl2.draw", initpygame_sdl2_draw},
 #  ifndef RENPY
-          {"pygame_sdl2.font", initpygame_sdl2_font},
-          {"pygame_sdl2.mixer", initpygame_sdl2_mixer},
-          {"pygame_sdl2.mixer_music", initpygame_sdl2_mixer_music},
+	  {"pygame_sdl2.font", initpygame_sdl2_font},
+	  {"pygame_sdl2.mixer", initpygame_sdl2_mixer},
+	  {"pygame_sdl2.mixer_music", initpygame_sdl2_mixer_music},
 #  endif
-          {"pygame_sdl2.scrap", initpygame_sdl2_scrap},
+	  {"pygame_sdl2.scrap", initpygame_sdl2_scrap},
 #  ifndef RENPY
-          {"pygame_sdl2.render", initpygame_sdl2_render},
+	  {"pygame_sdl2.render", initpygame_sdl2_render},
 #  endif
 
 #  ifdef RENPY
