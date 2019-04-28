@@ -7,18 +7,22 @@ Index: renpy/renpy/gl/gldraw.pyx
 ===================================================================
 --- renpy.orig/renpy/gl/gldraw.pyx
 +++ renpy/renpy/gl/gldraw.pyx
-@@ -528,6 +528,10 @@ cdef class GLDraw:
+@@ -528,6 +528,14 @@ cdef class GLDraw:
              self.always_opaque = True
              gltexture.use_gles()
  
 +        elif renpy.emscripten:
-+            self.redraw_period = 1.0
++            # give back control to browser regularly
++            self.redraw_period = 0.1
++            # True messes alpha imagemap/imagebutton mouseover
++            self.always_opaque = False
++            # WebGL is GLES
 +            gltexture.use_gles()
 +
          else:
              gltexture.use_gl()
  
-@@ -637,7 +641,7 @@ cdef class GLDraw:
+@@ -637,7 +645,7 @@ cdef class GLDraw:
          # ANGLE from working with fbo on Windows.
  
          use_fbo = (
