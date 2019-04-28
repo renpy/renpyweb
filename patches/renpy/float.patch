@@ -1,3 +1,10 @@
+Work-around for:
+https://github.com/emscripten-core/emscripten/issues/6759
+
+Probably here to stay until emterpreter is re-implemented on top of
+the new Emscripten LLVM back-end, which doesn't need
+EMULATED_FUNCTION_POINTER_CASTS
+
 Index: renpy/renpy/gl/gldraw.pyx
 ===================================================================
 --- renpy.orig/renpy/gl/gldraw.pyx
