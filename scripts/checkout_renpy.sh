@@ -8,6 +8,7 @@ cd "$RENPYWEB"
 
 if [ ! -e pygame_sdl2 ] ; then
     git clone git@github.com:renpy/pygame_sdl2.git pygame_sdl2
+    pushd pygame_sdl2
     git checkout master
     git pull
     popd
