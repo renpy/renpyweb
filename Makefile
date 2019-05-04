@@ -381,12 +381,13 @@ check_emscripten:
 	which emconfigure
 
 # Compress and factor files before uploading to a decent host
-# (note: gzip broken for itch.io though)
+# (note: gzip broken for itch.io/newgrounds though)
 preupload-clean:
 	rm -f \
 		$(BUILD)/t/index.js.orig.js \
 		$(BUILD)/t/index.wasm.pre $(BUILD)/t/index.wast \
 		$(BUILD)/t/index.bc
+	sed -i -e 's/%%TITLE%%/RenPyWeb/' $(BUILD)/t/index.html $(BUILD)/t/asmjs.html
 
 RENPY_VERSION=$(shell cd build/renpy && (cat renpy/__init__.py; echo 'print(".".join(str(i) for i in version_tuple))')|python -)
 devkit: hosting-nogzip-zip
