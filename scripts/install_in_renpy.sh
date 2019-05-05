@@ -36,6 +36,9 @@ fi
 mkdir renpy/web
 
 for i in asmjs.js asmjs.html.mem asmjs.html asmjs.em index.em index.html index.js index.wasm.gz pyapp.data pyapp-data.js pythonhome.data pythonhome-data.js zee.js; do
-    cp build/t/$i renpy/web/$i
+    if [ -e build/t/$i ]; then
+        cp build/t/$i renpy/web/$i
+    fi
 done
+
 cp htaccess.txt renpy/web/
