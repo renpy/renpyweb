@@ -14,7 +14,7 @@
       }
 
       .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
-      div.emscripten { text-align: center; }      
+      div.emscripten { text-align: center; }
       div.emscripten_border { border: 1px solid black; }
       /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
       canvas.emscripten { border: 0px none; background-color: black; width: 100vw; height: 100vh; }
@@ -39,7 +39,7 @@
         border-right: 5px solid rgb(235, 235, 235);
         border-bottom: 5px solid rgb(235, 235, 235);
         border-top: 5px solid rgb(120, 120, 120);
-        
+
         border-radius: 100%;
         background-color: rgb(189, 215, 46);
       }
@@ -134,7 +134,7 @@
         </div>
       </div>
     </div>
-    
+
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script>
@@ -188,12 +188,6 @@
 
     <script type='text/javascript'>
       /* Copyright (C) 2018  Sylvain Beucler */
-
-      /* Redirect to asmjs version if no WebAssembly support */
-      if ((typeof WebAssembly !== 'object')
-          && location.href.search('asmjs.html') == -1) {
-        location.href = 'asmjs.html' + location.search;
-      }
 
       /* Context menu */
       document.getElementById('ContextButton').addEventListener('click', function (e) {
@@ -343,7 +337,7 @@
             text = text.replace(/>/g, "&gt;");
             text = text.replace('\n', '<br />', 'g');
             element.innerHTML += text;
-            
+
             statusbar = document.getElementById('statusbar');
             statusbar.hidden = false;
             var print_date = new Date();
@@ -420,7 +414,7 @@
           if (text) Module.printErr('[post-exception status] ' + text);
         };
       };
-    </script>    
+    </script>
     <script type='text/javascript' src="pythonhome-data.js"></script>
     <script type='text/javascript' src="pyapp-data.js"></script>
     <script type='text/javascript'>
