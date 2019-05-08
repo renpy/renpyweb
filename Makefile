@@ -66,6 +66,7 @@ COMMON_LDFLAGS = \
 	$(BUILD)/emscripten.bc \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1 \
 	-s FORCE_FILESYSTEM=1 -s LZ4=1 \
+	-s MINIFY_HTML=0 \
 	-lpython2.7 \
 	-s USE_SDL=2 \
 	-lSDL2_image -ljpeg -lpng -lwebp -lz
