@@ -47,7 +47,7 @@ LDFLAGS=-O2 -s ASSERTIONS=0
 # + EMT_STACK_MAX=2MB
 
 
-all: wasm asmjs
+all: wasm
 
 PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen-static/*.o pygame_sdl2/emscripten-static/build-temp/src/*.o
 
@@ -389,12 +389,6 @@ preupload-clean:
 		$(BUILD)/t/index.wasm.pre $(BUILD)/t/index.wast \
 		$(BUILD)/t/index.bc
 	sed -i -e 's/%%TITLE%%/RenPyWeb/' $(BUILD)/t/index.html $(BUILD)/t/asmjs.html
-
-RENPY_VERSION=$(shell cd build/renpy && (cat renpy/__init__.py; echo 'print(".".join(str(i) for i in version_tuple))')|python -)
-devkit: hosting-nogzip-zip
-hosting-nogzip-zip: preupload-clean gunzip
-	rm -f $(CURDIR)/renpyweb-$(RENPY_VERSION)-$(shell date +%Y%m%d).zip
-	cd $(BUILD)/t && zip -r $(CURDIR)/renpyweb-$(RENPY_VERSION)-$(shell date +%Y%m%d).zip . -x \*.zip
 
 hosting-gzip: preupload-clean
 	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html}"

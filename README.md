@@ -15,12 +15,13 @@ This is the build environment for RenPyWeb.
 - Adapt `env.sh` and `source` it. If you used `scripts/build_toolchain.sh`,
   then `source toolchain/env.sh` will suffice.
 
-- Type:
+- Compile:
   `make`
 
-- Package the game using `scripts/distribute_game.sh`. This will run Ren'Py
-  to compile and distribute the game. It takes an optional argument, a path
-  to a Ren'Py game's base directory.
+- Install the 'web' add-on to Ren'Py:
+  `scripts/install_in_renpy.sh`
+
+- Package the game: from the Ren'Py interface, or using `scripts/distribute_game.sh`
 
 
 ## How to run locally
@@ -40,7 +41,8 @@ Use `asmjs.html` instead of `index.html`.
 
 ASMJS is deprecated in favor of WebAssembly.  It can be used for older
 browsers, but it is most useful as a debugging tool because WASM
-sometimes fails to provide enough information.
+sometimes fails to provide enough information.  RenPyWeb only
+officially supports WASM.
 
 
 ## How to make small-scale tests
@@ -50,11 +52,6 @@ to the variant you wish to experiment with.
 
 Also check the `native` target to try to run Ren'Py natively with some
 Emscripten behavior.
-
-
-## How to make the devkit
-
-    make devkit
 
 
 ## Performances
