@@ -32,7 +32,7 @@ done
 
 # Stub out these two libs.
 mkdir -p $PACKAGEDIR/lib/python2.7
-cp patches/pystub/*.py  $PACKAGEDIR/lib/python2.7
+cp -a patches/pystub/*.py  $PACKAGEDIR/lib/python2.7
 
 # Compile manually added Python scripts
 find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 python -OO -m py_compile
