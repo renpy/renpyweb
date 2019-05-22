@@ -58,9 +58,3 @@ unset RENPY_STEAM_SDK
     rm -f $INSTALLDIR/lib/python2.7/site-packages/renpy/*.so
     rm -f $INSTALLDIR/lib/python2.7/site-packages/renpy/*/*.so
 )
-
-exit 0
-
-# native
-
-python setup.py build_ext -b native-static/build-lib -t native-static/build-temp
