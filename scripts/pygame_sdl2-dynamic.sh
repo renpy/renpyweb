@@ -37,7 +37,7 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
     CC=emcc LDSHARED=emcc \
       CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2 -s USE_ZLIB=1" \
-      LDFLAGS="" \
+      LDFLAGS="-s ERROR_ON_MISSING_LIBRARIES=0" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' \
       $HOSTPYTHON \
       setup.py \

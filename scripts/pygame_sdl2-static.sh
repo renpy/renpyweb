@@ -39,9 +39,11 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     cd $PYGAME_SDL2_ROOT/
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
+    # -s ERROR_ON_MISSING_LIBRARIES=0: don't error only '-s USE_SDL=2' + '-lSDL2' & al.
+    #   + avoid potential link conflicts when Ren'Py bypasses pygame_sdl2
     CC=emcc LDSHARED=emcc \
       CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2" \
-      LDFLAGS="" \
+      LDFLAGS="-s ERROR_ON_MISSING_LIBRARIES=0" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' PYGAME_SDL2_STATIC=1 \
       $HOSTPYTHON \
       setup.py \
