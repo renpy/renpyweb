@@ -1,0 +1,25 @@
+<html>
+<head></head>
+<body>
+<script language="javascript">
+// https://emscripten.org/docs/api_reference/html5.h.html#functions-affected-by-web-security
+trigger_fullscreen = false;
+function main_thread() {
+    if (trigger_fullscreen) {
+	console.log(document.getElementById("canvas").requestFullscreen());
+	trigger_fullscreen = false;
+    }
+    window.setTimeout(main_thread, 100);
+}
+window.setTimeout(main_thread, 100);
+function fullscreen() {
+    trigger_fullscreen = true;
+}
+</script>
+<canvas id="canvas" width=400 height=400></canvas>
+<br />
+<input type="button" onclick="fullscreen();" value="Fullscreen delayed"></input>
+<input type="button" onclick="fullscreen(); main_thread();" value="Fullscreen immediately"></input>
+<input type="button" onclick="console.log(this.requestFullscreen());" value="Fullscreen button"></input>
+</body>
+</html>
