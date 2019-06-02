@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Clean build directories (e.g. before a complete rebuild)
+
+set -e
 RENPYWEB="$(dirname $(readlink -f $0))/.."
 cd "$RENPYWEB"
 
