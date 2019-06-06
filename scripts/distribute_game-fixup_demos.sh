@@ -8,6 +8,7 @@ set -ex
 
 if [ -z "$1" ]; then
     echo "usage: $0 game.zip"
+    exit 1
 fi
 
 workdir=$(mktemp -d)
