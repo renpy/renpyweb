@@ -1,5 +1,5 @@
 diff --git a/src/library.js b/src/library.js
-index 945747fce..1e34767b3 100644
+index 945747fce..09cdf1fee 100644
 --- a/src/library.js
 +++ b/src/library.js
 @@ -877,6 +877,10 @@ LibraryManager.library = {
@@ -7,7 +7,7 @@ index 945747fce..1e34767b3 100644
        ENV['HOME'] = '/home/web_user';
        ENV['LANG'] = 'C.UTF-8';
 +      // https://github.com/emscripten-core/emscripten/pull/8751
-+      if (navigator.languages != 'undefined' && navigator.languages.length > 0) {
++      if (typeof navigator === 'object' && typeof navigator.languages === 'object' && navigator.languages.length > 0) {
 +          ENV['LANG'] = navigator.languages[0].replace('-', '_') + '.UTF-8';
 +      }
        ENV['_'] = Module['thisProgram'];
