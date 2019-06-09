@@ -154,7 +154,7 @@ int main(int argc, char** argv) {
 /*
 gcc $(sdl2-config --cflags --libs) ../testfullscreen.c -o testfullscreen && ./testfullscreen
 
-EMCC_LOCAL_PORTS="sdl2=$(pwd)/SDL2-version_15|SDL2-version_15" emcc -s USE_SDL=2 ../testfullscreen.c -o testfullscreen.html
+EMCC_LOCAL_PORTS="sdl2=$(pwd)/SDL2-vanilla" emcc -s USE_SDL=2 ../testfullscreen.c -o testfullscreen.html
 
-EMCC_LOCAL_PORTS="sdl2=$(pwd)/SDL2-version_15|SDL2-version_15" emcc -s USE_SDL=2 ../testfullscreen.c -o testfullscreen.html --shell-file testfullscreen-shell.html -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=index.em -s EMTERPRETIFY_WHITELIST='["_main","_SDL_RenderPresent","_GLES2_RenderPresent","_SDL_GL_SwapWindow","_Emscripten_GLES_SwapWindow","_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_one_loop"]' -s ASSERTIONS=1 -g
+EMCC_LOCAL_PORTS="sdl2emterpreter=$(pwd)/SDL2" emcc -s USE_SDL=2 ../testfullscreen.c -o testfullscreen.html --shell-file testfullscreen-shell.html -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=index.em -s EMTERPRETIFY_WHITELIST='["_main","_SDL_RenderPresent","_GLES2_RenderPresent","_SDL_GL_SwapWindow","_Emscripten_GLES_SwapWindow","_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_one_loop"]' -s ASSERTIONS=1 -g
 */
