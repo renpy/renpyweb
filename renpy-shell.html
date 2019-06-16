@@ -146,17 +146,17 @@
       // Work-around chromium autoplay policy
       // https://github.com/emscripten-core/emscripten/issues/6511
       function resumeAudio(e) {
-	  if (typeof Module === 'undefined'
-	      || typeof Module.SDL2 == 'undefined'
-	      || typeof Module.SDL2.audioContext == 'undefined')
-	      return;
-	  if (Module.SDL2.audioContext.state == 'suspended') {
-	      Module.SDL2.audioContext.resume();
-	  }
-	  if (Module.SDL2.audioContext.state == 'running') {
-	      document.getElementById('canvas').removeEventListener('click', resumeAudio);
-	      document.removeEventListener('keydown', resumeAudio);
-	  }
+          if (typeof Module === 'undefined'
+              || typeof Module.SDL2 == 'undefined'
+              || typeof Module.SDL2.audioContext == 'undefined')
+              return;
+          if (Module.SDL2.audioContext.state == 'suspended') {
+              Module.SDL2.audioContext.resume();
+          }
+          if (Module.SDL2.audioContext.state == 'running') {
+              document.getElementById('canvas').removeEventListener('click', resumeAudio);
+              document.removeEventListener('keydown', resumeAudio);
+          }
       }
       document.getElementById('canvas').addEventListener('click', resumeAudio);
       document.addEventListener('keydown', resumeAudio);
@@ -244,7 +244,7 @@
         if (ret != 0) {
             Module.setStatus("Error extracting .zip.");
             return;
-	}
+        }
         FS.unlink('/game.zip')
         Module.print("Extracted in " + (Date.now()-start)/1000.0 + "s\n");
         disableGUI();
