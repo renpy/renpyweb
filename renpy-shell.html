@@ -146,7 +146,7 @@
           location.href = 'javascript:alert("' + error_message.replace('\n', '\\n') + '")';
           throw error_message;
           window.stop();
-	  // R.I.P.
+          // R.I.P.
       }
 
       // Work-around iframe focus
@@ -266,29 +266,25 @@
         }
 
         // presplash
-        if (FS.readdir('game').indexOf('presplash.png') >= 0) {
-          presplash = FS.readFile('/game/presplash.png');
-        } else if (FS.readdir('game').indexOf('presplash.jpg') >= 0) {
-          presplash = FS.readFile('/game/presplash.jpg');
-        } else if (FS.readdir('/').indexOf('presplash.png') >= 0) {
-          presplash = FS.readFile('/presplash.png');
-        } else if (FS.readdir('/').indexOf('presplash.jpg') >= 0) {
-          presplash = FS.readFile('/presplash.jpg');
+        presplash = undefined;
+        if (FS.readdir('/').indexOf('web-presplash.png') >= 0) {
+          presplash = FS.readFile('/web-presplash.png');
+        } else if (FS.readdir('/').indexOf('web-presplash.jpg') >= 0) {
+          presplash = FS.readFile('/web-presplash.jpg');
         }
+
+        div = document.createElement('div');
+        div.id = 'presplash';  // used by presplashEnd()
+        div.style = 'position: absolute; width: 100%; height: 100%';
+        c = document.getElementById('canvas');
+        c.parentElement.prepend(div);
 
         if (presplash) {
           obj_url = window.URL.createObjectURL(new Blob([presplash]));
           img = document.createElement('img');
           img.src = obj_url;
           img.style = 'display: block; margin: auto; width: 100%; height: 100%; object-fit: contain';
-          div = document.createElement('div');
-          div.id = 'presplash';  // used by presplashEnd()
-          div.style = 'position: absolute; width: 100%; height: 100%';
           div.appendChild(img)
-          //body = document.getElementsByTagName('body')[0];
-          //body.appendChild(div);
-          c = document.getElementById('canvas');
-          c.parentElement.prepend(div);
         } else {
           Module.print("Loading game, please wait...");
         }
