@@ -138,6 +138,17 @@
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script>
+      // Subtly hint at lack of WebAssembly support (if applicable)
+      if (typeof WebAssembly !== 'object') {
+          var error_message = "Unsupported browser - please upgrade!\n(WebAssembly support needed)";
+          document.body = document.createElement('body');
+          document.body.innerHTML = error_message.replace('\n', '<br />');
+          location.href = 'javascript:alert("' + error_message.replace('\n', '\\n') + '")';
+          throw error_message;
+          window.stop();
+	  // R.I.P.
+      }
+
       // Work-around iframe focus
       // https://github.com/emscripten-core/emscripten/pull/7631
       document.getElementById('canvas').addEventListener('mouseenter', function(e) { window.focus() });
