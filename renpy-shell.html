@@ -427,7 +427,11 @@
           Module.print("Could not create ~/.renpy/");
         }
         FS.syncfs(true, function(err) {
-          if (err) { console.trace(); console.log(err); }
+          if (err) {
+              console.trace(); console.log(err, err.message);
+              // Note: not visible enough, quickly replaced by loading status
+              Module.print("Warning: cannot save games");
+          }
         });
       }
       if (Module['calledRun']) {
