@@ -39,7 +39,7 @@ find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 python -OO -m py_compile
 find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 rm
 
 # RenPyWeb-specific files
-cp -a web-presplash.jpg $PACKAGEDIR/
+cp -a web-presplash-default.jpg $PACKAGEDIR/
 
 $FILE_PACKAGER \
     $OUTDIR/pyapp.data --js-output=$OUTDIR/pyapp-data.js \
