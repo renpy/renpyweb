@@ -34,6 +34,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/stat.h>
 #include <errno.h>
 #include <libgen.h>
+#include <sys/types.h>
+#include <utime.h>
 
 int mkdir_rec(char* path) {
   int ret;
@@ -194,6 +196,12 @@ void emSavegamesImport(void) {
     }
     fclose(out);
     zip_fclose(file);
+
+    if (sb.valid | ZIP_STAT_MTIME) {
+      struct utimbuf times = { sb.mtime, sb.mtime };
+      utime(destFullPath, &times);
+    }
+
     free(destFullPath);
   }
 }
