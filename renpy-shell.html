@@ -216,9 +216,13 @@
           FS.writeFile('savegames.zip', new Uint8Array(e.target.result));
           Module._emSavegamesImport();
           FS.syncfs(false, function(err) {
-            if (err) { console.trace(); console.log(err); }
+            if (err) {
+              console.trace(); console.log(err, err.message);
+              Module.print("Warning: cannot import savegames: write error: " + err.message + "\n");
+            } else {
+              Module.print("Saves imported - restart game to apply.\n");
+            }
           });
-          Module.print("Saves imported - restart game to apply.\n");
         }
         reader.readAsArrayBuffer(input.files[0])
       }
@@ -288,7 +292,7 @@
           img.style = 'display: block; margin: auto; width: 100%; height: 100%; object-fit: contain';
           div.appendChild(img)
         } else {
-          Module.print("Loading game, please wait...");
+          Module.print("Loading game, please wait...\n");
         }
 
         // give control back to webui before running main
@@ -319,7 +323,7 @@
 
       // called from pre.js
       function enableGUI() {
-        Module.print("Welcome! Click Open and load your zipped game/ folder!");
+        Module.print("Welcome! Click Open and load your zipped game/ folder!\n");
         document.getElementById('DivOpen').style.visibility = 'visible';
       }
       function disableGUI() {
@@ -433,13 +437,13 @@
           FS.mkdir('/home/web_user/.renpy');
           FS.mount(IDBFS, {}, '/home/web_user/.renpy');
         } catch(e) {
-          Module.print("Could not create ~/.renpy/");
+          Module.print("Could not create ~/.renpy/\n");
         }
         FS.syncfs(true, function(err) {
           if (err) {
               console.trace(); console.log(err, err.message);
               // Note: not visible enough, quickly replaced by loading status
-              Module.print("Warning: cannot save games");
+              Module.print("Warning: cannot save games\n");
           }
         });
       }

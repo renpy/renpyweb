@@ -180,7 +180,7 @@ Module['onRuntimeInitialized'] = function() {
         console.log(xhr);
         console.log(event);
 	if (show_error) {
-	    Module.print("Cannot download game. Maybe the download was blocked, see the JavaScript console for more information.");
+	    Module.print("Cannot download game. Maybe the download was blocked, see the JavaScript console for more information.\n");
 	} else {  /* no game querystring */
 	    enableGUI();
 	}
@@ -196,7 +196,7 @@ Module['onRuntimeInitialized'] = function() {
             console.log(event);
 	    if (show_error) {
 		Module.print("Error while downloading " + xhr.responseURL
-                             + " : " + xhr.statusText + " (status code " + xhr.status + ")");
+                             + " : " + xhr.statusText + " (status code " + xhr.status + ")\n");
 	    } else {  /* no game querystring */
 		enableGUI();
 	    }
