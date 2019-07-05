@@ -225,6 +225,7 @@
           });
         }
         reader.readAsArrayBuffer(input.files[0])
+	input.type = ''; input.type = 'file'; // reset field
       }
 
       function onSavegamesExport() {
