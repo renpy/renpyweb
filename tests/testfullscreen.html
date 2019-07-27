@@ -9,12 +9,26 @@ function main_thread() {
 	console.log(document.getElementById("canvas").requestFullscreen());
 	trigger_fullscreen = false;
     }
-    window.setTimeout(main_thread, 100);
+    //window.setTimeout(main_thread, 100);
+    window.requestAnimationFrame(main_thread);
 }
-window.setTimeout(main_thread, 100);
+//window.setTimeout(main_thread, 100);
+window.requestAnimationFrame(main_thread);
 function fullscreen() {
     trigger_fullscreen = true;
 }
+document.addEventListener('keydown', function(event) {
+  if (event.code == 'KeyF') {
+    console.log('keydown');
+    fullscreen();
+  }
+});
+document.addEventListener('keypress', function(event) {
+  if (event.keyCode == 102) {
+    console.log('keypress');
+    fullscreen();
+  }
+});
 </script>
 <canvas id="canvas" width=400 height=400></canvas>
 <br />
