@@ -13,6 +13,21 @@ index 945747fce..09cdf1fee 100644
        ENV['_'] = Module['thisProgram'];
        // Allocate memory.
  #if !MINIMAL_RUNTIME // TODO: environment support in MINIMAL_RUNTIME
+diff --git a/src/library_html5.js b/src/library_html5.js
+index e09a4b58d..04d639593 100644
+--- a/src/library_html5.js
++++ b/src/library_html5.js
+@@ -1527,7 +1527,9 @@ var LibraryJSEvents = {
+       return {{{ cDefine('EMSCRIPTEN_RESULT_NOT_SUPPORTED') }}};
+     }
+ 
+-    if (__currentFullscreenStrategy.canvasResizedCallback) {
++    // https://github.com/emscripten-ports/SDL2/issues/87
++    //if (__currentFullscreenStrategy.canvasResizedCallback) {
++    if (false) {
+ #if USE_PTHREADS
+         if (__currentFullscreenStrategy.canvasResizedCallbackTargetThread) JSEvents.queueEventHandlerOnThread_iiii(__currentFullscreenStrategy.canvasResizedCallbackTargetThread, __currentFullscreenStrategy.canvasResizedCallback, {{{ cDefine('EMSCRIPTEN_EVENT_CANVASRESIZED') }}}, 0, __currentFullscreenStrategy.canvasResizedCallbackUserData);
+         else
 diff --git a/tools/emterpretify.py b/tools/emterpretify.py
 index 92b91f0ce..ad9f42091 100755
 --- a/tools/emterpretify.py
