@@ -15,10 +15,11 @@ AddType application/wasm .wasm
   Header set Cache-Control "max-age=0"
 </IfModule>
 
-# Disable ETags which don't play nice with mod_gzip
-<IfModule mod_headers.c>
-  # Generated ETags
-  Header unset ETag
-</IfModule>
-# Static ETags
-FileETag None
+# Disable ETags which don't play nice with mod_gzip and HTTP/1.1
+# (ETags come in handy if you need to rollback to an older version though)
+#<IfModule mod_headers.c>
+#  # Generated ETags
+#  Header unset ETag
+#</IfModule>
+## Static ETags
+#FileETag None
