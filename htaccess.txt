@@ -7,3 +7,18 @@ AddType application/wasm .wasm
 
 # CPU-intensive, better pre-gzip
 #AddOutputFilterByType DEFLATE application/wasm
+
+
+# Force browser to check if cache needs to be refreshed or not (304) for XHR
+# (preserve browser cache, but revalidate)
+<IfModule mod_headers.c>
+  Header set Cache-Control "max-age=0"
+</IfModule>
+
+# Disable ETags which don't play nice with mod_gzip
+<IfModule mod_headers.c>
+  # Generated ETags
+  Header unset ETag
+</IfModule>
+# Static ETags
+FileETag None

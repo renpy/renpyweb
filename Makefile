@@ -407,6 +407,8 @@ gunzip:
 	-gunzip $(BUILD)/t/zee.js.gz
 	rm -f $(BUILD)/t/.htaccess
 
+testserver:
+	(cd build/t && python3 $(CURDIR)/testserver.py)
 
 $(BUILD)/python.built:
 	$(MAKE) dirs

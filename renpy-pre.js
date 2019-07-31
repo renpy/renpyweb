@@ -27,6 +27,8 @@ function httpRequest(method, url) {
     return new Promise(function(resolve, reject) {
         var wasmXHR = new XMLHttpRequest();
         wasmXHR.open(method, url, true);
+        // Tell browser not to corrupt the cache on HEAD + max-age=0...
+        if (method == 'HEAD') wasmXHR.setRequestHeader("Cache-Control", "no-store");
         wasmXHR.responseType = 'arraybuffer';
         wasmXHR.onload = function() {
 	    if (wasmXHR.status == 200 || wasmXHR.status == 304 || wasmXHR.status == 206 || (wasmXHR.status == 0 && wasmXHR.response)) {
