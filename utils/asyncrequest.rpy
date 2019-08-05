@@ -38,7 +38,7 @@
 init python:
     import os
 
-    if renpy.variant('web'):
+    if renpy.emscripten:
 
         import emscripten, binascii, json
         class AsyncRequest:
