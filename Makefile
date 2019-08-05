@@ -177,6 +177,8 @@ package-renpyweb:
 	# encodings/utf-32-be.py: .rpy from Ren'Py 6.x
 	# encoding/ascii.py: for presplash?
 	# webbrowser.py + shlex.py dep: click on URLs within Ren'Py
+	# socket.py: websockets + urllib dependency
+	# urllib.py: urllib.urlencode useful for encoding POST data
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
 	  python-emscripten/2.7.10/package-pythonhome.sh \
@@ -184,7 +186,9 @@ package-renpyweb:
 	  encodings/raw_unicode_escape.py base64.py \
 	  encodings/utf_32_be.py \
 	  encodings/ascii.py \
-	  webbrowser.py shlex.py
+	  webbrowser.py shlex.py \
+	  socket.py \
+	  urllib.py
 	$(CURDIR)/scripts/package-pyapp-renpy.sh
 
 
@@ -416,7 +420,7 @@ $(BUILD)/python.built:
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
 	    cd python-emscripten; \
-	    fossil open ../python-emscripten.fossil 80d17ca71a; \
+	    fossil open ../python-emscripten.fossil a17cc21fca; \
 	fi
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \

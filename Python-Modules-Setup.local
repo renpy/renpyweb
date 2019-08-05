@@ -30,3 +30,6 @@ _sha512 sha512module.c
 #echo 'unicodedata unicodedata.c
 
 #echo 'strop stropmodule.c' >> Modules/Setup.local  # for platform module -> use sys.platform
+
+# websockets
+_socket socketmodule.c timemodule.c
