@@ -21,14 +21,19 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+# Native uses urllib2 https://docs.python.org/2/library/urllib2.html
+# RenPyWeb uses XMLHttpRequest
+#
 # Ren'Py doesn't ship with certificates authorities, so for native
 # Ren'Py add your server certificate chain in 'yourgame/game/ca.pem'
+# e.g. 'ca.pem' in this directory (for Let's Encrypt)
 # (not in a .rpa, urllib2 wants an existing filename)
 # (for RenPyWeb, the browser's certificates are used)
-# 
-# Requests do not rollback (we can't rollback the remote server!) but
-# the user can rollback the game, so beware that the user may send a
-# request multiple times
+#
+# Requests do not rollback/forward (we can't alter the remote server!)
+# but the user can, so beware that they may send a request multiple
+# times (in which case Ren'Py will be unresponsive as rollback/forward
+# skips UI updates); use renpy.in_rollback() to detect this.
 
 init python:
     import os
@@ -43,9 +48,8 @@ init python:
                     if not os.path.exists(self.filename):
                         break
                 self.response = ''
-                self.finished = False
-            def send(self, endpoint, headers={}, data=None):
 
+            def send(self, endpoint, headers={}, data=None):
                 emscripten.run_script(r'''
                   (function () {
                     try {
@@ -53,7 +57,6 @@ init python:
                       var url = %s;
                       var headers = %s;
                       var data = %s;
-                      console.log("data", data);
 
                       var xhr = new XMLHttpRequest();
                       var method = 'GET';
@@ -69,7 +72,7 @@ init python:
                       Object.keys(headers).forEach(function(key) {
                         xhr.setRequestHeader(key, headers[key]);
                       });
-                      
+
                       xhr.onerror = function(event) {
                           FS.writeFile(filename,
                             JSON.stringify({
@@ -126,7 +129,7 @@ init python:
                 # new TextDecoder('utf-8').decode(FS.readFile('/tmp/t'))
 
             def isAlive(self):
-                return not (self.finished or os.path.exists(self.filename))
+                return not os.path.exists(self.filename)
             def readfs(self):
                 if os.path.exists(self.filename):
                     try:
@@ -134,7 +137,6 @@ init python:
                     except ValueError, e:
                         self.response = {'success': False, 'exception': str(e) }
                     os.unlink(self.filename)
-                    self.done = True
             def getError(self):
                 self.readfs()
                 if self.response and not self.response.get('success', True):
@@ -158,12 +160,8 @@ init python:
         import time
         class AsyncRequest:
             def __init__(self):
-                self.thread = None
                 self.response = None
                 self.error = None
-            def __getstate__(self):
-                self.thread = None
-                return self.__dict__
             def send(self, endpoint, headers={}, data=None):
                 req = urllib2.Request(endpoint, headers=headers, data=data)
                 def thread_main():
@@ -178,18 +176,30 @@ init python:
                         self.error = 'HTTPException'
                     except Exception, e:
                         self.error = 'Error: ' + str(e)
-                # self.thread = threading.Thread(target=lambda:time.sleep(1))
-                self.thread = threading.Thread(target=thread_main)
-                self.thread.start()
+                renpy.invoke_in_thread(thread_main)
             def isAlive(self):
-                return self.thread and self.thread.isAlive()
-                #if self.thread:
-                #    if self.thread.isAlive():
-                #        return True
-                #    else:
-                #        self.thread = None
-                #return False
+                return self.response is None and self.error is None
             def getError(self):
                 return self.error
             def getResponse(self):
                 return self.response
+
+
+label asyncrequest_test:
+    "test start"
+    $ req = AsyncRequest()
+    $ req.send('https://www.renpy.org/')
+    $ timer = 0
+    while not renpy.in_rollback() and req.isAlive():
+        $ timer += 0.1
+        show text "request in progress [timer]"
+        pause 0.1
+    $ ret = 'rollback'
+    if req.getResponse():
+        $ ret = req.response.split("\n")[0]
+    if req.getError():
+        $ ret = req.error
+    hide text
+    "ret=[ret]"
+    "test end"
+    return
