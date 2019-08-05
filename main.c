@@ -81,6 +81,7 @@ PyMODINIT_FUNC initrenpy_styledata_style_selected_functions(void);
 PyMODINIT_FUNC initrenpy_styledata_style_selected_hover_functions(void);
 PyMODINIT_FUNC initrenpy_styledata_style_selected_idle_functions(void);
 PyMODINIT_FUNC initrenpy_styledata_style_selected_insensitive_functions(void);
+PyMODINIT_FUNC initrenpy_display_matrix(void);
 PyMODINIT_FUNC initrenpy_display_render(void);
 PyMODINIT_FUNC initrenpy_display_accelerator(void);
 PyMODINIT_FUNC initrenpy_gl_gl(void);
@@ -179,6 +180,7 @@ int main(int argc, char* argv[]) {
 	  {"renpy.styledata.style_selected_hover_functions", initrenpy_styledata_style_selected_hover_functions},
 	  {"renpy.styledata.style_selected_idle_functions", initrenpy_styledata_style_selected_idle_functions},
 	  {"renpy.styledata.style_selected_insensitive_functions", initrenpy_styledata_style_selected_insensitive_functions},
+	  {"renpy.display.matrix", initrenpy_display_matrix},
 	  {"renpy.display.render", initrenpy_display_render},
 	  {"renpy.display.accelerator", initrenpy_display_accelerator},
 	  {"renpy.gl.gl", initrenpy_gl_gl},
