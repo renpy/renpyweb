@@ -30,6 +30,8 @@
 # (not in a .rpa, urllib2 wants an existing filename)
 # (for RenPyWeb, the browser's certificates are used)
 #
+# Currently a fixed timeout of 10 seconds is set.
+#
 # Requests do not rollback/forward (we can't alter the remote server!)
 # but the user can, so beware that they may send a request multiple
 # times (in which case Ren'Py will be unresponsive as rollback/forward
