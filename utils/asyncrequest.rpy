@@ -79,7 +79,7 @@ init python:
                           FS.writeFile(filename,
                             JSON.stringify({
                               'success': false,
-                              'status': event.target.status
+                              'exception': "Request failed (possibly blocked)",
                             })
                           );
                       }
@@ -137,15 +137,15 @@ init python:
                     try:
                         self.response = json.loads(open(self.filename).read())
                     except ValueError, e:
-                        self.response = {'success': False, 'exception': str(e) }
+                        self.response = { 'success': False, 'exception': str(e) }
                     os.unlink(self.filename)
             def getError(self):
                 self.readfs()
-                if self.response and not self.response.get('success', True):
-                    if self.response.get('exception', None):
-                        return 'Exception: ' + self.response.get['exception']
-                    elif self.response.get('status', None):
-                        if self.response.get('statusText', None):
+                if self.response and not self.response.get('success', False):
+                    if self.response.get('exception', None) is not None:
+                        return 'Exception: ' + self.response['exception']
+                    elif self.response.get('status', None) is not None:
+                        if self.response.get('statusText', None) is not None:
                             return self.response['statusText'] + '(' + str(self.response['status']) + ')'
                         else:
                             return str(self.response['status'])
