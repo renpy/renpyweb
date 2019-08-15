@@ -31,8 +31,8 @@ MODE=opti
 CFLAGS=-O3
 
 cd $BUILD/
-tar xf $CACHEROOT/libzip-1.5.1.tar.gz
-cd libzip-1.5.1/
+tar xf $CACHEROOT/libzip-1.5.2.tar.gz
+cd libzip-1.5.2/
 
 # This thing can't properly set its own LIBS (-lz), disable executables generation
 sed -i -e 's/ADD_SUBDIRECTORY(man)/#&/' CMakeLists.txt
@@ -52,6 +52,3 @@ CPPFLAGS="-I$INSTALLDIR/include" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS -L$INSTALLDI
 sed -i -e 's/^#define SIZEOF_OFF_T 7/#define SIZEOF_OFF_T 4/' config.h
 emmake make -j$(nproc)
 emmake make install
-
-
-
