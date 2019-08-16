@@ -31,6 +31,7 @@ void save() {
 #ifdef __EMSCRIPTEN__
   EM_ASM(
     console.log("saving...");
+    // note: slight chance that FS.syncfs won't finish in time
     FS.syncfs(false, function(err){console.log("sync'd", err);});
   );
 #endif
@@ -39,6 +40,7 @@ void save() {
 int SDLCALL beforeunload(void *userdata, SDL_Event * event)
 {
   if (event->type == SDL_APP_TERMINATING) {
+    EM_ASM(console.log("synchronous handler: SDL_APP_TERMINATING"););
     save();
   }
   return 1;
@@ -61,6 +63,11 @@ void one_iter() {
       loaded = 1;
     }
 
+    if (ev.type == SDL_APP_TERMINATING) {
+      // too late: may or may be reached depending on browser and page load
+      EM_ASM(console.log("main loop: SDL_APP_TERMINATING"););
+      // save();
+    }
     if (ev.type == SDL_MOUSEBUTTONUP) {
       count++;
       printf("You clicked %d times\n", count);
@@ -109,5 +116,5 @@ EMCC_LOCAL_PORTS="sdl2emterpreter=$(pwd)/SDL2" emcc -DASYNC ../testbeforeunload.
 
 EMCC_LOCAL_PORTS="sdl2emterpreter=$(pwd)/SDL2" emcc -DASYNC ../testbeforeunload.c -o index.html -s USE_SDL=2 -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=index.em -s EMTERPRETIFY_WHITELIST='["_main","_SDL_RenderPresent","_GLES2_RenderPresent","_SDL_GL_SwapWindow","_Emscripten_GLES_SwapWindow","_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_one_iter"]'
 
-emcc ../testbeforeunload.c -o index.html -s USE_SDL=2
+EMCC_LOCAL_PORTS="sdl2=$(pwd)/SDL2" emcc ../testbeforeunload.c -o index.html -s USE_SDL=2
 */
