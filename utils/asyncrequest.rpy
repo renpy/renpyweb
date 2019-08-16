@@ -197,10 +197,10 @@ label asyncrequest_test:
         show text "request in progress [timer]"
         pause 0.1
     $ ret = 'rollback'
-    if req.getResponse():
-        $ ret = req.response.split("\n")[0]
     if req.getError():
-        $ ret = req.error
+        $ ret = req.getError()
+    else:
+        $ ret = req.getResponse().split("\n")[0]
     hide text
     "ret=[ret]"
     "test end"
