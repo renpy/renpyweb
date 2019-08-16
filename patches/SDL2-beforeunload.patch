@@ -1,0 +1,41 @@
+https://github.com/emscripten-ports/SDL2/issues/88
+
+diff --git a/src/video/emscripten/SDL_emscriptenevents.c b/src/video/emscripten/SDL_emscriptenevents.c
+index 1bb603b8d..182b1c7b6 100644
+--- a/src/video/emscripten/SDL_emscriptenevents.c
++++ b/src/video/emscripten/SDL_emscriptenevents.c
+@@ -642,6 +642,16 @@ Emscripten_HandleVisibilityChange(int eventType, const EmscriptenVisibilityChang
+     return 0;
+ }
+ 
++static EM_BOOL
++Emscripten_HandleBeforeUnload(int eventType, const void* reserved, void *userData)
++{
++    /* This event will need to be handled synchronously, e.g. using
++       SDL_AddEventWatch, as the page is being closed *now*. */
++    /* No need to send a SDL_QUIT, the app won't get control again. */
++    SDL_SendAppEvent(SDL_APP_TERMINATING);
++    return 0;
++}
++
+ void
+ Emscripten_RegisterEventHandlers(SDL_WindowData *data)
+ {
+@@ -681,6 +691,8 @@ Emscripten_RegisterEventHandlers(SDL_WindowData *data)
+     emscripten_set_resize_callback("#window", data, 0, Emscripten_HandleResize);
+ 
+     emscripten_set_visibilitychange_callback(data, 0, Emscripten_HandleVisibilityChange);
++
++    emscripten_set_beforeunload_callback(data, Emscripten_HandleBeforeUnload);
+ }
+ 
+ void
+@@ -723,6 +735,8 @@ Emscripten_UnregisterEventHandlers(SDL_WindowData *data)
+     emscripten_set_resize_callback("#window", NULL, 0, NULL);
+ 
+     emscripten_set_visibilitychange_callback(NULL, 0, NULL);
++
++    emscripten_set_beforeunload_callback(NULL, NULL);
+ }
+ 
+ #endif /* SDL_VIDEO_DRIVER_EMSCRIPTEN */

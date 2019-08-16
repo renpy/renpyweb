@@ -1,0 +1,27 @@
+<html>
+<head>
+  <title>beforeunload</title>
+</head>
+<body>
+  <script>
+    clock_sto = function(e) { console.log(e); window.setTimeout(clock, 1000); };
+    clock_raf = function(e) { console.log(e); window.requestAnimationFrame(clock_raf); };
+    //window.setTimeout(clock_sto, 1000);
+    //window.requestAnimationFrame(clock_raf);
+    window.addEventListener('beforeunload', function(event) {
+	// This is always executed, even when quitting the browser
+	console.log(event);
+
+	// This brings a pop-up:
+	// Cancel the event as stated by the standard.
+	event.preventDefault();
+	// Chrome requires returnValue to be set.
+	event.returnValue = '';
+
+	// During this callback and the pop-up, setTimeout or
+	// requestAnimationFrame aren't called
+    });
+  </script>
+  <a href="https://renpy.beuc.net/">renpy.beuc.net (quits the page)</a>
+</body>
+</html>

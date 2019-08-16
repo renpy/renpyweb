@@ -503,6 +503,7 @@ $(BUILD)/SDL2.built:
 	cd $(BUILD)/SDL2 && \
                 git checkout version_17 && \
                 patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch
+                patch -p1 < $(PATCHESDIR)/SDL2-beforeunload.patch
 	touch $(BUILD)/SDL2.built
 
 $(BUILD)/zee.js.built:
