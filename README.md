@@ -4,7 +4,7 @@ This is the build environment for RenPyWeb.
 
 ## How to build
 
-- [Install emscripten](https://emscripten.org/docs/building_from_source/building_emscripten_from_source_on_linux.html) 1.38.32 and apply
+- [Install emscripten](https://emscripten.org/docs/building_from_source/building_emscripten_from_source_on_linux.html) 1.38.37 and apply
   `patches/emscripten.patch`.  You can use `scripts/build_toolchain.sh` for this.
 
 - Install Ren'Py to `renpy/` and pygame\_sdl2 to `pygame_sdl2/`. It's also necessary

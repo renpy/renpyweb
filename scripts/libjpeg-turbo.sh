@@ -42,6 +42,7 @@ cd build/
 # emconfigure ../configure --prefix $INSTALLDIR
 # => errors when trying to test assembly, weird test
 
-emconfigure ../configure --host asmjs-unknown-emscripten --build $(sh ../config.guess) --prefix $INSTALLDIR
+emconfigure ../configure --host asmjs-unknown-emscripten --build $(sh ../config.guess) \
+  --prefix $INSTALLDIR --disable-shared --without-turbojpeg
 emmake make -j$(nproc)
 emmake make install

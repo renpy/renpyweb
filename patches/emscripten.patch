@@ -1,23 +1,8 @@
-diff --git a/src/library.js b/src/library.js
-index 945747fce..09cdf1fee 100644
---- a/src/library.js
-+++ b/src/library.js
-@@ -877,6 +877,10 @@ LibraryManager.library = {
-       ENV['PWD'] = '/';
-       ENV['HOME'] = '/home/web_user';
-       ENV['LANG'] = 'C.UTF-8';
-+      // https://github.com/emscripten-core/emscripten/pull/8751
-+      if (typeof navigator === 'object' && typeof navigator.languages === 'object' && navigator.languages.length > 0) {
-+          ENV['LANG'] = navigator.languages[0].replace('-', '_') + '.UTF-8';
-+      }
-       ENV['_'] = Module['thisProgram'];
-       // Allocate memory.
- #if !MINIMAL_RUNTIME // TODO: environment support in MINIMAL_RUNTIME
 diff --git a/src/library_html5.js b/src/library_html5.js
-index e09a4b58d..04d639593 100644
+index f278bb952..6ca12df18 100644
 --- a/src/library_html5.js
 +++ b/src/library_html5.js
-@@ -1527,7 +1527,9 @@ var LibraryJSEvents = {
+@@ -1532,7 +1532,9 @@ var LibraryJSEvents = {
        return {{{ cDefine('EMSCRIPTEN_RESULT_NOT_SUPPORTED') }}};
      }
  
@@ -55,10 +40,10 @@ index 518102344..822c1da36 100644
  
  init()
 diff --git a/tools/ports/sdl2.py b/tools/ports/sdl2.py
-index ebcf76d3a..d973584c2 100644
+index c46b1b3d2..7f5205744 100644
 --- a/tools/ports/sdl2.py
 +++ b/tools/ports/sdl2.py
-@@ -10,6 +10,41 @@ TAG = 'version_17'
+@@ -11,6 +11,49 @@ HASH = '3a677c06d693c1568543eeb9179f9211a8c482738dab4400ccbc39aabe0cd1e57085e63b
  SUBDIR = 'SDL2-' + TAG
  
  
@@ -72,6 +57,10 @@ index ebcf76d3a..d973584c2 100644
 +  def create():
 +    # we are rebuilding SDL, clear dependant projects so they copy in their includes to ours properly
 +    ports.clear_project_build('sdl2_image')
++    ports.clear_project_build('sdl2_mixer')
++    ports.clear_project_build('sdl2_net')
++    ports.clear_project_build('sdl2_ttf')
++    ports.clear_project_build('sdl2_gfx')
 +    # copy includes to a location so they can be used as 'SDL2/'
 +    source_include_path = os.path.join(ports.get_dir(), 'sdl2emterpreter', SUBDIR + '', 'include')
 +    dest_include_path = os.path.join(shared.Cache.get_path('ports-builds'), 'sdl2emterpreter', 'include')
@@ -82,7 +71,11 @@ index ebcf76d3a..d973584c2 100644
 +    open(os.path.join(dest_include_path, 'SDL_config.h'), 'w').write(sdl_config_h)
 +    open(os.path.join(dest_include_path, 'SDL2', 'SDL_config.h'), 'w').write(sdl_config_h)
 +    # build
-+    srcs = 'SDL.c SDL_assert.c SDL_dataqueue.c SDL_error.c SDL_hints.c SDL_log.c atomic/SDL_atomic.c atomic/SDL_spinlock.c audio/SDL_audio.c audio/SDL_audiocvt.c audio/SDL_audiodev.c audio/SDL_audiotypecvt.c audio/SDL_mixer.c audio/SDL_wave.c cpuinfo/SDL_cpuinfo.c dynapi/SDL_dynapi.c events/SDL_clipboardevents.c events/SDL_dropevents.c events/SDL_events.c events/SDL_gesture.c events/SDL_keyboard.c events/SDL_mouse.c events/SDL_quit.c events/SDL_touch.c events/SDL_windowevents.c file/SDL_rwops.c haptic/SDL_haptic.c joystick/SDL_gamecontroller.c joystick/SDL_joystick.c libm/e_atan2.c libm/e_log.c libm/e_pow.c libm/e_rem_pio2.c libm/e_sqrt.c libm/k_cos.c libm/k_rem_pio2.c libm/k_sin.c libm/k_tan.c libm/s_atan.c libm/s_copysign.c libm/s_cos.c libm/s_fabs.c libm/s_floor.c libm/s_scalbn.c libm/s_sin.c libm/s_tan.c power/SDL_power.c render/SDL_d3dmath.c render/SDL_render.c render/SDL_yuv_mmx.c render/SDL_yuv_sw.c render/direct3d/SDL_render_d3d.c render/direct3d11/SDL_render_d3d11.c render/opengl/SDL_render_gl.c render/opengl/SDL_shaders_gl.c render/opengles/SDL_render_gles.c render/opengles2/SDL_render_gles2.c render/opengles2/SDL_shaders_gles2.c render/psp/SDL_render_psp.c render/software/SDL_blendfillrect.c render/software/SDL_blendline.c render/software/SDL_blendpoint.c render/software/SDL_drawline.c render/software/SDL_drawpoint.c render/software/SDL_render_sw.c render/software/SDL_rotate.c stdlib/SDL_getenv.c stdlib/SDL_iconv.c stdlib/SDL_malloc.c stdlib/SDL_qsort.c stdlib/SDL_stdlib.c stdlib/SDL_string.c thread/SDL_thread.c timer/SDL_timer.c video/SDL_RLEaccel.c video/SDL_blit.c video/SDL_blit_0.c video/SDL_blit_1.c video/SDL_blit_A.c video/SDL_blit_N.c video/SDL_blit_auto.c video/SDL_blit_copy.c video/SDL_blit_slow.c video/SDL_bmp.c video/SDL_clipboard.c video/SDL_egl.c video/SDL_fillrect.c video/SDL_pixels.c video/SDL_rect.c video/SDL_shape.c video/SDL_stretch.c video/SDL_surface.c video/SDL_video.c video/emscripten/SDL_emscriptenevents.c video/emscripten/SDL_emscriptenframebuffer.c video/emscripten/SDL_emscriptenmouse.c video/emscripten/SDL_emscriptenopengles.c video/emscripten/SDL_emscriptenvideo.c audio/emscripten/SDL_emscriptenaudio.c video/dummy/SDL_nullevents.c video/dummy/SDL_nullframebuffer.c video/dummy/SDL_nullvideo.c audio/disk/SDL_diskaudio.c audio/dummy/SDL_dummyaudio.c loadso/dlopen/SDL_sysloadso.c power/emscripten/SDL_syspower.c joystick/emscripten/SDL_sysjoystick.c filesystem/emscripten/SDL_sysfilesystem.c timer/unix/SDL_systimer.c haptic/dummy/SDL_syshaptic.c thread/generic/SDL_syscond.c thread/generic/SDL_sysmutex.c thread/generic/SDL_syssem.c thread/generic/SDL_systhread.c thread/generic/SDL_systls.c main/dummy/SDL_dummy_main.c'.split(' ')
++    srcs = 'SDL.c SDL_assert.c SDL_dataqueue.c SDL_error.c SDL_hints.c SDL_log.c atomic/SDL_atomic.c atomic/SDL_spinlock.c audio/SDL_audio.c audio/SDL_audiocvt.c audio/SDL_audiodev.c audio/SDL_audiotypecvt.c audio/SDL_mixer.c audio/SDL_wave.c cpuinfo/SDL_cpuinfo.c dynapi/SDL_dynapi.c events/SDL_clipboardevents.c events/SDL_dropevents.c events/SDL_events.c events/SDL_gesture.c events/SDL_keyboard.c events/SDL_mouse.c events/SDL_quit.c events/SDL_touch.c events/SDL_windowevents.c file/SDL_rwops.c haptic/SDL_haptic.c joystick/SDL_gamecontroller.c joystick/SDL_joystick.c libm/e_atan2.c libm/e_log.c libm/e_pow.c libm/e_rem_pio2.c libm/e_sqrt.c libm/k_cos.c libm/k_rem_pio2.c libm/k_sin.c libm/k_tan.c libm/s_atan.c libm/s_copysign.c libm/s_cos.c libm/s_fabs.c libm/s_floor.c libm/s_scalbn.c libm/s_sin.c libm/s_tan.c power/SDL_power.c render/SDL_d3dmath.c render/SDL_render.c render/SDL_yuv_sw.c render/direct3d/SDL_render_d3d.c render/direct3d11/SDL_render_d3d11.c render/opengl/SDL_render_gl.c render/opengl/SDL_shaders_gl.c render/opengles/SDL_render_gles.c render/opengles2/SDL_render_gles2.c render/opengles2/SDL_shaders_gles2.c render/psp/SDL_render_psp.c render/software/SDL_blendfillrect.c render/software/SDL_blendline.c render/software/SDL_blendpoint.c render/software/SDL_drawline.c render/software/SDL_drawpoint.c render/software/SDL_render_sw.c render/software/SDL_rotate.c sensor/SDL_sensor.c stdlib/SDL_getenv.c stdlib/SDL_iconv.c stdlib/SDL_malloc.c stdlib/SDL_qsort.c stdlib/SDL_stdlib.c stdlib/SDL_string.c thread/SDL_thread.c timer/SDL_timer.c video/SDL_RLEaccel.c video/SDL_blit.c video/SDL_blit_0.c video/SDL_blit_1.c video/SDL_blit_A.c video/SDL_blit_N.c video/SDL_blit_auto.c video/SDL_blit_copy.c video/SDL_blit_slow.c video/SDL_bmp.c video/SDL_clipboard.c video/SDL_egl.c video/SDL_fillrect.c video/SDL_pixels.c video/SDL_rect.c video/SDL_shape.c video/SDL_stretch.c video/SDL_surface.c video/SDL_video.c video/SDL_yuv.c video/emscripten/SDL_emscriptenevents.c video/emscripten/SDL_emscriptenframebuffer.c video/emscripten/SDL_emscriptenmouse.c video/emscripten/SDL_emscriptenopengles.c video/emscripten/SDL_emscriptenvideo.c audio/emscripten/SDL_emscriptenaudio.c video/dummy/SDL_nullevents.c video/dummy/SDL_nullframebuffer.c video/dummy/SDL_nullvideo.c video/yuv2rgb/yuv_rgb.c audio/disk/SDL_diskaudio.c audio/dummy/SDL_dummyaudio.c loadso/dlopen/SDL_sysloadso.c power/emscripten/SDL_syspower.c joystick/emscripten/SDL_sysjoystick.c filesystem/emscripten/SDL_sysfilesystem.c timer/unix/SDL_systimer.c haptic/dummy/SDL_syshaptic.c main/dummy/SDL_dummy_main.c'.split()
++    thread_srcs = ['SDL_syscond.c', 'SDL_sysmutex.c', 'SDL_syssem.c', 'SDL_systhread.c', 'SDL_systls.c']
++    thread_backend = 'generic' if not settings.USE_PTHREADS else 'pthread'
++    srcs += ['thread/%s/%s' % (thread_backend, s) for s in thread_srcs]
++
 +    commands = []
 +    o_s = []
 +    for src in srcs:
@@ -100,7 +93,7 @@ index ebcf76d3a..d973584c2 100644
  def get(ports, settings, shared):
    if settings.USE_SDL != 2:
      return []
-@@ -53,7 +88,11 @@ def get(ports, settings, shared):
+@@ -53,7 +96,11 @@ def get(ports, settings, shared):
      ports.create_lib(final, o_s)
      return final
  

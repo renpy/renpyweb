@@ -1,7 +1,7 @@
 https://github.com/emscripten-ports/SDL2/issues/70
 
 diff --git a/src/timer/unix/SDL_systimer.c b/src/timer/unix/SDL_systimer.c
-index 159bda5c5..222a7455b 100644
+index 5045996f3..43428c1d8 100644
 --- a/src/timer/unix/SDL_systimer.c
 +++ b/src/timer/unix/SDL_systimer.c
 @@ -31,6 +31,8 @@
@@ -33,7 +33,7 @@ index 159bda5c5..222a7455b 100644
  
  #endif /* SDL_TIMER_UNIX */
 diff --git a/src/video/emscripten/SDL_emscriptenopengles.c b/src/video/emscripten/SDL_emscriptenopengles.c
-index 9b29bb275..c7f5f51c8 100644
+index f83954cfa..1c2b507fb 100644
 --- a/src/video/emscripten/SDL_emscriptenopengles.c
 +++ b/src/video/emscripten/SDL_emscriptenopengles.c
 @@ -82,9 +82,16 @@ Emscripten_GLES_LoadLibrary(_THIS, const char *path) {

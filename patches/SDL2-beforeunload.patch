@@ -1,10 +1,10 @@
 https://github.com/emscripten-ports/SDL2/issues/88
 
 diff --git a/src/video/emscripten/SDL_emscriptenevents.c b/src/video/emscripten/SDL_emscriptenevents.c
-index 1bb603b8d..fc260ad32 100644
+index 4d25b2101..237bd1fc2 100644
 --- a/src/video/emscripten/SDL_emscriptenevents.c
 +++ b/src/video/emscripten/SDL_emscriptenevents.c
-@@ -642,6 +642,16 @@ Emscripten_HandleVisibilityChange(int eventType, const EmscriptenVisibilityChang
+@@ -652,6 +652,16 @@ Emscripten_HandleVisibilityChange(int eventType, const EmscriptenVisibilityChang
      return 0;
  }
  
@@ -21,8 +21,8 @@ index 1bb603b8d..fc260ad32 100644
  void
  Emscripten_RegisterEventHandlers(SDL_WindowData *data)
  {
-@@ -681,6 +691,8 @@ Emscripten_RegisterEventHandlers(SDL_WindowData *data)
-     emscripten_set_resize_callback("#window", data, 0, Emscripten_HandleResize);
+@@ -691,6 +701,8 @@ Emscripten_RegisterEventHandlers(SDL_WindowData *data)
+     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, data, 0, Emscripten_HandleResize);
  
      emscripten_set_visibilitychange_callback(data, 0, Emscripten_HandleVisibilityChange);
 +
@@ -30,8 +30,8 @@ index 1bb603b8d..fc260ad32 100644
  }
  
  void
-@@ -723,6 +735,8 @@ Emscripten_UnregisterEventHandlers(SDL_WindowData *data)
-     emscripten_set_resize_callback("#window", NULL, 0, NULL);
+@@ -733,6 +745,8 @@ Emscripten_UnregisterEventHandlers(SDL_WindowData *data)
+     emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, 0, NULL);
  
      emscripten_set_visibilitychange_callback(NULL, 0, NULL);
 +

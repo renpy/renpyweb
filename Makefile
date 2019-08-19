@@ -141,7 +141,7 @@ RENPY_LDFLAGS = \
 dirs:
 	mkdir -p $(BUILD)/t/
 
-$(BUILD)/emscripten.bc: python-emscripten/emscripten.pyx
+$(BUILD)/emscripten.bc: $(BUILD)/python.built python-emscripten/emscripten.pyx
 	cython python-emscripten/emscripten.pyx -o $(BUILD)/emscripten.c
 	emcc $(BUILD)/emscripten.c -o $(BUILD)/emscripten.bc -I install/include/python2.7
 
@@ -154,11 +154,11 @@ $(BUILD)/main-renpyweb-static.bc: main.c
 $(BUILD)/importexport.bc: importexport.c $(BUILD)/libzip.built
 	emcc $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
 
-common-pygame-example: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
-common-pygame-example-static: common-pygame-example package-pygame-example-static $(BUILD)/pygame_sdl2-static.built $(BUILD)/main-pygame_sdl2-static.bc
-common-pygame-example-dynamic: common-pygame-example $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/main-pygame_sdl2-dynamic.bc
+common: check_emscripten dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
+common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built $(BUILD)/main-pygame_sdl2-static.bc package-pygame-example-static
+common-pygame-example-dynamic: common $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/main-pygame_sdl2-dynamic.bc
 
-common-renpyweb: dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built $(BUILD)/zee.js.built $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb
+common-renpyweb: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb $(BUILD)/zee.js.built
 
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
@@ -195,7 +195,7 @@ package-renpyweb:
 ##
 # pygame-example for faster configuration experiments
 ##
-pygame-example-static-wasm: check_emscripten $(BUILD)/python.built common-pygame-example-static
+pygame-example-static-wasm: $(BUILD)/python.built common-pygame-example-static
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -210,7 +210,7 @@ pygame-example-static-wasm: check_emscripten $(BUILD)/python.built common-pygame
 	# invoke_jiji@http://localhost:8000/index.js:13263:12
 	# legalfunc$invoke_jiji@http://localhost:8000/index.js line 1557 > WebAssembly.instantiate:wasm-function[8183]:0x4fb0cf
 	# _IMG_LoadPNG_RW@http://localhost:8000/index.js line 1557 > WebAssembly.instantiate:wasm-function[5051]:0x349f95
-pygame-example-static-asmjs: check_emscripten $(BUILD)/python.built common-pygame-example-static
+pygame-example-static-asmjs: $(BUILD)/python.built common-pygame-example-static
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -218,7 +218,7 @@ pygame-example-static-asmjs: check_emscripten $(BUILD)/python.built common-pygam
 	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html -s WASM=0
-pygame-example-static-emterpreter-wasm: check_emscripten $(BUILD)/python.built common-pygame-example-static
+pygame-example-static-emterpreter-wasm: $(BUILD)/python.built common-pygame-example-static
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -230,7 +230,7 @@ pygame-example-static-emterpreter-wasm: check_emscripten $(BUILD)/python.built c
 	    -o $(BUILD)/t/index.html
 	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
 	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
-pygame-example-static-emterpreter-asmjs: check_emscripten $(BUILD)/python.built common-pygame-example-static
+pygame-example-static-emterpreter-asmjs: $(BUILD)/python.built common-pygame-example-static
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -242,7 +242,7 @@ pygame-example-static-emterpreter-asmjs: check_emscripten $(BUILD)/python.built 
 	    -o $(BUILD)/t/index.html -s WASM=0
 #pygame-example-dynamic-emterpreter:
 #	-> dynamic linking of Emterpreted functions not supported
-pygame-example-dynamic-wasm: check_emscripten $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic-wasm
+pygame-example-dynamic-wasm: $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic-wasm
 	emcc $(BUILD)/main-pygame_sdl2-dynamic.bc \
 	    -s MAIN_MODULE=1 -s EXPORT_ALL=1 \
 	    $(COMMON_LDFLAGS) \
@@ -252,7 +252,7 @@ pygame-example-dynamic-wasm: check_emscripten $(BUILD)/python.built common-pygam
 	    -o $(BUILD)/t/index.html
 	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
 	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
-pygame-example-dynamic-asmjs: check_emscripten $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic-asmjs
+pygame-example-dynamic-asmjs: $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic-asmjs
 	emcc $(BUILD)/main-pygame_sdl2-dynamic.bc \
 	    -s MAIN_MODULE=1 -s EXPORT_ALL=1 \
 	    $(COMMON_LDFLAGS) \
@@ -260,7 +260,7 @@ pygame-example-dynamic-asmjs: check_emscripten $(BUILD)/python.built common-pyga
 	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html -s WASM=0
-pygame-example-worker: check_emscripten $(BUILD)/python.built common-pygame-example-static
+pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 # Not supported well enough, effort moved to PROXY_TO_PTHREAD
 # Also not useful for Ren'Py as workers still need to return before they get events (cf. emterpreter)
 # Requires https://github.com/kripken/emscripten/issues/5380 to fix incomplete SDL2 support in --proxy-to-worker
@@ -281,7 +281,7 @@ pygame-example-worker: check_emscripten $(BUILD)/python.built common-pygame-exam
 ##
 # renpyweb-static-emterpreter-wasm/asmjs
 ##
-wasm: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
@@ -293,7 +293,7 @@ wasm: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpywe
 	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
 	gzip -f $(BUILD)/t/index.wasm
 
-asmjs: check_emscripten $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# Using asmjs.html instead of asmjs/index.html because
 	# e.g. itch.io picks a random index.html as entry point
 	emcc $(RENPY_OBJS) \
@@ -385,6 +385,8 @@ native:
 check_emscripten:
 	which emcc
 	which emconfigure
+	# Init emscripten libs (binaryen) outside of emconfigure so it won't complain
+	tmpdir=$$(mktemp -d) && echo 'int main(void){}' > $$tmpdir/tmp.c && emcc $$tmpdir/tmp.c && rm -rf $$tmpdir
 
 # Compress and factor files before uploading to a decent host
 # (note: gzip broken for itch.io/newgrounds though)
@@ -415,7 +417,7 @@ testserver:
 	(cd build/t && python3 $(CURDIR)/testserver.py)
 
 $(BUILD)/python.built:
-	$(MAKE) dirs
+	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
 	if [ ! -d python-emscripten ]; then \
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
@@ -501,9 +503,9 @@ $(CACHEROOT)/ffmpeg-3.0.tar.bz2:
 $(BUILD)/SDL2.built:
 	-git clone https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
 	cd $(BUILD)/SDL2 && \
-                git checkout version_17 && \
-                patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch
-                patch -p1 < $(PATCHESDIR)/SDL2-beforeunload.patch
+		git checkout version_18 && \
+		patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch && \
+		patch -p1 < $(PATCHESDIR)/SDL2-beforeunload.patch
 	touch $(BUILD)/SDL2.built
 
 $(BUILD)/zee.js.built:
