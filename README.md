@@ -58,10 +58,23 @@ Emscripten behavior.
 
 RenPyWeb could be faster.
 
-Whenever RenPyWeb takes too much time for certain actions, the browser
-just waits for it at the cost of slightly freezing the game or
-breaking the audio stream (for audio, a larger buffer/latency was used
-as a temporary work-around).
+Normally your computer runs the game and let it do what it wants until
+it quits.  However the browser only gives control to the game to
+render a single image - and the game needs to give control back as
+soon as possible, ideally 60 times per second.
+
+The root issue is that Ren'Py's main loop is strongly recursive, and
+cannot be interrupted.  We were able to add specific stop/resume
+points using the Emterpreter technology, at the cost of performances
+in Python.
+
+Fixing it would be ideal, but would require rewriting a lot of Ren'Py.
+
+
+In addition, whenever RenPyWeb takes too much time for certain
+actions, the browser just waits for it at the cost of slightly
+freezing the game or breaking the audio stream (for audio, a larger
+buffer/latency was used as a temporary work-around).
 
 When we say "certain actions", this can be running background tasks
 such as sound decoding, image prediction and autosave; or complex
@@ -71,15 +84,6 @@ In desktop/mobile Ren'Py, background tasks are run in threads.
 However the browser's JavaScript and WebAssembly are mono-threaded;
 those background tasks need to be done along with rendering the
 current frame, causing random delays.
-
-In addition, normally your computer runs the game and let it do what
-it wants until it quits.  However the browser only gives control to
-the game to render a single image - and the game needs to give control
-back as soon as possible, ideally 60 times per second.  Ren'Py's main
-loop is strongly recursive, and cannot be interrupted without
-rewriting half of Ren'Py.  We were able to add specific stop/resume points
-using the Emterpreter technology, at the cost of performances in
-Python.  Complex tasks hence take longer.
 
 To fix this, we need full threading support in the browser, so we can
 run Ren'Py in a thread without interrupting it (so we can ditch
@@ -95,12 +99,16 @@ Full threading support in the browser requires:
 - [SharedArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer):
   present in Chrome, present but disabled by default in Firefox
 
+- [WebAssembly threads](https://developers.google.com/web/updates/2018/10/wasm-threads):
+  present in Chrome, present but disabled by default in Firefox
+
 - [pthread emulation](https://emscripten.org/docs/porting/pthreads.html):
   to mimic thread by running 2 separate Worker apps with all the
   memory in SharedArrayBuffer, while proxying text and graphic output
   to the main thread; in progress
 
-- threaded version of the SDL2/OpenGL stack as ported to Emscripten; not started AFAIK
+- threaded/proxied version of the SDL2/OpenGL stack as ported to
+  Emscripten; only basic OpenGL is available as of 2019-08
 
 
 If you have suggestions, feel free to file a bug report :)
