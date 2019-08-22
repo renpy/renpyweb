@@ -1,4 +1,3 @@
-#include <SDL2/SDL.h>
 #include <math.h>
 #include <stdio.h>
 #include <emscripten.h>
@@ -14,21 +13,26 @@ static void callback(void *userdata) {
   }
 }
 
+void test() {
+  printf("before sleep...\n");
+
+  emscripten_sleep(5000);
+  //emscripten_sleep_with_yield(5000);
+
+  printf("after sleep...\n");
+}
+
 int main(int argc, char* argv[]) {
   printf("starting...\n");
   running = true;
 
-  if (SDL_Init(0)) {
-    fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
-    return 1;
-  }
-
   emscripten_async_call(callback, NULL, 1000);
-  //emscripten_sleep(5000);
-  emscripten_sleep_with_yield(5000);
+
+  test();
 
   running = false;
   printf("end.\n");
 }
 
-/* EMCC_LOCAL_PORTS="sdl2=$HOME/workdir/emsource/ports/SDL2-version_13|SDL2-version_13" emcc ../testasync.c -s USE_SDL=2 -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -o testasync.html */
+/* emcc ../testasync.c -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -o testasync.html */
+/* emcc ../testasync.c -s ASYNCIFY -s ASYNCIFY_WHITELIST=['main','test'] -o testasync.html -g -s ASSERTIONS=2 */
