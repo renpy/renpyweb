@@ -92,7 +92,7 @@ RENPY_LDFLAGS = \
 	--shell-file renpy-shell.html --pre-js renpy-pre.js
 
 # No SDL2_mixer nor SDL2_ttf, Ren'Py has its own audio/ttf support.
-# Compile our own SDL2_image because Emscripten has no jpg/webp ports.
+# Compile our own SDL2_image because Emscripten has no webp ports and a different libjpeg.
 
 #	EMCC_FORCE_STDLIBS=gl -> attempt to force GL symbols
 #	-s SDL2_IMAGE_FORMATS='["png","jpg","webp"]' -> not compiling properly + expect conflicts with direct uses of libjpg/libpng from pygame_sdl2

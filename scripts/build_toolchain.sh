@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EMSCRIPTEN_VERSION=1.38.37
+EMSCRIPTEN_VERSION=1.38.42
 RENPYWEB="$(dirname $(readlink -f $0))/.."
 TOOLCHAIN="$RENPYWEB/toolchain"
 

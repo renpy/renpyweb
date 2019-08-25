@@ -106,3 +106,25 @@ index c46b1b3d2..7f5205744 100644
  
  
  def clear(ports, shared):
+
+
+diff --git a/emcc.py b/emcc.py
+index 9d9d1ec4371..799f63bdd3e 100755
+--- a/emcc.py
++++ b/emcc.py
+@@ -678,6 +678,15 @@ def filter_emscripten_options(argv):
+       cmd += ['-s', 'NO_EXIT_RUNTIME=0']
+       # use node.js raw filesystem access, to behave just like a native executable
+       cmd += ['-s', 'NODERAWFS=1']
++      # https://github.com/emscripten-core/emscripten/issues/9257#issuecomment-523670023
++      # [Revert 08d5e0c36d662104ac27432d5fc872423b9e578f]
++      # Disable wasm in configuration checks so that (1) we do not depend on
++      # wasm support just for configuration (perhaps the user does not intend
++      # to build to wasm; using asm.js only depends on js which we need anyhow),
++      # and (2) we don't have issues with a separate .wasm file
++      # on the side, async startup, etc..
++      if not shared.Settings.WASM_BACKEND:
++        cmd += ['-s', 'WASM=0']
+ 
+     logger.debug('just configuring: ' + ' '.join(cmd))
+     if debug_configure:
