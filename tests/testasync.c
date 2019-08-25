@@ -16,8 +16,10 @@ static void callback(void *userdata) {
 void test() {
   printf("before sleep...\n");
 
-  emscripten_sleep(5000);
+  // EMTERPRETER
   //emscripten_sleep_with_yield(5000);
+  // ASYNCIFY
+  emscripten_sleep(5000);
 
   printf("after sleep...\n");
 }
