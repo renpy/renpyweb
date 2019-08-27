@@ -468,15 +468,30 @@ $(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.5.2.tar.gz
 	$(SCRIPTSDIR)/libzip.sh
 	touch $(BUILD)/libzip.built
 
+$(BUILD)/zee.js.built:
+	-git clone https://github.com/kripken/zee.js $(BUILD)/zee.js
+	cd $(BUILD)/zee.js && \
+		git checkout 83873a460f53ae80488cd73d6d5740102fa94e00 && \
+		make -j$(nproc)
+	touch $(BUILD)/zee.js.built
+
+$(BUILD)/SDL2.built:
+	-git clone https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
+	cd $(BUILD)/SDL2 && \
+		git checkout version_18 && \
+		patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch && \
+		patch -p1 < $(PATCHESDIR)/SDL2-beforeunload.patch
+	touch $(BUILD)/SDL2.built
+
 # Note: do not mix USE_SDL_IMAGE=2 (2.0.0 and -lSDL2_image (2.0.2)
 # I got weird errors with dynamic linking, possibly they are not 100% compatible
-$(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.0.2.tar.gz
+$(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.0.2.tar.gz $(BUILD)/SDL2.built
 	$(SCRIPTSDIR)/SDL2_image.sh
 	touch $(BUILD)/SDL2_image.built
 
 # Note: SDL2_mixer needed for pygame_sdl2's headers / initial compilation;
 # there's a new USE_SDL_MIXER=2 but its .h is not installed properly
-$(BUILD)/SDL2_mixer.built: $(CACHEROOT)/SDL2_mixer-2.0.1.tar.gz
+$(BUILD)/SDL2_mixer.built: $(CACHEROOT)/SDL2_mixer-2.0.1.tar.gz $(BUILD)/SDL2.built
 	$(SCRIPTSDIR)/SDL2_mixer.sh
 	touch $(BUILD)/SDL2_mixer.built
 
@@ -492,28 +507,9 @@ $(CACHEROOT)/fribidi-0.19.2.tar.gz:
 $(CACHEROOT)/ffmpeg-3.0.tar.bz2:
 	wget https://ffmpeg.org/releases/ffmpeg-3.0.tar.bz2 -P $(CACHEROOT)
 
-#$(BUILD)/SDL2.built: $(CACHEROOT)/SDL2-2.0.8.tar.gz
-#	$(SCRIPTSDIR)/sdl2.sh
-#	touch $(BUILD)/sdl2.built
-#
-#$(CACHEROOT)/SDL2-2.0.8.tar.gz:
-#	wget https://libsdl.org/release/SDL2-2.0.8.tar.gz -P $(CACHEROOT)
+#$(CACHEROOT)/SDL2-2.0.9.tar.gz:
+#	wget https://libsdl.org/release/SDL2-2.0.9.tar.gz -P $(CACHEROOT)
 # => USE_SDL=2 for now, it has lots of Emscripten fixes
-
-$(BUILD)/SDL2.built:
-	-git clone https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
-	cd $(BUILD)/SDL2 && \
-		git checkout version_18 && \
-		patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch && \
-		patch -p1 < $(PATCHESDIR)/SDL2-beforeunload.patch
-	touch $(BUILD)/SDL2.built
-
-$(BUILD)/zee.js.built:
-	-git clone https://github.com/kripken/zee.js $(BUILD)/zee.js
-	cd $(BUILD)/zee.js && \
-		git checkout 83873a460f53ae80488cd73d6d5740102fa94e00 && \
-		make -j$(nproc)
-	touch $(BUILD)/zee.js.built
 
 # TODO: move to 2.0.3 but depends on latest SDL2 (> USE_SDL=2 port)
 $(CACHEROOT)/SDL2_image-2.0.2.tar.gz:

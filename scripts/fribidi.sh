@@ -35,7 +35,6 @@ cd fribidi-0.19.2/
 mkdir -p build
 cd build/
 
-# TODO: --disable-shared
-emconfigure ../configure --prefix $INSTALLDIR
+emconfigure ../configure --prefix $INSTALLDIR --disable-shared
 emmake make -j$(nproc)
 emmake make install

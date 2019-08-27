@@ -66,6 +66,7 @@ fi
       PKG_CONFIG_LIBDIR=$INSTALLDIR/lib/pkgconfig:$(emconfigure env|grep ^PKG_CONFIG_LIBDIR|sed 's/^PKG_CONFIG_LIBDIR=//') \
       CPPFLAGS="-I$INSTALLDIR/include" LDFLAGS="-L$INSTALLDIR/lib" CFLAGS="$CFLAGS"
 
-    emmake make -j$(nproc)
+    #emmake make -j$(nproc)  # parallism issue with EMCC_LOCAL_PORTS?
+    emmake make
     emmake make install
 )

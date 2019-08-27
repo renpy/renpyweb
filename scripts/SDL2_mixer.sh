@@ -37,11 +37,10 @@ cd SDL2_mixer-2.0.1/
 mkdir -p build
 cd build/
 
-# TODO: --disable-shared
 # Note: this is a minimal build just to fix LinkError-s
 # TODO: stub it instead?
 EMCONFIGURE_JS=1 emconfigure ../configure \
-  --prefix $INSTALLDIR \
+  --prefix $INSTALLDIR --disable-shared \
   --enable-music-wave \
   --disable-music-ogg-shared --disable-music-ogg \
   --disable-music-midi \
@@ -51,5 +50,6 @@ EMCONFIGURE_JS=1 emconfigure ../configure \
   --disable-music-cmd \
   --disable-music-flac --disable-music-flac-shared \
   --disable-music-mp3 --disable-music-mp3-smpeg --disable-music-mp3-smpeg-shared --disable-smpegtest
-emmake make -j$(nproc)
+#emmake make -j$(nproc)  # parallism issue with EMCC_LOCAL_PORTS?
+emmake make
 emmake make install

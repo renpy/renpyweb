@@ -43,6 +43,8 @@ unset RENPY_STEAM_SDK
 # (cd "$RENPY_MODULES_ROOT" && python -O distribute.py || true)
 
 (
+    unset EMCC_LOCAL_PORTS  # parallelism issues?
+
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
     # work-around USE_* - https://github.com/emscripten-core/emscripten/issues/8650
