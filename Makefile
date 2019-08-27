@@ -58,7 +58,7 @@ RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc \
 # Ensure all builds use the same (locally patched) SDL2 instead of
 # placing the default one in cache
 # 'unexport' has the same global reach as 'export' T_T
-EMCC_LOCAL_PORTS = sdl2emterpreter=$(BUILD)/SDL2
+EMCC_LOCAL_PORTS = sdl2=$(BUILD)/SDL2
 export EMCC_LOCAL_PORTS
 
 COMMON_LDFLAGS = \
@@ -150,7 +150,7 @@ $(BUILD)/main-pygame_sdl2-static.bc: main.c
 $(BUILD)/main-pygame_sdl2-dynamic.bc: main.c
 	emcc $(CFLAGS) main.c -o $(BUILD)/main-pygame_sdl2-dynamic.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-renpyweb-static.bc: main.c
-	emcc $(CFLAGS) -DSTATIC=1 -DRENPY=1 main.c -o $(BUILD)/main-renpyweb-static.bc -s USE_SDL=2 -I install/include/python2.7
+	emcc $(CFLAGS) -DASYNC=1 -DSTATIC=1 -DRENPY=1 main.c -o $(BUILD)/main-renpyweb-static.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/importexport.bc: importexport.c $(BUILD)/libzip.built
 	emcc $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
 
@@ -517,10 +517,10 @@ $(BUILD)/zee.js.built:
 
 # TODO: move to 2.0.3 but depends on latest SDL2 (> USE_SDL=2 port)
 $(CACHEROOT)/SDL2_image-2.0.2.tar.gz:
-	wget http://libsdl.org/projects/SDL_image/release/SDL2_image-2.0.2.tar.gz -P $(CACHEROOT)
+	wget https://libsdl.org/projects/SDL_image/release/SDL2_image-2.0.2.tar.gz -P $(CACHEROOT)
 
 $(CACHEROOT)/SDL2_mixer-2.0.1.tar.gz:
-	wget http://libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz -P $(CACHEROOT)
+	wget https://libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz -P $(CACHEROOT)
 
 $(CACHEROOT)/zlib-1.2.11.tar.gz:
 	wget http://prdownloads.sourceforge.net/libpng/zlib-1.2.11.tar.gz -P $(CACHEROOT)

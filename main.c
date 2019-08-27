@@ -101,6 +101,13 @@ PyMODINIT_FUNC initrenpy_text_ftfont(void);
 
 void pyapp_runmain();
 
+#ifdef ASYNC
+extern void (*emscripten_sdl_async_callback)(Uint32);
+void async_callback(Uint32 ms) {
+  emscripten_sleep_with_yield(ms);
+}
+#endif
+
 int main(int argc, char* argv[]) {
 	// Load additional modules installed relative to current directory
 	// Note: Python already looks for a PYTHONHOME structure in '.' by default
@@ -204,12 +211,15 @@ int main(int argc, char* argv[]) {
 	PySys_SetArgv(argc, argv);
 	PyRun_SimpleString("print 'Python loaded.'");
 
+#ifdef ASYNC
+	emscripten_sdl_async_callback = async_callback;
+#endif
+
 #if __EMSCRIPTEN__ && RENPY
 	// Return without exiting so we can keep using Python
 	emscripten_exit_with_live_runtime();
 #elif __EMSCRIPTEN__
 	// pygame-example
-	emscripten_sample_gamepad_data(); // temp work-around for 1.38.25/SDL2-version_15
 	pyapp_runmain();
 #else
 	// Mock Emscripten

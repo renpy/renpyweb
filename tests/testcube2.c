@@ -3,8 +3,21 @@
 
 void dummy(void) { printf("testing EMTERPRETIFY_BLACKLIST\n"); }
 
+#ifdef ASYNC
+#include <emscripten.h>
+extern void (*emscripten_sdl_async_callback)(Uint32);
+void async_callback(Uint32 ms) {
+  emscripten_sleep_with_yield(ms);
+}
+#endif
+
 int main(int argc, char** argv) {
   SDL_Init(SDL_INIT_VIDEO);
+
+#ifdef ASYNC
+  emscripten_sdl_async_callback = async_callback;
+#endif
+
   SDL_Window *sdlWindow = SDL_CreateWindow("test",
 					   SDL_WINDOWPOS_UNDEFINED,
 					   SDL_WINDOWPOS_UNDEFINED,
@@ -93,7 +106,7 @@ int main(int argc, char** argv) {
 /*
 gcc $(sdl2-config --cflags --libs) testcube2.c -o testcube2
 
-EMCC_LOCAL_PORTS="sdl2=$HOME/workdir/emtests/renpyweb/build/SDL2-version_15|SDL2-version_15" emcc ../cube2.c -o index.html -s USE_SDL=2 -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=index.em -s EMTERPRETIFY_BLACKLIST='["_dummy"]'
-EMCC_LOCAL_PORTS="sdl2=$HOME/workdir/emtests/renpyweb/build/SDL2-version_15|SDL2-version_15" emcc ../cube2.c -o index.html -s USE_SDL=2 -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=index.em -s EMTERPRETIFY_WHITELIST='["_main","_SDL_RenderPresent","_GLES2_RenderPresent","_SDL_GL_SwapWindow","_Emscripten_GLES_SwapWindow","_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay"]'
+EMCC_LOCAL_PORTS="sdl2=$(pwd)/../../build/SDL2" emcc -DASYNC ../testcube2.c -o testcube2.html -s USE_SDL=2 -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=index.em -s EMTERPRETIFY_BLACKLIST='["_dummy"]'
+EMCC_LOCAL_PORTS="sdl2=$(pwd)/../../build/SDL2" emcc -DASYNC ../testcube2.c -o testcube2.html -s USE_SDL=2 -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=index.em -s EMTERPRETIFY_WHITELIST='["_main","_SDL_RenderPresent","_GLES2_RenderPresent","_SDL_GL_SwapWindow","_Emscripten_GLES_SwapWindow","_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_async_callback"]'
 emcc ../cube2.c -o index.html -s USE_SDL=2 -s USE_PTHREADS=1 -s PROXY_TO_PTHREAD=1 -s WASM=0
 */
