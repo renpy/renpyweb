@@ -13,7 +13,7 @@ This is the build environment for RenPyWeb.
 - Emscripten option#1: download prebuilt binaries:
 
         git clone https://github.com/emscripten-core/emsdk/
-        push emsdk/
+        pushd emsdk/
         ./emsdk install 1.38.42
         ./emsdk activate --embedded 1.38.42
         cd fastcomp/emscripten && patch -p1 < ../../../patches/emscripten.patch
