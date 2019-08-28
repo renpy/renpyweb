@@ -36,8 +36,6 @@ HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpy
 
 PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 (
-    unset EMCC_LOCAL_PORTS  # parallelism issues?
-
     cd $PYGAME_SDL2_ROOT/
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs

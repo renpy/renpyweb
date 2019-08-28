@@ -55,12 +55,6 @@ RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc \
 	$(PYGAME_SDL2_STATIC_OBJS) \
 	renpy/module/emscripten-static/build-temp/*.o renpy/module/emscripten-static/build-temp/gen-static/*.o
 
-# Ensure all builds use the same (locally patched) SDL2 instead of
-# placing the default one in cache
-# 'unexport' has the same global reach as 'export' T_T
-EMCC_LOCAL_PORTS = sdl2=$(BUILD)/SDL2
-export EMCC_LOCAL_PORTS
-
 COMMON_LDFLAGS = \
 	-L $(INSTALLDIR)/lib $(LDFLAGS) \
 	$(BUILD)/emscripten.bc \
@@ -219,7 +213,7 @@ pygame-example-static-asmjs: $(BUILD)/python.built common-pygame-example-static
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html -s WASM=0
 pygame-example-static-emterpreter-wasm: $(BUILD)/python.built common-pygame-example-static
-	emcc $(BUILD)/main-pygame_sdl2-static.bc \
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
@@ -231,7 +225,7 @@ pygame-example-static-emterpreter-wasm: $(BUILD)/python.built common-pygame-exam
 	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
 	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
 pygame-example-static-emterpreter-asmjs: $(BUILD)/python.built common-pygame-example-static
-	emcc $(BUILD)/main-pygame_sdl2-static.bc \
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
@@ -282,7 +276,7 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 # renpyweb-static-emterpreter-wasm/asmjs
 ##
 wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
-	emcc $(RENPY_OBJS) \
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    -s EMTERPRETIFY_FILE=$(BUILD)/t/index.em \
@@ -296,7 +290,7 @@ wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# Using asmjs.html instead of asmjs/index.html because
 	# e.g. itch.io picks a random index.html as entry point
-	emcc $(RENPY_OBJS) \
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) -s WASM=0 \
 	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
             -s EMTERPRETIFY_FILE=$(BUILD)/t/asmjs.em \
@@ -511,7 +505,6 @@ $(CACHEROOT)/ffmpeg-3.0.tar.bz2:
 #	wget https://libsdl.org/release/SDL2-2.0.9.tar.gz -P $(CACHEROOT)
 # => USE_SDL=2 for now, it has lots of Emscripten fixes
 
-# TODO: move to 2.0.3 but depends on latest SDL2 (> USE_SDL=2 port)
 $(CACHEROOT)/SDL2_image-2.0.2.tar.gz:
 	wget https://libsdl.org/projects/SDL_image/release/SDL2_image-2.0.2.tar.gz -P $(CACHEROOT)
 
