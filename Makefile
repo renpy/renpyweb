@@ -470,9 +470,8 @@ $(BUILD)/zee.js.built:
 	touch $(BUILD)/zee.js.built
 
 $(BUILD)/SDL2.built:
-	-git clone https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
+	-git clone --depth 1 --branch version_18 https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
 	cd $(BUILD)/SDL2 && \
-		git checkout version_18 && \
 		patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch && \
 		patch -p1 < $(PATCHESDIR)/SDL2-beforeunload.patch
 	touch $(BUILD)/SDL2.built
