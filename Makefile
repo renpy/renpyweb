@@ -479,13 +479,13 @@ $(BUILD)/SDL2.built:
 
 # Note: do not mix USE_SDL_IMAGE=2 (2.0.0 and -lSDL2_image (2.0.2)
 # I got weird errors with dynamic linking, possibly they are not 100% compatible
-$(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.0.2.tar.gz $(BUILD)/SDL2.built
+$(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.0.2.tar.gz
 	$(SCRIPTSDIR)/SDL2_image.sh
 	touch $(BUILD)/SDL2_image.built
 
 # Note: SDL2_mixer needed for pygame_sdl2's headers / initial compilation;
 # there's a new USE_SDL_MIXER=2 but its .h is not installed properly
-$(BUILD)/SDL2_mixer.built: $(CACHEROOT)/SDL2_mixer-2.0.1.tar.gz $(BUILD)/SDL2.built
+$(BUILD)/SDL2_mixer.built: $(CACHEROOT)/SDL2_mixer-2.0.1.tar.gz
 	$(SCRIPTSDIR)/SDL2_mixer.sh
 	touch $(BUILD)/SDL2_mixer.built
 
