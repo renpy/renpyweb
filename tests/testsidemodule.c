@@ -6,4 +6,5 @@ void f(void) {
   printf("f2!\n");
 }
 
-// emcc -s SIDE_MODULE=1 -s EXPORT_ALL=1 testsidemodule.c -o testsidemodule.js -s WASM=1
+// emcc -s SIDE_MODULE=1 -s EXPORT_ALL=1 ../testsidemodule.c -o testsidemodule.wasm -s WASM=1
+// emcc -s SIDE_MODULE=1 -s EXPORTED_FUNCTIONS="['_f']" ../testsidemodule.c -o testsidemodule.wasm -s WASM=1

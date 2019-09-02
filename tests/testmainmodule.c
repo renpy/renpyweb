@@ -19,4 +19,5 @@ main(int argc,char** argv)
   return 0;
 }
 
-// emcc -s MAIN_MODULE=1 testmainmodule.c -o t/testmainmodule.html -s WASM=1 --preload-file testsidemodule.so
+// \cp -a testsidemodule.wasm testsidemodule.so
+// emcc -s MAIN_MODULE=1 ../testmainmodule.c -o testmainmodule.html -s WASM=1 --preload-file testsidemodule.so
