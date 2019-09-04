@@ -380,7 +380,7 @@ check_emscripten:
 	which emcc
 	which emconfigure
 	# Init emscripten libs (binaryen) outside of emconfigure so it won't complain
-	tmpdir=$$(mktemp -d) && echo 'int main(void){}' > $$tmpdir/tmp.c && emcc $$tmpdir/tmp.c && rm -rf $$tmpdir
+	tmpdir=$$(mktemp -d) && (cd $$tmpdir && echo 'int main(void){}' > tmp.c && emcc tmp.c) && rm -rf $$tmpdir
 
 # Compress and factor files before uploading to a decent host
 # (note: gzip broken for itch.io/newgrounds though)
