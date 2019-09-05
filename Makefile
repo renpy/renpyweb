@@ -141,6 +141,8 @@ $(BUILD)/emscripten.bc: $(BUILD)/python.built python-emscripten/emscripten.pyx
 
 $(BUILD)/main-pygame_sdl2-static.bc: main.c
 	emcc $(CFLAGS) -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static.bc -s USE_SDL=2 -I install/include/python2.7
+$(BUILD)/main-pygame_sdl2-static-async.bc: main.c
+	emcc $(CFLAGS) -DASYNC=1 -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static-async.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-pygame_sdl2-dynamic.bc: main.c
 	emcc $(CFLAGS) main.c -o $(BUILD)/main-pygame_sdl2-dynamic.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-renpyweb-static.bc: main.c
@@ -149,7 +151,7 @@ $(BUILD)/importexport.bc: importexport.c $(BUILD)/libzip.built
 	emcc $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
 
 common: check_emscripten dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
-common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built $(BUILD)/main-pygame_sdl2-static.bc package-pygame-example-static
+common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built package-pygame-example-static
 common-pygame-example-dynamic: common $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/main-pygame_sdl2-dynamic.bc
 
 common-renpyweb: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb $(BUILD)/zee.js.built
@@ -189,7 +191,7 @@ package-renpyweb:
 ##
 # pygame-example for faster configuration experiments
 ##
-pygame-example-static-wasm: $(BUILD)/python.built common-pygame-example-static
+pygame-example-static-wasm: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -204,7 +206,7 @@ pygame-example-static-wasm: $(BUILD)/python.built common-pygame-example-static
 	# invoke_jiji@http://localhost:8000/index.js:13263:12
 	# legalfunc$invoke_jiji@http://localhost:8000/index.js line 1557 > WebAssembly.instantiate:wasm-function[8183]:0x4fb0cf
 	# _IMG_LoadPNG_RW@http://localhost:8000/index.js line 1557 > WebAssembly.instantiate:wasm-function[5051]:0x349f95
-pygame-example-static-asmjs: $(BUILD)/python.built common-pygame-example-static
+pygame-example-static-asmjs: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -212,8 +214,8 @@ pygame-example-static-asmjs: $(BUILD)/python.built common-pygame-example-static
 	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html -s WASM=0
-pygame-example-static-emterpreter-wasm: $(BUILD)/python.built common-pygame-example-static
-	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static.bc \
+pygame-example-static-emterpreter-wasm: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static-async.bc
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static-async.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
@@ -224,8 +226,8 @@ pygame-example-static-emterpreter-wasm: $(BUILD)/python.built common-pygame-exam
 	    -o $(BUILD)/t/index.html
 	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
 	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
-pygame-example-static-emterpreter-asmjs: $(BUILD)/python.built common-pygame-example-static
-	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static.bc \
+pygame-example-static-emterpreter-asmjs: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static-async.bc
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static-async.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \

@@ -14,6 +14,12 @@ class Condition():
     def wait(self, duration=None): pass
 
 
+class Lock(object):
+    def __enter__(self): pass
+
+    def __exit__(self, _type, value, traceback): pass
+
+
 class RLock(object):
     def __enter__(self): pass
 

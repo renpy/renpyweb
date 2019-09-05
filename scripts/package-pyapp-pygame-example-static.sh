@@ -18,20 +18,30 @@ OUTDIR=build/t
 rm -rf $PACKAGEDIR/
 mkdir -p $PACKAGEDIR
 
-# Compile Ren'Py Python scripts
+# pygame_sdl2-static
+mkdir -p $PACKAGEDIR/lib/python2.7/site-packages/pygame_sdl2/threads
+for i in $(cd install && find lib/python2.7/site-packages/pygame_sdl2/ -name "*.pyo"); do
+   cp -a install/$i $PACKAGEDIR/$i
+done
+
+# Stub out threading
+mkdir -p $PACKAGEDIR/lib/python2.7
+cp -a patches/pystub/threading.py  $PACKAGEDIR/lib/python2.7
+
+# Compile manually added Python scripts
+find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 python -OO -m py_compile
+find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 rm
+
+# Copy game data and remove source files
+cp -a pygame-example/* $PACKAGEDIR/
+
+# Compile Python scripts
 for i in $(cd pygame-example/ && find . -name "*.py"); do
     if [ pygame-example/$i -nt pygame-example/${i%.py}.pyo ]; then
 	python -OO -m py_compile pygame-example/$i
     fi
 done
 
-# Copy game data and remove source files
-cp -a pygame-example/* $PACKAGEDIR/
-# pygame_sdl2-static
-mkdir -p $PACKAGEDIR/lib/python2.7/site-packages/pygame_sdl2/threads
-for i in $(cd install && find lib/python2.7/site-packages/pygame_sdl2/ -name "*.pyo"); do
-   cp -a install/$i $PACKAGEDIR/$i
-done
 find $PACKAGEDIR/ \( -name "*.py" -o -name "*.pyc" \
     -o -name "*.pyx" -o -name "*.pxd" \
     -o -name "*.rpy" -o -name "*.rpym" \) -print0 \
