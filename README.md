@@ -43,13 +43,8 @@ This is the build environment for RenPyWeb.
 
 ## How to run locally
 
-- Firefox: double-click on `build/t/index.html`
-
-- Firefox or Chromium:
-
-      cd build/t/
-      python3 -m http.server 8000
-      chromium http://localhost:8000/
+      make testserver
+      $BROWSER http://localhost:8000/
 
 
 ## ASMJS version
