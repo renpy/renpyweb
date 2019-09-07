@@ -38,7 +38,7 @@ SCRIPTSDIR=$(CURDIR)/scripts
 ##LDFLAGS=-s ASSERTIONS=2 -g3 -O2  # heavy/slow
 #LDFLAGS=-s ASSERTIONS=1 -g
 
-# optimized (mostly useful for asm.js target):
+# optimized (most noticeable for asm.js target):
 CFLAGS=-O3
 CXXFLAGS=-O3
 LDFLAGS=-O2 -s ASSERTIONS=0
