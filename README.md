@@ -30,7 +30,7 @@ This is the build environment for RenPyWeb.
 
 - Patch Emscripten:
 
-    cd emscripten && patch -p1 < ../../../patches/emscripten.patch
+        cd emscripten/ && patch -p1 < ../../../patches/emscripten.patch
 
 - Compile:
   `make`
