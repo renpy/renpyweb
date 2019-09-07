@@ -34,6 +34,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 PyMODINIT_FUNC initemscripten(void);
 #endif
 
+#ifdef ASYNC
+extern void (*emscripten_sdl_async_callback)(Uint32);
+void async_callback(Uint32 ms) {
+  //emscripten_run_script("console.trace('before sleep');");
+  emscripten_sleep_with_yield(ms);
+  //emscripten_run_script("console.trace('after sleep');");
+}
+#endif
+
+void pyapp_runmain();
+
+
 #ifdef STATIC
 PyMODINIT_FUNC initpygame_sdl2_color(void);
 PyMODINIT_FUNC initpygame_sdl2_controller(void);
@@ -97,17 +109,6 @@ PyMODINIT_FUNC initrenpy_text_textsupport(void);
 PyMODINIT_FUNC initrenpy_text_texwrap(void);
 PyMODINIT_FUNC initrenpy_text_ftfont(void);
 #  endif
-#endif
-
-void pyapp_runmain();
-
-#ifdef ASYNC
-extern void (*emscripten_sdl_async_callback)(Uint32);
-void async_callback(Uint32 ms) {
-  //emscripten_run_script("console.trace('before sleep');");
-  emscripten_sleep_with_yield(ms);
-  //emscripten_run_script("console.trace('after sleep');");
-}
 #endif
 
 int main(int argc, char* argv[]) {
