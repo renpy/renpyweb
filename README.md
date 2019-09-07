@@ -12,12 +12,12 @@ This is the build environment for RenPyWeb.
 
 - Emscripten option#1: download prebuilt binaries:
 
-        git clone https://github.com/emscripten-core/emsdk/
-        pushd emsdk/
-        ./emsdk install 1.38.43
-        ./emsdk activate --embedded 1.38.43
-        popd
-        source emsdk/emsdk_env.sh
+      git clone https://github.com/emscripten-core/emsdk/
+      pushd emsdk/
+      ./emsdk install 1.38.43
+      ./emsdk activate --embedded 1.38.43
+      popd
+      source emsdk/emsdk_env.sh
 
 - Emscripten option#2: build from source
 
@@ -30,7 +30,7 @@ This is the build environment for RenPyWeb.
 
 - Patch Emscripten:
 
-        cd emscripten/ && patch -p1 < ../../../patches/emscripten.patch
+      cd emscripten/ && patch -p1 < ../../../patches/emscripten.patch
 
 - Compile:
   `make`
@@ -47,9 +47,9 @@ This is the build environment for RenPyWeb.
 
 - Firefox or Chromium:
 
-        cd build/t/
-        python3 -m http.server 8000
-        chromium http://localhost:8000/
+      cd build/t/
+      python3 -m http.server 8000
+      chromium http://localhost:8000/
 
 
 ## ASMJS version
