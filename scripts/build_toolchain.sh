@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EMSCRIPTEN_VERSION=1.38.42
+EMSCRIPTEN_VERSION=1.38.43
 RENPYWEB="$(dirname $(readlink -f $0))/.."
 TOOLCHAIN="$RENPYWEB/toolchain"
 
@@ -45,6 +45,9 @@ clone_emscripten () {
     pushd emscripten
 
     git checkout $EMSCRIPTEN_VERSION
+
+    # https://github.com/emscripten-core/emscripten/issues/9282
+    echo \"$EMSCRIPTEN_VERSION\" > emscripten-version.txt
 
     popd
 }

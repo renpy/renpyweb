@@ -18,13 +18,6 @@ index 5b74801de..95d2183a2 100755
  
      logger.debug('just configuring: ' + ' '.join(cmd))
      if debug_configure:
-diff --git a/emscripten-version.txt b/emscripten-version.txt
-index 3f0332d30..4c43231cf 100644
---- a/emscripten-version.txt
-+++ b/emscripten-version.txt
-@@ -1 +1 @@
--"1.38.41"
-+"1.38.42"
 diff --git a/src/library_html5.js b/src/library_html5.js
 index 59b1fe470..6be651920 100644
 --- a/src/library_html5.js
