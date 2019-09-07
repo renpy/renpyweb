@@ -54,9 +54,9 @@ PyMODINIT_FUNC initpygame_sdl2_rwobject(void);
 PyMODINIT_FUNC initpygame_sdl2_scrap(void);
 PyMODINIT_FUNC initpygame_sdl2_surface(void);
 PyMODINIT_FUNC initpygame_sdl2_transform(void);
+PyMODINIT_FUNC initpygame_sdl2_gfxdraw(void);
 #  ifndef RENPY
 PyMODINIT_FUNC initpygame_sdl2_font(void);
-PyMODINIT_FUNC initpygame_sdl2_gfxdraw(void);
 PyMODINIT_FUNC initpygame_sdl2_mixer(void);
 PyMODINIT_FUNC initpygame_sdl2_mixer_music(void);
 PyMODINIT_FUNC initpygame_sdl2_render(void);
@@ -156,9 +156,7 @@ int main(int argc, char* argv[]) {
 	  {"pygame_sdl2.pygame_time", initpygame_sdl2_pygame_time},
 	  {"pygame_sdl2.image", initpygame_sdl2_image},
 	  {"pygame_sdl2.transform", initpygame_sdl2_transform},
-#  ifndef RENPY
 	  {"pygame_sdl2.gfxdraw", initpygame_sdl2_gfxdraw},
-#  endif
 	  {"pygame_sdl2.draw", initpygame_sdl2_draw},
 #  ifndef RENPY
 	  {"pygame_sdl2.font", initpygame_sdl2_font},
