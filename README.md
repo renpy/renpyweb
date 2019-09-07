@@ -14,15 +14,15 @@ This is the build environment for RenPyWeb.
 
       git clone https://github.com/emscripten-core/emsdk/
       pushd emsdk/
-      ./emsdk install 1.38.43
-      ./emsdk activate --embedded 1.38.43
+      ./emsdk install 1.38.43-upstream
+      ./emsdk activate --embedded 1.38.43-upstream
       popd
       source emsdk/emsdk_env.sh
 
 - Emscripten option#2: build from source
 
   - [Install emscripten](https://emscripten.org/docs/building_from_source/building_emscripten_from_source_on_linux.html)
-    1.38.43-fastcomp, and apply `patches/emscripten.patch`.
+    1.38.43-upstream, and apply `patches/emscripten.patch`.
     You can use `scripts/build_toolchain.sh` for this.
 
   - Adapt `env.sh` and `source` it.  If you used

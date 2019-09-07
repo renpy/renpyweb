@@ -48,6 +48,7 @@ LDFLAGS=-O2 -s ASSERTIONS=0
 
 
 all: wasm
+wasm: emterpreter-wasm
 
 PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen-static/*.o pygame_sdl2/emscripten-static/build-temp/src/*.o
 
@@ -71,12 +72,15 @@ COMMON_LDFLAGS = \
 EMTERPRETER_LDFLAGS = \
 	-s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
 	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "async_callback", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "___Pyx_PyObject_CallNoArg_*", "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init", "_builtin_eval"]'
+ASYNCIFY_LDFLAGS = \
+	-s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=65535 \
+	-s ASYNCIFY_WHITELIST='["main", "pyapp_runmain", "async_callback", "SDL_WaitEvent", "SDL_WaitEventTimeout", "SDL_Delay", "SDL_RenderPresent", "GLES2_RenderPresent", "SDL_GL_SwapWindow", "Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "PyRun_SimpleFileExFlags", "PyRun_FileExFlags", "PyEval_EvalCode", "PyEval_EvalCodeEx", "PyEval_EvalFrameEx", "PyCFunction_Call", "PyObject_Call", "fast_function", "function_call", "instancemethod_call", "slot_tp_call", "__pyx_pw_11pygame_sdl2_5event_7wait", "__pyx_pw_11pygame_sdl2_7display_21flip", "__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "__pyx_pf_5renpy_2gl_6gldraw_6GLDraw_28draw_screen", "__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_29draw_screen", "__Pyx_PyObject_CallNoArg", "__pyx_pf_10emscripten_6sleep", "__pyx_pw_10emscripten_7sleep", "__pyx_pf_10emscripten_8sleep_with_yield", "__pyx_pw_10emscripten_9sleep_with_yield", "gen_send", "gen_send_ex", "gen_iternext", "type_call", "slot_tp_init", "builtin_eval", "__Pyx_PyObject_CallNoArg.1", "__Pyx_PyObject_CallNoArg.2", "__Pyx_PyObject_CallNoArg.3", "__Pyx_PyObject_CallNoArg.4", "__Pyx_PyObject_CallNoArg.5", "__Pyx_PyObject_CallNoArg.6", "__Pyx_PyObject_CallNoArg.7", "__Pyx_PyObject_CallNoArg.8", "__Pyx_PyObject_CallNoArg.9", "__Pyx_PyObject_CallNoArg.10", "__Pyx_PyObject_CallNoArg.11", "__Pyx_PyObject_CallNoArg.12", "__Pyx_PyObject_CallNoArg.13", "__Pyx_PyObject_CallNoArg.14", "__Pyx_PyObject_CallNoArg.15", "__Pyx_PyObject_CallNoArg.16", "__Pyx_PyObject_CallNoArg.17", "__Pyx_PyObject_CallNoArg.18", "__Pyx_PyObject_CallNoArg.19", "__Pyx_PyObject_CallNoArg.20", "__pyx_pf_5renpy_2gl_6gldraw_6GLDraw_30draw_screen", "__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_31draw_screen"]'
+
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
 	    -s USE_SDL_TTF=2
 RENPY_LDFLAGS = \
 	$(COMMON_LDFLAGS) \
-	$(EMTERPRETER_LDFLAGS) \
 	-s USE_FREETYPE=1 \
 	-lavformat -lavcodec -lavutil -lswresample -lswscale -lfribidi \
 	-lzip \
@@ -226,6 +230,15 @@ pygame-example-static-emterpreter-wasm: $(BUILD)/python.built common-pygame-exam
 	    -o $(BUILD)/t/index.html
 	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
 	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
+pygame-example-static-asyncify-wasm: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static-async.bc
+	emcc $(BUILD)/main-pygame_sdl2-static-async.bc \
+	    $(PYGAME_SDL2_STATIC_OBJS) \
+	    $(COMMON_LDFLAGS) \
+	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
+	    $(ASYNCIFY_LDFLAGS) \
+	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
+	    --shell-file pygame-example-shell.html \
+	    -o $(BUILD)/t/index.html
 pygame-example-static-emterpreter-asmjs: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static-async.bc
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static-async.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
@@ -277,9 +290,10 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 ##
 # renpyweb-static-emterpreter-wasm/asmjs
 ##
-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+emterpreter-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
+	    $(EMTERPRETER_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    -s EMTERPRETIFY_FILE=$(BUILD)/t/index.em \
 	    -o $(BUILD)/t/index.html
@@ -289,7 +303,7 @@ wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
 	gzip -f $(BUILD)/t/index.wasm
 
-asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+emterpreter-asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# Using asmjs.html instead of asmjs/index.html because
 	# e.g. itch.io picks a random index.html as entry point
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
@@ -297,6 +311,17 @@ asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
             -s EMTERPRETIFY_FILE=$(BUILD)/t/asmjs.em \
 	    -o $(BUILD)/t/asmjs.html
+
+asyncify-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
+	    $(RENPY_LDFLAGS) \
+	    $(ASYNCIFY_LDFLAGS) \
+	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
+	    -o $(BUILD)/t/index.html
+	# fallback compression
+	# zee.js current broken https://github.com/emscripten-core/emscripten/issues/9380
+	#cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
+	gzip -f $(BUILD)/t/index.wasm
 
 
 

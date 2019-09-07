@@ -42,6 +42,9 @@ unset RENPY_STEAM_SDK
 # TODO: Generate vc_version.py (git describe --tags --dirty --match start-7.2)
 # (cd "$RENPY_MODULES_ROOT" && python -O distribute.py || true)
 
+# https://github.com/emscripten-core/emscripten/issues/9317
+sed -i -e 's/-fPIC//' $(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/lib/python2.7/_sysconfigdata.py
+
 (
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'

@@ -37,6 +37,8 @@ cd zlib-1.2.11/
 mkdir -p cross-emscripten-$MODE
 cd cross-emscripten-$MODE/
 
+# https://github.com/emscripten-core/emscripten/issues/9317 work-around
+sed -i -e 's/-fPIC//' ../configure
 emconfigure env CFLAGS="$CFLAGS" ../configure --prefix $INSTALLDIR
 emmake make -j$(nproc)
 emmake make install

@@ -34,6 +34,9 @@ INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
 HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/bin/python
 
+# https://github.com/emscripten-core/emscripten/issues/9317
+sed -i -e 's/-fPIC//' $(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/lib/python2.7/_sysconfigdata.py
+
 PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 (
     cd $PYGAME_SDL2_ROOT/
