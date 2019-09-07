@@ -412,6 +412,10 @@ gunzip:
 testserver:
 	(cd build/t && python3 $(CURDIR)/testserver.py)
 
+cleancython:
+	rm -rf pygame_sdl2/*-static/ renpy/module/*-static/ build/pygame_sdl2-static.built build/renpy.built
+
+
 $(BUILD)/python.built:
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
 	if [ ! -d python-emscripten ]; then \
