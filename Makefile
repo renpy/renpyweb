@@ -38,7 +38,7 @@ SCRIPTSDIR=$(CURDIR)/scripts
 ##LDFLAGS=-s ASSERTIONS=2 -g3 -O2  # heavy/slow
 #LDFLAGS=-s ASSERTIONS=1 -g
 
-# optimized (most noticeable for asm.js target):
+# optimized
 CFLAGS=-O3
 CXXFLAGS=-O3
 LDFLAGS=-O2 -s ASSERTIONS=0
@@ -65,9 +65,12 @@ COMMON_LDFLAGS = \
 	-lpython2.7 \
 	-s USE_SDL=2 \
 	-lSDL2_image -ljpeg -lpng -lwebp -lz
-# Using wildcard to target all __Pyx_PyObject_CallNoArg homonymous functions
-# https://github.com/emscripten-core/emscripten/issues/7988
-# https://github.com/emscripten-core/emscripten/pull/8056
+# Stack save/restore points; population method:
+# - Emterpreter: check the provided stack trace on failure
+# - Asyncify: manually console.trace() before the emscripten_sleep()s
+# Using wildcards:
+# - __Pyx_PyObject_CallNoArg homonymous functions get a suffix at link time
+# - Cython-generated function that may change (depends on ordering? and on Cython version)
 EMTERPRETER_LDFLAGS = \
 	-s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
 	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "async_callback", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "___Pyx_PyObject_CallNoArg_*", "___pyx_pf_10emscripten_6sleep", "___pyx_pw_10emscripten_7sleep", "___pyx_pf_10emscripten_8sleep_with_yield", "___pyx_pw_10emscripten_9sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init", "_builtin_eval"]'
