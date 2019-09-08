@@ -290,7 +290,7 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 ##
 # renpyweb-static-emterpreter-wasm/asmjs
 ##
-emterpreter-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+emterpreter-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb versionmark
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    $(EMTERPRETER_LDFLAGS) \
@@ -312,7 +312,7 @@ emterpreter-asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
             -s EMTERPRETIFY_FILE=$(BUILD)/t/asmjs.em \
 	    -o $(BUILD)/t/asmjs.html
 
-asyncify-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+asyncify-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb versionmark
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    $(ASYNCIFY_LDFLAGS) \
@@ -408,6 +408,9 @@ check_emscripten:
 	which emconfigure
 	# Init emscripten libs (binaryen) outside of emconfigure so it won't complain
 	tmpdir=$$(mktemp -d) && (cd $$tmpdir && echo 'int main(void){}' > tmp.c && emcc tmp.c) && rm -rf $$tmpdir
+
+versionmark:
+	git describe --tags --dirty > $(BUILD)/t/renpyweb-version.txt
 
 # Compress and factor files before uploading to a decent host
 # (note: gzip broken for itch.io/newgrounds though)
