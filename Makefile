@@ -288,6 +288,7 @@ wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# fallback compression
 	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
 	gzip -f $(BUILD)/t/index.wasm
+	$(MAKE) versionmark
 
 asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# Using asmjs.html instead of asmjs/index.html because
@@ -383,6 +384,9 @@ check_emscripten:
 	which emconfigure
 	# Init emscripten libs (binaryen) outside of emconfigure so it won't complain
 	tmpdir=$$(mktemp -d) && (cd $$tmpdir && echo 'int main(void){}' > tmp.c && emcc tmp.c) && rm -rf $$tmpdir
+
+versionmark:
+	git describe --tags --dirty > $(BUILD)/t/renpyweb-version.txt
 
 # Compress and factor files before uploading to a decent host
 # (note: gzip broken for itch.io/newgrounds though)
