@@ -277,7 +277,7 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 ##
 # renpyweb-static-emterpreter-wasm/asmjs
 ##
-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
+wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb versionmark
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
@@ -288,7 +288,6 @@ wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# fallback compression
 	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
 	gzip -f $(BUILD)/t/index.wasm
-	$(MAKE) versionmark
 
 asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 	# Using asmjs.html instead of asmjs/index.html because
