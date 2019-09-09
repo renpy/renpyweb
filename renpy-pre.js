@@ -132,11 +132,9 @@ Module['onRuntimeInitialized'] = function() {
     //query_string = query_string.slice(0, -1);
 
 
-    var show_error = false;
     var url = DEFAULT_GAME_FILENAME;
     
     if (_GET['game']) {
-        show_error = true;
 	if (_GET['game'].match(/^[0-9a-z._-]+$/i)) {
 	    url = _GET['game'];
 	} else {
@@ -181,11 +179,7 @@ Module['onRuntimeInitialized'] = function() {
     xhr.onerror = function(event) {
         console.log(xhr);
         console.log(event);
-	if (show_error) {
-	    Module.print("Cannot download game. Maybe the download was blocked, see the JavaScript console for more information.\n");
-	} else {  /* no game querystring */
-	    enableGUI();
-	}
+	Module.print("Cannot download game. Maybe the download was blocked, see the JavaScript console for more information.\n");
     }
     xhr.onload = function(event) {
         if (xhr.status == 200 || xhr.status == 304 || xhr.status == 206 || (xhr.status == 0 && xhr.response)) {
@@ -196,12 +190,8 @@ Module['onRuntimeInitialized'] = function() {
         } else {
             console.log(xhr);
             console.log(event);
-	    if (show_error) {
-		Module.print("Error while downloading " + xhr.responseURL
-                             + " : " + xhr.statusText + " (status code " + xhr.status + ")\n");
-	    } else {  /* no game querystring */
-		enableGUI();
-	    }
+	    Module.print("Error while downloading " + xhr.responseURL
+                         + " : " + xhr.statusText + " (status code " + xhr.status + ")\n");
         }
     };
     xhr.send(null);

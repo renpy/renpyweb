@@ -176,13 +176,6 @@
       document.addEventListener('keydown', resumeAudio);
     </script>
 
-    <div id="DivOpen" style="position: absolute; top: 82px; visibility: hidden; width: 100%; text-align: center;">
-        <input id="ButtonOpen" type="file" onchange="onOpen()"
-          accept="application/zip" style="display: none;"></input>
-        <button onclick="document.getElementById('ButtonOpen').click()"
-          style="font-size: larger;">Open local Game</button>
-    </div>
-
     <div id="ContextContainer">
       <a id="ContextButton">&#8801;</a><br />
       <div id="ContextMenu" style="display: none;">
@@ -238,20 +231,6 @@
         }
       }
 
-      function onOpen() {
-        Module.print("Extracting, please wait...\n");
-
-        window.setTimeout(function() {
-          input = document.getElementById('ButtonOpen')
-          reader = new FileReader();
-          reader.onload = function(e) {
-            FS.writeFile('game.zip', new Uint8Array(e.target.result));
-            gameExtractAndRun();
-          }
-          reader.readAsArrayBuffer(input.files[0])
-        }, 10);
-      }
-
       function gameExtractAndRun() {
         start = Date.now();
         var ret = Module.ccall('PyRun_SimpleString', 'number', ['string'], [
@@ -266,7 +245,6 @@
         }
         FS.unlink('/game.zip')
         Module.print("Extracted in " + (Date.now()-start)/1000.0 + "s\n");
-        disableGUI();
 
         if (FS.readdir('/').indexOf('game') < 0) {
             Module.setStatus("Invalid .zip (no top-level 'game' directory).");
@@ -323,15 +301,6 @@
         a.click();
         window.URL.revokeObjectURL(a.href);
         document.body.removeChild(a);
-      }
-
-      // called from pre.js
-      function enableGUI() {
-        Module.print("Welcome! Click Open and load your zipped game/ folder!\n");
-        document.getElementById('DivOpen').style.visibility = 'visible';
-      }
-      function disableGUI() {
-        document.getElementById('DivOpen').style.visibility = 'hidden';
       }
     </script>
     <script type='text/javascript'>
