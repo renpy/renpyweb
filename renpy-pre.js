@@ -133,7 +133,7 @@ Module['onRuntimeInitialized'] = function() {
 
 
     var show_error = false;
-    var url = 'game.zip';
+    var url = DEFAULT_GAME_FILENAME;
     
     if (_GET['game']) {
         show_error = true;
