@@ -9,3 +9,4 @@ python-emscripten.fossil
 toolchain
 /renpy
 /pygame_sdl2
+/emsdk/
