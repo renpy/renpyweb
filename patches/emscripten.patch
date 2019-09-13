@@ -1,25 +1,41 @@
 diff --git a/emcc.py b/emcc.py
-index 5b74801de..95d2183a2 100755
+index 921be9714..a162b7fa6 100755
 --- a/emcc.py
 +++ b/emcc.py
-@@ -685,6 +685,15 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
-       cmd += ['-s', 'NO_EXIT_RUNTIME=0']
-       # use node.js raw filesystem access, to behave just like a native executable
-       cmd += ['-s', 'NODERAWFS=1']
-+      # https://github.com/emscripten-core/emscripten/issues/9257#issuecomment-523670023
-+      # [Revert 08d5e0c36d662104ac27432d5fc872423b9e578f]
-+      # Disable wasm in configuration checks so that (1) we do not depend on
-+      # wasm support just for configuration (perhaps the user does not intend
-+      # to build to wasm; using asm.js only depends on js which we need anyhow),
-+      # and (2) we don't have issues with a separate .wasm file
-+      # on the side, async startup, etc..
-+      if not shared.Settings.WASM_BACKEND:
-+        cmd += ['-s', 'WASM=0']
+@@ -1600,6 +1609,12 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
+             passes += ['--log-execution']
+             passes += ['--instrument-memory']
+             passes += ['--legalize-js-interface']
++          # https://github.com/emscripten-core/emscripten/pull/9408
++          if shared.Settings.EMULATE_FUNCTION_POINTER_CASTS:
++            # note that this pass must run before asyncify, as if it runs afterwards we only
++            # generate the  byn$fpcast_emu  functions after asyncify runs, and so we wouldn't
++            # be able to whitelist them etc.
++            passes += ['--fpcast-emu']
+           if shared.Settings.ASYNCIFY:
+             # TODO: allow whitelist as in asyncify
+             passes += ['--asyncify']
+@@ -1647,13 +1661,12 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
+       # run safe-heap as a binaryen pass
+       if shared.Settings.SAFE_HEAP and shared.Building.is_wasm_only():
+         options.binaryen_passes += ['--safe-heap']
+-      if shared.Settings.EMULATE_FUNCTION_POINTER_CASTS:
+-        # emulated function pointer casts is emulated in wasm using a binaryen pass
++      if shared.Settings.EMULATE_FUNCTION_POINTER_CASTS and not shared.Settings.WASM_BACKEND:
++        # emulated function pointer casts is emulated in fastcomp wasm using a binaryen pass
+         options.binaryen_passes += ['--fpcast-emu']
+-        if not shared.Settings.WASM_BACKEND:
+-          # we also need emulated function pointers for that, as we need a single flat
+-          # table, as is standard in wasm, and not asm.js split ones.
+-          shared.Settings.EMULATED_FUNCTION_POINTERS = 1
++        # we also need emulated function pointers for that, as we need a single flat
++        # table, as is standard in wasm, and not asm.js split ones.
++        shared.Settings.EMULATED_FUNCTION_POINTERS = 1
  
-     logger.debug('just configuring: ' + ' '.join(cmd))
-     if debug_configure:
+     if shared.Settings.WASM2JS:
+       if not shared.Settings.WASM_BACKEND:
 diff --git a/src/library_html5.js b/src/library_html5.js
-index 59b1fe470..6be651920 100644
+index 36e9552b7..ee1ef631e 100644
 --- a/src/library_html5.js
 +++ b/src/library_html5.js
 @@ -1533,7 +1533,9 @@ var LibraryJSEvents = {
@@ -33,17 +49,3 @@ index 59b1fe470..6be651920 100644
  #if USE_PTHREADS
          if (__currentFullscreenStrategy.canvasResizedCallbackTargetThread) JSEvents.queueEventHandlerOnThread_iiii(__currentFullscreenStrategy.canvasResizedCallbackTargetThread, __currentFullscreenStrategy.canvasResizedCallback, {{{ cDefine('EMSCRIPTEN_EVENT_CANVASRESIZED') }}}, 0, __currentFullscreenStrategy.canvasResizedCallbackUserData);
          else
-diff --git a/tools/emterpretify.py b/tools/emterpretify.py
-index bf263995d..c1b75e8bc 100755
---- a/tools/emterpretify.py
-+++ b/tools/emterpretify.py
-@@ -27,7 +27,8 @@ logger = logging.getLogger('emterpretify')
- 
- INNERTERPRETER_LAST_OPCODE = 0 # 'CONDD'
- 
--EMT_STACK_MAX = 1024 * 1024
-+# Double stack size for renpyweb
-+EMT_STACK_MAX = 2 * 1024 * 1024
- 
- LOG_CODE = int(os.environ.get('EMCC_LOG_EMTERPRETER_CODE', '0'))
- 

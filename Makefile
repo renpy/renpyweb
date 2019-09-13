@@ -322,8 +322,7 @@ asyncify-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb versio
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    -o $(BUILD)/t/index.html
 	# fallback compression
-	# zee.js current broken https://github.com/emscripten-core/emscripten/issues/9380
-	#cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
+	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
 	gzip -f $(BUILD)/t/index.wasm
 
 
