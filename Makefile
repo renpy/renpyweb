@@ -501,7 +501,7 @@ $(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.5.2.tar.gz
 $(BUILD)/zee.js.built:
 	-git clone https://github.com/kripken/zee.js $(BUILD)/zee.js
 	cd $(BUILD)/zee.js && \
-		git checkout f81f86226d93cfaa85f185e9f416667c98fd9ca1 && \
+		git checkout 4324d2ca65ced2c7e75d85baf6bdab11ccfed8ac && \
 		make clean && \
 		make -j$(nproc)
 	touch $(BUILD)/zee.js.built
