@@ -32,6 +32,8 @@ cd $BUILD/
 tar xf $CACHEROOT/libjpeg-turbo-1.4.0.tar.gz
 cd libjpeg-turbo-1.4.0/
 
+patch < $PATCHESDIR/libjpegturbo-stringh.patch
+
 #official config.sub/config.guess don't recognize 'asmjs-unknown-emscripten' :/
 #cp -a ../config/config.sub ../config/config.guess .
 #cp -a ../SDL2/config.sub ../SDL2/config.guess .
