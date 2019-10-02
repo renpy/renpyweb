@@ -178,6 +178,7 @@ package-renpyweb:
 	# webbrowser.py + shlex.py dep: click on URLs within Ren'Py
 	# socket.py: websockets + urllib dependency
 	# urllib.py: urllib.urlencode useful for encoding POST data
+	# wave.py sunau.py chunk.py: for AudioData()
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
 	  python-emscripten/2.7.10/package-pythonhome.sh \
@@ -187,7 +188,8 @@ package-renpyweb:
 	  encodings/ascii.py \
 	  webbrowser.py shlex.py \
 	  socket.py \
-	  urllib.py
+	  urllib.py \
+	  wave.py sunau.py chunk.py
 	$(CURDIR)/scripts/package-pyapp-renpy.sh
 
 
