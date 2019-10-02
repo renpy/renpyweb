@@ -35,7 +35,6 @@ cd ffmpeg-3.0/
 mkdir -p build
 cd build/
 
-# TODO: still creates .so-s with --disable-shared
 export CFLAGS="-fno-common"
 export CXXFLAGS="-fno-common"
 # Configure flags from renpy-deps/build.sh
@@ -43,7 +42,6 @@ emconfigure ../configure --prefix=$INSTALLDIR \
        --cc=emcc \
        --disable-shared \
        --enable-runtime-cpudetect \
-       --enable-shared \
        --enable-avresample \
        --disable-encoders \
        --disable-muxers \
