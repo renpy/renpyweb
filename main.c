@@ -115,24 +115,17 @@ int main(int argc, char* argv[]) {
 	// Load additional modules installed relative to current directory
 	// Note: Python already looks for a PYTHONHOME structure in '.' by default
 	setenv("PYTHONPATH", ".", 0);
-
-	// Trace modules loading
-	setenv("PYTHONVERBOSE", "1", 0);
 	// Trace GL calls and throw exception on error
 	//setenv("RENPY_GL_CHECK_ERRORS", "7", 0);
 	// Force using FrameBufferObjects for RenderToTexture
 	//setenv("RENPY_GL_RTT", "fbo", 1);
-
 	// Logs all SDL_SetError (at least in SDL 2.0.5)
 	//SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 
-	//printf("Welcome!\n");
-	//fprintf(stderr, "Test stderr\n");
-
-	// look for .pyo rather than .pyc
-	Py_OptimizeFlag = 2;
-
-	Py_InitializeEx(0);
+	Py_FrozenFlag   = 1; // drop <exec_prefix> warnings
+	Py_OptimizeFlag = 2; // look for .pyo rather than .pyc
+	Py_VerboseFlag  = 1; // trace modules loading
+	Py_InitializeEx(0);  // 0 = get rid of 'Calling stub instead of sigaction()'
 
 	//initemscripten();
 	static struct _inittab builtins[] = {
