@@ -35,16 +35,20 @@ mkdir -p $PACKAGEDIR/lib/python2.7
 cp -a patches/pystub/*.py  $PACKAGEDIR/lib/python2.7
 
 # Compile manually added Python scripts
-find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 python -OO -m py_compile
+(cd $PACKAGEDIR/ && find -name "*.py" -print0 | xargs -r0 python -OO -m py_compile)
 find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 rm
 
 # RenPyWeb-specific files
 cp -a web-presplash-default.jpg $PACKAGEDIR/
 
-$FILE_PACKAGER \
-    $OUTDIR/pyapp.data --js-output=$OUTDIR/pyapp-data.js \
-    --preload $PACKAGEDIR@/ \
-    --use-preload-cache --no-heap-copy
-# No --lz4 because this implies read-only, hence can't be overwritten
-# by game.zip.
-# https://github.com/emscripten-core/emscripten/issues/8450
+PACKAGEDIR_FULLPATH=$(readlink -f $PACKAGEDIR)
+(
+    cd $OUTDIR;  # use relative path in xxx-data.js
+    $FILE_PACKAGER \
+	pyapp.data --js-output=pyapp-data.js \
+	--preload $PACKAGEDIR_FULLPATH@/ \
+	--use-preload-cache --no-heap-copy
+    # No --lz4 because this implies read-only, hence can't be overwritten
+    # by game.zip.
+    # https://github.com/emscripten-core/emscripten/issues/8450
+)
