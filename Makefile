@@ -60,7 +60,7 @@ COMMON_LDFLAGS = \
 	-L $(INSTALLDIR)/lib $(LDFLAGS) \
 	$(BUILD)/emscripten.bc \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1 \
-	-s FORCE_FILESYSTEM=1 -s LZ4=1 \
+	-s FORCE_FILESYSTEM=1 -s LZ4=1 -s FETCH=1 \
 	-s MINIFY_HTML=0 \
 	-s ENVIRONMENT=web \
 	-lpython2.7 \
@@ -454,7 +454,7 @@ $(BUILD)/python.built:
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
 	    cd python-emscripten; \
-	    fossil open ../python-emscripten.fossil 4cba327037; \
+	    fossil open ../python-emscripten.fossil bd17eb499a; \
 	fi
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
