@@ -143,7 +143,7 @@ dirs:
 	mkdir -p $(BUILD)/t/
 
 $(BUILD)/emscripten.bc: $(BUILD)/python.built python-emscripten/emscripten.pyx
-	cython python-emscripten/emscripten.pyx -o $(BUILD)/emscripten.c
+	cython -2 python-emscripten/emscripten.pyx -o $(BUILD)/emscripten.c
 	emcc $(BUILD)/emscripten.c -o $(BUILD)/emscripten.bc -I install/include/python2.7
 
 $(BUILD)/main-pygame_sdl2-static.bc: main.c
