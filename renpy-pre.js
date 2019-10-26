@@ -183,7 +183,7 @@ Module['onRuntimeInitialized'] = function() {
     }
     xhr.onload = function(event) {
         if (xhr.status == 200 || xhr.status == 304 || xhr.status == 206 || (xhr.status == 0 && xhr.response)) {
-            FS.writeFile('game.zip', new Uint8Array(xhr.response));
+            FS.writeFile('game.zip', new Uint8Array(xhr.response), {canOwn:true});
             if (Module['setStatus']) Module['setStatus']('');
 	    Module.print("Extracting Story...\n");
             window.setTimeout(function() { gameExtractAndRun(); }, 200);
