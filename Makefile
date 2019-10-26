@@ -111,10 +111,11 @@ RENPY_LDFLAGS = \
 #   if you want to set WASM=0 -> need to recompile all the Python .so-s
 
 # Memory usage
-# -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
-# TOTAL_MEMORY=512MB causes issues on mobile platforms
-# TOTAL_MEMORY=64MB is enough to run 'the_question' (on desktop) but not 'tutorial'
-# TOTAL_MEMORY=128MB is a good compromise and fails early if e.g. a mobile platform doesn't have that much RAM
+# TOTAL_MEMORY=64MB is not enough to run 'the_question' and 'tutorial'
+# (2019-10, with --no-heap-copy so without filesystem; minimal Python fits in ~6MB)
+# TOTAL_MEMORY=96MB works for 'the_question' and 'tutorial'; beware: memory growth is x2
+# TOTAL_MEMORY=128MB leaves a nice margin
+# TOTAL_MEMORY=512MB usually won't run at all on mobile platforms and/or picky browsers
 # ALLOW_MEMORY_GROWTH=1 so we can run any game; documented as efficient with WASM
 
 # Emterpreter:
