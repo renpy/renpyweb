@@ -391,7 +391,7 @@ $(BUILD)/zee.js.built:
 $(BUILD)/SDL2.built:
 	-git clone --depth 1 --branch version_18 https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
 	cd $(BUILD)/SDL2 && \
-		patch -p1 < $(PATCHESDIR)/SDL2-emterpreter.patch && \
+		patch -p1 < $(PATCHESDIR)/SDL2-pseudosync.patch && \
 		patch -p1 < $(PATCHESDIR)/SDL2-beforeunload.patch
 	touch $(BUILD)/SDL2.built
 
