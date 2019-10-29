@@ -26,7 +26,7 @@ This is the build environment for RenPyWeb.
 
 - Emscripten: apply pending fixes:
 
-      cd emsdk/emscripten/ && patch -p1 < ../../../patches/emscripten.patch
+      cd emsdk/upstream/emscripten/ && patch -p1 < ../../../patches/emscripten.patch
 
 - Compile:
   `make`
