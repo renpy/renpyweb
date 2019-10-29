@@ -198,8 +198,14 @@ Module['onRuntimeInitialized'] = function() {
 }
 
 
-// Don't throw exception on sys.exit()
+// Don't throw uncatchable async exception on sys.exit()
 Module['quit'] = function() {
-    console.log('Module.quit');
-    Module['setStatus']('Quit');
+    console.log('RenPyWeb: quit');
+    Module['setStatus']('Bye!');
+    // avoid callback loop
+    if (noExitRuntime) {
+	noExitRuntime = false;  // cf. emscripten_force_exit
+	// delete Module['quit'];  // not preventing loop
+	exit(0);
+    }
 }
