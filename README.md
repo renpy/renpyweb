@@ -1,5 +1,7 @@
 # RenPyWeb - Ren'Py in your HTML5 web browser
 
+Homepage & documentation: https://renpy.beuc.net/
+
 This is the build environment for RenPyWeb.
 
 ## How to build
