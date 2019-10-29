@@ -38,7 +38,7 @@ PyMODINIT_FUNC initemscripten(void);
 extern void (*emscripten_sdl_async_callback)(Uint32);
 void async_callback(Uint32 ms) {
   //emscripten_run_script("console.trace('before sleep');");
-  emscripten_sleep_with_yield(ms);
+  emscripten_sleep(ms);
   //emscripten_run_script("console.trace('after sleep');");
 }
 #endif

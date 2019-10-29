@@ -31,23 +31,19 @@ SCRIPTSDIR=$(CURDIR)/scripts
 ##CFLAGS=-s ASSERTIONS=2
 ##CXXFLAGS=-s ASSERTIONS=2
 ##LDFLAGS=-s ASSERTIONS=2 -g4
-# Using -O3 because Python (and Python extensions) are using it by default
-#CFLAGS=-s ASSERTIONS=2 -O3
-#CXXFLAGS=-s ASSERTIONS=2 -O3
-##LDFLAGS=-g3 -O3  # way too slow with asm.js - and buggy for wasm in renpyweb-pygame-example-emterpreter/
-##LDFLAGS=-s ASSERTIONS=2 -g3 -O2  # heavy/slow
-#LDFLAGS=-s ASSERTIONS=1 -g
+# Using -O3 because Python+extensions are using it by default
+#CFLAGS=-O3 -s ASSERTIONS=1
+#CXXFLAGS=-O3 -s ASSERTIONS=1
+#LDFLAGS=-O3 -s ASSERTIONS=1 -g
 
 # optimized
 CFLAGS=-O3
 CXXFLAGS=-O3
-LDFLAGS=-O2 -s ASSERTIONS=0
-#LDFLAGS=-O2 -s ASSERTIONS=1 -g
-
-# + EMT_STACK_MAX=2MB
+LDFLAGS=-O3 -s ASSERTIONS=0
+#LDFLAGS=-O3 -s ASSERTIONS=1 -g  # quick debug
 
 
-all: wasm
+all: asyncify
 
 PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen-static/*.o pygame_sdl2/emscripten-static/build-temp/src/*.o
 
@@ -65,21 +61,24 @@ COMMON_LDFLAGS = \
 	-lpython2.7 \
 	-s USE_SDL=2 \
 	-lSDL2_image -ljpeg -lpng -lwebp -lz
-# Stack save/restore points; population method:
-# - Emterpreter: check the provided stack trace on failure
-# - Asyncify: manually console.trace() before the emscripten_sleep()s
-# Using wildcards:
-# - __Pyx_PyObject_CallNoArg homonymous functions get a suffix at link time
-# - Cython-generated function that may change (depends on ordering? and on Cython version)
-EMTERPRETER_LDFLAGS = \
-	-s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST='["_main", "_pyapp_runmain", "async_callback", "_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_SDL_RenderPresent", "_GLES2_RenderPresent", "_SDL_GL_SwapWindow", "_Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "_PyRun_SimpleFileExFlags", "_PyRun_FileExFlags", "_PyEval_EvalCode", "_PyEval_EvalCodeEx", "_PyEval_EvalFrameEx", "_PyCFunction_Call", "_PyObject_Call", "_fast_function", "_function_call", "_instancemethod_call", "_slot_tp_call", "___pyx_pw_11pygame_sdl2_5event_7wait", "___pyx_pw_11pygame_sdl2_7display_21flip", "___pyx_pw_11pygame_sdl2_7display_6Window_13flip", "___pyx_pf_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "___pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "___Pyx_PyObject_CallNoArg_*", "___pyx_pf_10emscripten_*sleep", "___pyx_pw_10emscripten_*sleep", "___pyx_pf_10emscripten_*sleep_with_yield", "___pyx_pw_10emscripten_*sleep_with_yield", "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init", "_builtin_eval"]'
+
+### Stack save/restore points
+# Test with both -O0 -g and -O3; e.g. SDL_WaitEvent/SDL_Delay may be listed as non-existing due to inlining
+# Using wildcards for:
+# - __Pyx_PyObject_CallNoArg homonymous functions that get a suffix at link time
+# - Cython-generated function that may change (depends on functions order and Cython version)
+# "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"...:
+#   possibly unnecessary, depends on where emscripten_sleep() is used in Python
+# Last-resort stack trace inspection: manually console.trace() before the emscripten_sleep()s
+ASYNCIFY_LDFLAGS = \
+	-s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=65535 \
+	-s ASYNCIFY_WHITELIST='["main", "pyapp_runmain", "async_callback", "byn$$fpcast-emu$$async_callback", "SDL_WaitEvent", "SDL_WaitEventTimeout", "SDL_Delay", "SDL_RenderPresent", "GLES2_RenderPresent", "SDL_GL_SwapWindow", "Emscripten_GLES_SwapWindow", "byn$$fpcast-emu$$Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "PyRun_SimpleFileExFlags", "PyRun_FileExFlags", "PyEval_EvalCode", "PyEval_EvalCodeEx", "PyEval_EvalFrameEx", "PyCFunction_Call", "PyObject_Call", "fast_function", "byn$$fpcast-emu$$function_call", "function_call", "instancemethod_call", "byn$$fpcast-emu$$instancemethod_call", "byn$$fpcast-emu$$slot_tp_call", "slot_tp_call", "__pyx_pw_11pygame_sdl2_5event_7wait", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_5event_7wait", "__pyx_pw_11pygame_sdl2_7display_21flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_21flip", "__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "__pyx_pf_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "byn$$fpcast-emu$$__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__Pyx_PyObject_CallNoArg*", "byn$$fpcast-emu$$__pyx_pw_10emscripten_*sleep", "__pyx_pf_10emscripten_*sleep", "__pyx_pw_10emscripten_*sleep", "__pyx_pf_10emscripten_*sleep_with_yield", "__pyx_pw_10emscripten_*sleep_with_yield", "gen_send", "gen_send_ex", "gen_iternext", "type_call", "slot_tp_init", "builtin_eval"]'
+
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
 	    -s USE_SDL_TTF=2
 RENPY_LDFLAGS = \
 	$(COMMON_LDFLAGS) \
-	$(EMTERPRETER_LDFLAGS) \
 	-s USE_FREETYPE=1 \
 	-lavformat -lavcodec -lavutil -lswresample -lswscale -lfribidi \
 	-lzip \
@@ -109,6 +108,7 @@ RENPY_LDFLAGS = \
 # -s MAIN_MODULE=1
 # .so-s with -s SIDE_MODULE=1 -s EXPORT_ALL=1
 #   if you want to set WASM=0 -> need to recompile all the Python .so-s
+# 1.39.0 still has several issues with dynamic linking, including linking -fPIC in static projects
 
 # Memory usage
 # TOTAL_MEMORY=64MB is not enough to run 'the_question' and 'tutorial'
@@ -118,22 +118,7 @@ RENPY_LDFLAGS = \
 # TOTAL_MEMORY=512MB usually won't run at all on mobile platforms and/or picky browsers
 # ALLOW_MEMORY_GROWTH=1 so we can run any game; documented as efficient with WASM
 
-# Emterpreter:
-# -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=$(BUILD)/main.em
-# -g4 -> -g3: https://github.com/kripken/emscripten/issues/6724
-# emterpretify.py: EMT_STACK_MAX = 2*1024*1024
-# Emterpreter notes:
-# - for -s WASM=1, beware of https://github.com/kripken/emscripten/issues/6759
-# -s --profiling-funcs : if needing function names in a stack trace, but SLOW
-# -s EMTERPRETIFY_ADVISE=1: generate initial EMTERPRETIFY_WHITELIST
 # - library_egl.js: don't put emscripten_sleep calls there (JS is non-emterpreted)
-
-# => does not take _PyEval_EvalFrameEx/_PyEval_EvalCodeEx into
-#    account? They still appear in assert's stack trace; it works though...
-#    https://www.mail-archive.com/emscripten-discuss@googlegroups.com/msg07663.html
-# => ___Pyx* function names may change when recompiling...
-# => "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"
-#    added when experimenting with emscripten_sleep in python.py, otherwise not needed (?)
 
 
 dirs:
@@ -166,10 +151,8 @@ package-python-minimal:
 	  python-emscripten/2.7.10/package-pythonhome.sh
 package-pygame-example-static: package-python-minimal
 	$(CURDIR)/scripts/package-pyapp-pygame-example-static.sh
-package-pygame-example-dynamic-asmjs: package-python-minimal $(BUILD)/pygame_sdl2-dynamic.built
-	$(CURDIR)/scripts/package-pyapp-pygame-example-dynamic.sh asmjs
-package-pygame-example-dynamic-wasm: package-python-minimal $(BUILD)/pygame_sdl2-dynamic.built
-	$(CURDIR)/scripts/package-pyapp-pygame-example-dynamic.sh wasm
+package-pygame-example-dynamic: package-python-minimal $(BUILD)/pygame_sdl2-dynamic.built
+	$(CURDIR)/scripts/package-pyapp-pygame-example-dynamic.sh
 
 package-renpyweb:
 	# repr.py: for Developer mode > Variable viewer
@@ -197,7 +180,7 @@ package-renpyweb:
 ##
 # pygame-example for faster configuration experiments
 ##
-pygame-example-static-wasm: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
+pygame-example-static: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
 	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -205,46 +188,17 @@ pygame-example-static-wasm: $(BUILD)/python.built common-pygame-example-static $
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
-	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
-	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
-	# currently broken (tested in 1.38.25, 1.38.27)
-	# exception thrown: TypeError: cannot pass i64 to or from JS,ftCall_jiji@http://localhost:8000/index.js:13391:10
-	# invoke_jiji@http://localhost:8000/index.js:13263:12
-	# legalfunc$invoke_jiji@http://localhost:8000/index.js line 1557 > WebAssembly.instantiate:wasm-function[8183]:0x4fb0cf
-	# _IMG_LoadPNG_RW@http://localhost:8000/index.js line 1557 > WebAssembly.instantiate:wasm-function[5051]:0x349f95
-pygame-example-static-asmjs: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
-	emcc $(BUILD)/main-pygame_sdl2-static.bc \
+pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static-async.bc
+	emcc $(BUILD)/main-pygame_sdl2-static-async.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
-	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
-	    --shell-file pygame-example-shell.html \
-	    -o $(BUILD)/t/index.html -s WASM=0
-pygame-example-static-emterpreter-wasm: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static-async.bc
-	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static-async.bc \
-	    $(PYGAME_SDL2_STATIC_OBJS) \
-	    $(COMMON_LDFLAGS) \
-	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
-	    $(EMTERPRETER_LDFLAGS) \
+	    $(ASYNCIFY_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
-	    -s EMTERPRETIFY_FILE=$(BUILD)/t/index.em \
 	    -o $(BUILD)/t/index.html
-	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
-	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
-pygame-example-static-emterpreter-asmjs: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static-async.bc
-	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(BUILD)/main-pygame_sdl2-static-async.bc \
-	    $(PYGAME_SDL2_STATIC_OBJS) \
-	    $(COMMON_LDFLAGS) \
-	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
-	    $(EMTERPRETER_LDFLAGS) \
-	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
-	    --shell-file pygame-example-shell.html \
-	    -s EMTERPRETIFY_FILE=$(BUILD)/t/index.em \
-	    -o $(BUILD)/t/index.html -s WASM=0
-#pygame-example-dynamic-emterpreter:
-#	-> dynamic linking of Emterpreted functions not supported
-pygame-example-dynamic-wasm: $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic-wasm
+#pygame-example-dynamic-asyncify: TODO
+pygame-example-dynamic: $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic
 	emcc $(BUILD)/main-pygame_sdl2-dynamic.bc \
 	    -s MAIN_MODULE=1 -s EXPORT_ALL=1 \
 	    $(COMMON_LDFLAGS) \
@@ -252,16 +206,6 @@ pygame-example-dynamic-wasm: $(BUILD)/python.built common-pygame-example-dynamic
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
-	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
-	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
-pygame-example-dynamic-asmjs: $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic-asmjs
-	emcc $(BUILD)/main-pygame_sdl2-dynamic.bc \
-	    -s MAIN_MODULE=1 -s EXPORT_ALL=1 \
-	    $(COMMON_LDFLAGS) \
-	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
-	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
-	    --shell-file pygame-example-shell.html \
-	    -o $(BUILD)/t/index.html -s WASM=0
 pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 # Not supported well enough, effort moved to PROXY_TO_PTHREAD
 # Also not useful for Ren'Py as workers still need to return before they get events (cf. emterpreter)
@@ -276,37 +220,23 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
             --preload-file build/package-worker@/ \
 	    -o $(BUILD)/t/index.html --proxy-to-worker
-	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
-	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
 
 
 ##
-# renpyweb-static-emterpreter-wasm/asmjs
+# renpyweb-static-asyncify
 ##
-wasm: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb versionmark
+asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb versionmark
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
+	    $(ASYNCIFY_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
-	    -s EMTERPRETIFY_FILE=$(BUILD)/t/index.em \
 	    -o $(BUILD)/t/index.html
-	# work-around https://github.com/kripken/emscripten-fastcomp/pull/195
-	sed -i -e 's/$$legalf32//g' $(BUILD)/t/index.js
 	# fallback compression
 	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
 	gzip -f $(BUILD)/t/index.wasm
 
-asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
-	# Using asmjs.html instead of asmjs/index.html because
-	# e.g. itch.io picks a random index.html as entry point
-	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
-	    $(RENPY_LDFLAGS) -s WASM=0 \
-	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
-            -s EMTERPRETIFY_FILE=$(BUILD)/t/asmjs.em \
-	    -o $(BUILD)/t/asmjs.html
 
-
-
-# pthreads - Experimental - doesn't work
+# Experimental - doesn't work
 # -s ALLOW_MEMORY_GROWTH=0
 #   ERROR:root:Memory growth is not yet supported with pthreads (1.38.19)
 #   https://github.com/kripken/emscripten/issues/7382
@@ -320,34 +250,7 @@ asmjs: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb
 #   https://github.com/kripken/emscripten/pull/6201
 #   https://github.com/kripken/emscripten/labels/HTML5%20API
 #   https://github.com/kripken/emscripten/labels/multithreading
-pthreads-asmjs:
-	env |grep PORT
-	exit 1
-	mkdir -p $(BUILD)/t/pthreads/
-	emcc \
-	    -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=2 -s PROXY_TO_PTHREAD=1 -s WASM=0 \
-	    \
-	    -L $(INSTALLDIR)/lib -O0 -s ASSERTIONS=1 \
-	    $(BUILD)/main.bc $(BUILD)/emscripten.bc \
-	    $(BUILD)/pygame_sdl2/emscripten-static/build-temp/gen/*.o $(BUILD)/pygame_sdl2/emscripten-static/build-temp/src/*.o \
-	    $(BUILD)/renpy/module/emscripten-static/build-temp/*.o $(BUILD)/renpy/module/emscripten-static/build-temp/gen/*.o \
-	    -s USE_SDL=2 -s USE_FREETYPE=1 \
-	    -lSDL2_image -ljpeg -lpng -lwebp -lz \
-	    -lpython2.7 \
-	    -lavformat -lavcodec -lavutil -lswresample -lswscale -lfribidi \
-	    -s EMULATE_FUNCTION_POINTER_CASTS=1 \
-	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
-	    -s FORCE_FILESYSTEM=1 \
-	    -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_Py_Initialize', '_PyRun_SimpleString', '_pyapp_runmain']" \
-	    -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' \
-	    -s FULL_ES2=1 \
-	    --pre-js pre.js \
-	    --shell-file shell.html \
-	    \
-            -o $(BUILD)/t/pthreads/asmjs.html
-
-# Experimental - doesn't work
-pthreads-wasm:
+pthreads:
 	mkdir -p $(BUILD)/t/pthreads/
 	emcc \
 	    -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=2 -s PROXY_TO_PTHREAD=1 -s WASM=1 \
@@ -431,7 +334,7 @@ $(BUILD)/python.built:
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
 	    cd python-emscripten; \
-	    fossil open ../python-emscripten.fossil bd17eb499a; \
+	    fossil open ../python-emscripten.fossil 4c22eafeb3; \
 	fi
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \

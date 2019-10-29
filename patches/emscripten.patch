@@ -1,25 +1,35 @@
+diff --git a/emar.py b/emar.py
+index 1af065aa1..2b03753ce 100755
+--- a/emar.py
++++ b/emar.py
+@@ -67,6 +67,10 @@ def run():
+         full_name = os.path.abspath(orig_name)
+         dirname = os.path.dirname(full_name)
+         basename = os.path.basename(full_name)
++        # https://github.com/emscripten-core/emscripten/issues/9733
++        if basename not in contents:
++          contents.add(basename)
++          continue
+ 
+         h = hashlib.md5(full_name.encode('utf-8')).hexdigest()[:8]
+         parts = basename.split('.')
 diff --git a/emcc.py b/emcc.py
-index 5b74801de..95d2183a2 100755
+index ccb06e3bf..61294510f 100755
 --- a/emcc.py
 +++ b/emcc.py
-@@ -685,6 +685,15 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
-       cmd += ['-s', 'NO_EXIT_RUNTIME=0']
-       # use node.js raw filesystem access, to behave just like a native executable
-       cmd += ['-s', 'NODERAWFS=1']
-+      # https://github.com/emscripten-core/emscripten/issues/9257#issuecomment-523670023
-+      # [Revert 08d5e0c36d662104ac27432d5fc872423b9e578f]
-+      # Disable wasm in configuration checks so that (1) we do not depend on
-+      # wasm support just for configuration (perhaps the user does not intend
-+      # to build to wasm; using asm.js only depends on js which we need anyhow),
-+      # and (2) we don't have issues with a separate .wasm file
-+      # on the side, async startup, etc..
-+      if not shared.Settings.WASM_BACKEND:
-+        cmd += ['-s', 'WASM=0']
+@@ -1884,6 +1884,10 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
+         return any(flag.startswith(x) for x in ('-l', '-L', '-Wl,'))
  
-     logger.debug('just configuring: ' + ' '.join(cmd))
-     if debug_configure:
+       compile_args = [a for a in newargs if a and not is_link_flag(a)]
++      # https://github.com/emscripten-core/emscripten/issues/9013
++      if '-fPIC' in compile_args and not shared.Settings.RELOCATABLE:
++        shared.warning('Ignoring -fPIC flag when not building with SIDE_MODULE or MAIN_MODULE')
++        compile_args.remove('-fPIC')
+ 
+       # Bitcode args generation code
+       def get_clang_command(input_files):
 diff --git a/src/library_html5.js b/src/library_html5.js
-index 59b1fe470..6be651920 100644
+index 267dbe30e..d0ffda384 100644
 --- a/src/library_html5.js
 +++ b/src/library_html5.js
 @@ -1533,7 +1533,9 @@ var LibraryJSEvents = {
@@ -33,17 +43,3 @@ index 59b1fe470..6be651920 100644
  #if USE_PTHREADS
          if (__currentFullscreenStrategy.canvasResizedCallbackTargetThread) JSEvents.queueEventHandlerOnThread_iiii(__currentFullscreenStrategy.canvasResizedCallbackTargetThread, __currentFullscreenStrategy.canvasResizedCallback, {{{ cDefine('EMSCRIPTEN_EVENT_CANVASRESIZED') }}}, 0, __currentFullscreenStrategy.canvasResizedCallbackUserData);
          else
-diff --git a/tools/emterpretify.py b/tools/emterpretify.py
-index bf263995d..c1b75e8bc 100755
---- a/tools/emterpretify.py
-+++ b/tools/emterpretify.py
-@@ -27,7 +27,8 @@ logger = logging.getLogger('emterpretify')
- 
- INNERTERPRETER_LAST_OPCODE = 0 # 'CONDD'
- 
--EMT_STACK_MAX = 1024 * 1024
-+# Double stack size for renpyweb
-+EMT_STACK_MAX = 2 * 1024 * 1024
- 
- LOG_CODE = int(os.environ.get('EMCC_LOG_EMTERPRETER_CODE', '0'))
- 

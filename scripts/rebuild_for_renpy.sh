@@ -13,6 +13,6 @@ cd "$RENPYWEB"
 rm -Rf build/t
 rm -f build/renpy.built
 rm -f build/pygame_sdl2-static.built
-nice make wasm
+nice make
 
 scripts/install_in_renpy.sh

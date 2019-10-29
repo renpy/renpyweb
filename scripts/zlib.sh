@@ -37,6 +37,11 @@ cd zlib-1.2.11/
 mkdir -p cross-emscripten-$MODE
 cd cross-emscripten-$MODE/
 
+# Ensure static code is compiled without -fPIC for efficiency
+# + https://github.com/emscripten-core/emscripten/issues/9013
+# TODO: handle dynamic build
+sed -i -e 's/-fPIC//' ../configure
+
 emconfigure env CFLAGS="$CFLAGS" ../configure --prefix $INSTALLDIR
 emmake make -j$(nproc)
 emmake make install

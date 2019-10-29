@@ -28,7 +28,6 @@ done
 # Copy game data and remove source files
 cp -a pygame-example/* $PACKAGEDIR/
 # pygame_sdl2-dynamic
-# TODO: store .so variants for ASMJS and for WASM somewhere
 mkdir -p $PACKAGEDIR/lib/python2.7/site-packages/pygame_sdl2/threads
 for i in $(cd install && find lib/python2.7/site-packages/pygame_sdl2/ -name "*.pyo" -o -name "*.so"); do
    cp -a install/$i $PACKAGEDIR/$i
@@ -44,12 +43,8 @@ cp -aL pygame-example/main.py $PACKAGEDIR/main.py
 
 # use-preload-plugins to pre-compile .so-s in Chromium on startup
 # https://emscripten.org/docs/porting/files/packaging_files.html#preloading-files
-preloadso=''
-if [ "$1" == "wasm" ]; then
-    preloadso='--use-preload-plugins'
-fi
 $FILE_PACKAGER \
     $OUTDIR/pyapp.data --js-output=$OUTDIR/pyapp-data.js \
     --preload $PACKAGEDIR@/ \
-    $preloadso \
+    --use-preload-plugins \
     --use-preload-cache --no-heap-copy --lz4

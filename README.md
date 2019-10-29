@@ -10,27 +10,23 @@ This is the build environment for RenPyWeb.
   to `renpy/lib/`. This can be done for you with
   `scripts/checkout_renpy.sh`.
 
-- Emscripten option#1: download prebuilt binaries:
+- Emscripten: download prebuilt binaries (or [build from source](https://emscripten.org/docs/building_from_source/building_emscripten_from_source_on_linux.html))
 
       git clone https://github.com/emscripten-core/emsdk/
       pushd emsdk/
-      ./emsdk install 1.38.45
-      ./emsdk activate --embedded 1.38.45
+      ./emsdk install 1.39.0
+      ./emsdk activate --embedded 1.39.0
       popd
       source emsdk/emsdk_env.sh
 
-- Emscripten option#2: build from source
+- Emscripten: you need to recompile everything on upgrade:
 
-  - [Install emscripten](https://emscripten.org/docs/building_from_source/building_emscripten_from_source_on_linux.html)
-    1.38.43-fastcomp, and apply `patches/emscripten.patch`.
-    You can use `scripts/build_toolchain.sh` for this.
+      rm -rf build/ install/ python-emscripten/2.7.10/build/
+      make cythonclean
 
-  - Adapt `env.sh` and `source` it.  If you used
-    `scripts/build_toolchain.sh`, then `source toolchain/env.sh`.
+- Emscripten: apply pending fixes:
 
-- Patch Emscripten:
-
-      cd emscripten/ && patch -p1 < ../../../patches/emscripten.patch
+      cd emsdk/emscripten/ && patch -p1 < ../../../patches/emscripten.patch
 
 - Compile:
   `make`
@@ -45,16 +41,6 @@ This is the build environment for RenPyWeb.
 
       make testserver
       $BROWSER http://localhost:8000/
-
-
-## ASMJS version
-
-Use `asmjs.html` instead of `index.html`.
-
-ASMJS is deprecated in favor of WebAssembly.  It can be used for older
-browsers, but it is most useful as a debugging tool because WASM
-sometimes fails to provide enough information.  RenPyWeb only
-officially supports WASM.
 
 
 ## How to make small-scale tests
