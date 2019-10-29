@@ -10,7 +10,7 @@ This is the build environment for RenPyWeb.
   to `renpy/lib/`. This can be done for you with
   `scripts/checkout_renpy.sh`.
 
-- Emscripten: download prebuilt binaries (or [build from source](https://emscripten.org/docs/building_from_source/building_emscripten_from_source_on_linux.html))
+- Emscripten: download prebuilt binaries (or [build from source](https://emscripten.org/docs/building_from_source/))
 
       git clone https://github.com/emscripten-core/emsdk/
       pushd emsdk/
