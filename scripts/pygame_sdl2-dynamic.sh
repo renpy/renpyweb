@@ -49,6 +49,7 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 
     # https://github.com/emscripten-core/emscripten/wiki/Linking
     # https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone
+    # TODO: this was meant for the old emscripten "fastcomp" backend
     (
 	cd $INSTALLDIR/lib/python2.7/site-packages/pygame_sdl2/
 	for i in *.so; do
