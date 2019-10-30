@@ -132,18 +132,18 @@ dirs:
 
 $(BUILD)/emscripten.bc: $(BUILD)/python.built python-emscripten/emscripten.pyx
 	cython -2 python-emscripten/emscripten.pyx -o $(BUILD)/emscripten.c
-	emcc $(BUILD)/emscripten.c -o $(BUILD)/emscripten.bc -I install/include/python2.7
+	emcc -c $(BUILD)/emscripten.c -o $(BUILD)/emscripten.bc -I install/include/python2.7
 
 $(BUILD)/main-pygame_sdl2-static.bc: main.c
-	emcc $(CFLAGS) -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static.bc -s USE_SDL=2 -I install/include/python2.7
+	emcc -c $(CFLAGS) -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-pygame_sdl2-static-async.bc: main.c
-	emcc $(CFLAGS) -DASYNC=1 -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static-async.bc -s USE_SDL=2 -I install/include/python2.7
+	emcc -c $(CFLAGS) -DASYNC=1 -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static-async.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-pygame_sdl2-dynamic.bc: main.c
-	emcc $(CFLAGS) main.c -o $(BUILD)/main-pygame_sdl2-dynamic.bc -s USE_SDL=2 -I install/include/python2.7
+	emcc -c $(CFLAGS) main.c -o $(BUILD)/main-pygame_sdl2-dynamic.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-renpyweb-static.bc: main.c
-	emcc $(CFLAGS) -DASYNC=1 -DSTATIC=1 -DRENPY=1 main.c -o $(BUILD)/main-renpyweb-static.bc -s USE_SDL=2 -I install/include/python2.7
+	emcc -c $(CFLAGS) -DASYNC=1 -DSTATIC=1 -DRENPY=1 main.c -o $(BUILD)/main-renpyweb-static.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/importexport.bc: importexport.c $(BUILD)/libzip.built
-	emcc $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
+	emcc -c $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
 
 common: check_emscripten dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
 common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built package-pygame-example-static
