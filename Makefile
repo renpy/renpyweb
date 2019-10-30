@@ -51,11 +51,19 @@ RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc \
 	$(PYGAME_SDL2_STATIC_OBJS) \
 	renpy/module/emscripten-static/build-temp/*.o renpy/module/emscripten-static/build-temp/gen-static/*.o
 
+# EMULATE_FUNCTION_POINTER_CASTS=1: for Python
+# FORCE_FILESYSTEM=1: for file_packager.py resource bundles (.data)
+# LZ4=1: support file_packager.py --lz4 (beware: creates read-only files, stored compressed in-memory)
+# RETAIN_COMPILER_SETTINGS=1: 'compilerSettings' contains build info, for debugging (.js += 6kB)
+# MINIFY_HTML=0	: so Ren'Py users can customize index.html
+# ENVIRONMENT=web: just in case
+# USE_SDL=2: use SDL2 "port" (upstream's Emscripten support is lagging)
+# Cf. emscripten/src/settings.js
 COMMON_LDFLAGS = \
 	-L $(INSTALLDIR)/lib $(LDFLAGS) \
 	$(BUILD)/emscripten.bc \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1 \
-	-s FORCE_FILESYSTEM=1 -s LZ4=1 \
+	-s FORCE_FILESYSTEM=1 -s LZ4=1 -s RETAIN_COMPILER_SETTINGS=1 \
 	-s MINIFY_HTML=0 \
 	-s ENVIRONMENT=web \
 	-lpython2.7 \
@@ -69,6 +77,7 @@ COMMON_LDFLAGS = \
 # - Cython-generated function that may change (depends on functions order and Cython version)
 # "_gen_send", "_gen_send_ex", "_gen_iternext", "_type_call", "_slot_tp_init"...:
 #   possibly unnecessary, depends on where emscripten_sleep() is used in Python
+# library_egl.js: don't put emscripten_sleep calls there (JS is not automatically instrumented)
 # Last-resort stack trace inspection: manually console.trace() before the emscripten_sleep()s
 ASYNCIFY_LDFLAGS = \
 	-s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=65535 \
@@ -77,6 +86,8 @@ ASYNCIFY_LDFLAGS = \
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
 	    -s USE_SDL_TTF=2
+
+# See below for flags explanation
 RENPY_LDFLAGS = \
 	$(COMMON_LDFLAGS) \
 	-s USE_FREETYPE=1 \
@@ -97,9 +108,6 @@ RENPY_LDFLAGS = \
 # glGenBuffers or glBindBuffer in all of Ren'Py (boo)...
 # -s FULL_ES2=1
 
-# LZ4: support file_packager.py --lz4 (beware: creates read-only files, stored compressed in-memory)
-# -s LZ4=1
-
 # Debug:
 # compilation process: EMCC_DEBUG=2
 # webgl tracing: -s GL_ASSERTIONS=1 -s GL_UNSAFE_OPTS=0 -s TRACE_WEBGL_CALLS=1 -s GL_DEBUG=1
@@ -117,8 +125,6 @@ RENPY_LDFLAGS = \
 # TOTAL_MEMORY=128MB leaves a nice margin
 # TOTAL_MEMORY=512MB usually won't run at all on mobile platforms and/or picky browsers
 # ALLOW_MEMORY_GROWTH=1 so we can run any game; documented as efficient with WASM
-
-# - library_egl.js: don't put emscripten_sleep calls there (JS is non-emterpreted)
 
 
 dirs:
