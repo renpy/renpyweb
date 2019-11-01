@@ -1,33 +1,69 @@
 diff --git a/emar.py b/emar.py
-index 1af065aa1..2b03753ce 100755
+index 1af065aa1..a51fc67be 100755
 --- a/emar.py
 +++ b/emar.py
-@@ -67,6 +67,10 @@ def run():
-         full_name = os.path.abspath(orig_name)
-         dirname = os.path.dirname(full_name)
-         basename = os.path.basename(full_name)
-+        # https://github.com/emscripten-core/emscripten/issues/9733
-+        if basename not in contents:
-+          contents.add(basename)
-+          continue
+@@ -55,12 +55,6 @@ def run():
+       else:
+         out_arg_index = 2
  
-         h = hashlib.md5(full_name.encode('utf-8')).hexdigest()[:8]
-         parts = basename.split('.')
-diff --git a/emcc.py b/emcc.py
-index ccb06e3bf..61294510f 100755
---- a/emcc.py
-+++ b/emcc.py
-@@ -1884,6 +1884,10 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
-         return any(flag.startswith(x) for x in ('-l', '-L', '-Wl,'))
+-      contents = set()
+-      if os.path.exists(newargs[out_arg_index]):
+-        cmd = [shared.LLVM_AR, 't', newargs[out_arg_index]]
+-        output = shared.check_call(cmd, stdout=shared.PIPE).stdout
+-        contents.update(output.split('\n'))
+-
+       # Add a hash to colliding basename, to make them unique.
+       for j in range(out_arg_index + 1, len(newargs)):
+         orig_name = newargs[j]
+@@ -73,15 +67,12 @@ def run():
+         parts[0] += '_' + h
+         newname = '.'.join(parts)
+         full_newname = os.path.join(dirname, newname)
+-        assert not os.path.exists(full_newname)
+         try:
+           shutil.copyfile(orig_name, full_newname)
+           newargs[j] = full_newname
+           to_delete.append(full_newname)
+-          contents.add(newname)
+         except Exception:
+           # it is ok to fail here, we just don't get hashing
+-          contents.add(basename)
+           pass
  
-       compile_args = [a for a in newargs if a and not is_link_flag(a)]
-+      # https://github.com/emscripten-core/emscripten/issues/9013
-+      if '-fPIC' in compile_args and not shared.Settings.RELOCATABLE:
-+        shared.warning('Ignoring -fPIC flag when not building with SIDE_MODULE or MAIN_MODULE')
-+        compile_args.remove('-fPIC')
+     if shared.DEBUG:
+@@ -94,11 +85,11 @@ def run():
+   if shared.DEBUG:
+     print('emar:', sys.argv, '  ==>  ', newargs, file=sys.stderr)
  
-       # Bitcode args generation code
-       def get_clang_command(input_files):
+-  try:
+-    return shared.run_process(newargs, stdin=sys.stdin, check=False).returncode
+-  finally:
+-    for d in to_delete:
+-      shared.try_delete(d)
++  # https://github.com/emscripten-core/emscripten/pull/9742/files
++  rtn = shared.run_process(newargs, stdin=sys.stdin, check=False).returncode
++  for d in to_delete:
++    shared.try_delete(d)
++  return rtn
+ 
+ 
+ if __name__ == '__main__':
+diff --git a/src/library.js b/src/library.js
+index e278e9455..d26cad800 100644
+--- a/src/library.js
++++ b/src/library.js
+@@ -4258,6 +4258,11 @@ LibraryManager.library = {
+     return cache[fullname] = allocate(intArrayFromString(ret + ''), 'i8', ALLOC_NORMAL);
+   },
+ 
++  // https://github.com/emscripten-core/emscripten/pull/9734
++  emscripten_has_asyncify: function() {
++    return {{{ ASYNCIFY || EMTERPRETIFY_ASYNC }}};
++  },
++
+   emscripten_debugger: function() {
+     debugger;
+   },
 diff --git a/src/library_html5.js b/src/library_html5.js
 index 267dbe30e..d0ffda384 100644
 --- a/src/library_html5.js
@@ -43,3 +79,79 @@ index 267dbe30e..d0ffda384 100644
  #if USE_PTHREADS
          if (__currentFullscreenStrategy.canvasResizedCallbackTargetThread) JSEvents.queueEventHandlerOnThread_iiii(__currentFullscreenStrategy.canvasResizedCallbackTargetThread, __currentFullscreenStrategy.canvasResizedCallback, {{{ cDefine('EMSCRIPTEN_EVENT_CANVASRESIZED') }}}, 0, __currentFullscreenStrategy.canvasResizedCallbackUserData);
          else
+diff --git a/src/library_memfs.js b/src/library_memfs.js
+index b0ad890ee..f4f8a332d 100644
+--- a/src/library_memfs.js
++++ b/src/library_memfs.js
+@@ -272,20 +272,28 @@ mergeInto(LibraryManager.library, {
+       //         with canOwn=true, creating a copy of the bytes is avoided, but the caller shouldn't touch the passed in range
+       //         of bytes anymore since their contents now represent file data inside the filesystem.
+       write: function(stream, buffer, offset, length, position, canOwn) {
++// https://github.com/emscripten-core/emscripten/pull/9716
++#if ASSERTIONS
++        // The data buffer should be a typed array view
++        assert(!(buffer instanceof ArrayBuffer));
++#endif
+ #if ALLOW_MEMORY_GROWTH
+-        // If memory can grow, we don't want to hold on to references of
+-        // the memory Buffer, as they may get invalidated. That means
+-        // we need to do a copy here.
++        // If the buffer is located in main memory (HEAP), and if
++        // memory can grow, we can't hold on to references of the
++        // memory buffer, as they may get invalidated. That means we
++        // need to do copy its contents.
++        if (buffer.buffer === HEAP8.buffer) {
+ #if ASSERTIONS
+-        // FIXME: this is inefficient as the file packager may have
+-        //        copied the data into memory already - we may want to
+-        //        integrate more there and let the file packager loading
+-        //        code be able to query if memory growth is on or off.
+-        if (canOwn) {
+-          warnOnce('file packager has copied file data into memory, but in memory growth we are forced to copy it again (see --no-heap-copy)');
+-        }
++          // FIXME: this is inefficient as the file packager may have
++          //        copied the data into memory already - we may want to
++          //        integrate more there and let the file packager loading
++          //        code be able to query if memory growth is on or off.
++          if (canOwn) {
++            warnOnce('file packager has copied file data into memory, but in memory growth we are forced to copy it again (see --no-heap-copy)');
++          }
+ #endif // ASSERTIONS
+-        canOwn = false;
++          canOwn = false;
++        }
+ #endif // ALLOW_MEMORY_GROWTH
+ 
+         if (!length) return 0;
+@@ -341,6 +349,10 @@ mergeInto(LibraryManager.library, {
+         stream.node.usedBytes = Math.max(stream.node.usedBytes, offset + length);
+       },
+       mmap: function(stream, buffer, offset, length, position, prot, flags) {
++#if ASSERTIONS
++        // The data buffer should be a typed array view
++        assert(!(buffer instanceof ArrayBuffer));
++#endif
+         if (!FS.isFile(stream.node.mode)) {
+           throw new FS.ErrnoError({{{ cDefine('ENODEV') }}});
+         }
+@@ -349,7 +361,7 @@ mergeInto(LibraryManager.library, {
+         var contents = stream.node.contents;
+         // Only make a new copy when MAP_PRIVATE is specified.
+         if ( !(flags & {{{ cDefine('MAP_PRIVATE') }}}) &&
+-              (contents.buffer === buffer || contents.buffer === buffer.buffer) ) {
++              contents.buffer === buffer.buffer ) {
+           // We can't emulate MAP_SHARED when the file is not backed by the buffer
+           // we're mapping to (e.g. the HEAP buffer).
+           allocated = false;
+diff --git a/system/include/emscripten/emscripten.h b/system/include/emscripten/emscripten.h
+index 389810f81..99a012df6 100644
+--- a/system/include/emscripten/emscripten.h
++++ b/system/include/emscripten/emscripten.h
+@@ -228,6 +228,7 @@ int emscripten_get_worker_queue_size(worker_handle worker);
+ // misc.
+ 
+ int emscripten_get_compiler_setting(const char *name);
++int emscripten_has_asyncify();
+ 
+ void emscripten_debugger(void);
+ 

@@ -82,7 +82,7 @@ COMMON_LDFLAGS = \
 # Without ASYNCIFY_WHITELIST perfs are now acceptable (unlike with Emterpreter), at the cost of increased .wasm size and compilation time
 ASYNCIFY_LDFLAGS = \
 	-s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=65535 \
-	-s ASYNCIFY_WHITELIST='["main", "pyapp_runmain", "async_callback", "byn$$fpcast-emu$$async_callback", "SDL_WaitEvent", "SDL_WaitEventTimeout", "SDL_Delay", "SDL_RenderPresent", "GLES2_RenderPresent", "SDL_GL_SwapWindow", "Emscripten_GLES_SwapWindow", "byn$$fpcast-emu$$Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "PyRun_SimpleFileExFlags", "PyRun_FileExFlags", "PyEval_EvalCode", "PyEval_EvalCodeEx", "PyEval_EvalFrameEx", "PyCFunction_Call", "PyObject_Call", "fast_function", "byn$$fpcast-emu$$function_call", "function_call", "instancemethod_call", "byn$$fpcast-emu$$instancemethod_call", "byn$$fpcast-emu$$slot_tp_call", "slot_tp_call", "__pyx_pw_11pygame_sdl2_5event_7wait", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_5event_7wait", "__pyx_pw_11pygame_sdl2_7display_21flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_21flip", "__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "__pyx_pf_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "byn$$fpcast-emu$$__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__Pyx_PyObject_CallNoArg*", "byn$$fpcast-emu$$__pyx_pw_10emscripten_*sleep", "__pyx_pf_10emscripten_*sleep", "__pyx_pw_10emscripten_*sleep", "gen_send", "gen_send_ex", "gen_iternext", "type_call", "slot_tp_init", "builtin_eval"]'
+	-s ASYNCIFY_WHITELIST='["main", "pyapp_runmain", "SDL_WaitEvent", "SDL_WaitEventTimeout", "SDL_Delay", "SDL_RenderPresent", "GLES2_RenderPresent", "SDL_GL_SwapWindow", "Emscripten_GLES_SwapWindow", "byn$$fpcast-emu$$Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "PyRun_SimpleFileExFlags", "PyRun_FileExFlags", "PyEval_EvalCode", "PyEval_EvalCodeEx", "PyEval_EvalFrameEx", "PyCFunction_Call", "PyObject_Call", "fast_function", "byn$$fpcast-emu$$function_call", "function_call", "instancemethod_call", "byn$$fpcast-emu$$instancemethod_call", "byn$$fpcast-emu$$slot_tp_call", "slot_tp_call", "__pyx_pw_11pygame_sdl2_5event_7wait", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_5event_7wait", "__pyx_pw_11pygame_sdl2_7display_21flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_21flip", "__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "__pyx_pf_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "byn$$fpcast-emu$$__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__Pyx_PyObject_CallNoArg*", "byn$$fpcast-emu$$__pyx_pw_10emscripten_*sleep", "__pyx_pf_10emscripten_*sleep", "__pyx_pw_10emscripten_*sleep", "gen_send", "gen_send_ex", "gen_iternext", "type_call", "slot_tp_init", "builtin_eval"]'
 
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
@@ -137,8 +137,6 @@ $(BUILD)/emscripten.bc: $(BUILD)/python.built python-emscripten/emscripten.pyx
 
 $(BUILD)/main-pygame_sdl2-static.bc: main.c
 	emcc -c $(CFLAGS) -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static.bc -s USE_SDL=2 -I install/include/python2.7
-$(BUILD)/main-pygame_sdl2-static-async.bc: main.c
-	emcc -c $(CFLAGS) -DASYNC=1 -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static-async.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-pygame_sdl2-dynamic.bc: main.c
 	emcc -c $(CFLAGS) main.c -o $(BUILD)/main-pygame_sdl2-dynamic.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-renpyweb-static.bc: main.c
@@ -195,8 +193,9 @@ pygame-example-static: $(BUILD)/python.built common-pygame-example-static $(BUIL
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
-pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static-async.bc
-	emcc $(BUILD)/main-pygame_sdl2-static-async.bc \
+pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 \
+	emcc $(BUILD)/main-pygame_sdl2-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
@@ -233,7 +232,8 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 # renpyweb-static-asyncify
 ##
 asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb versionmark
-	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 emcc $(RENPY_OBJS) \
+	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 \
+	emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    $(ASYNCIFY_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
@@ -310,13 +310,12 @@ preupload-clean:
 		$(BUILD)/t/index.js.orig.js \
 		$(BUILD)/t/index.wasm.pre $(BUILD)/t/index.wast \
 		$(BUILD)/t/index.bc
-	sed -i -e 's/%%TITLE%%/RenPyWeb/' $(BUILD)/t/index.html $(BUILD)/t/asmjs.html
+	sed -i -e 's/%%TITLE%%/RenPyWeb/' $(BUILD)/t/index.html
 
 hosting-gzip: preupload-clean
 	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html}"
 	-bash -c "gzip -f $(BUILD)/t/pythonhome{.data,-data.js}"
 	-bash -c "gzip -f $(BUILD)/t/pyapp{.data,-data.js}"
-	-bash -c "gzip -f $(BUILD)/t/asmjs.{em,html,html.mem,js}"
 	-gzip -f $(BUILD)/t/zee.js
 	cp -a htaccess.txt $(BUILD)/t/.htaccess
 
@@ -324,7 +323,6 @@ gunzip:
 	-bash -c "gunzip $(BUILD)/t/index.{em,js,html}.gz"
 	-bash -c "gunzip $(BUILD)/t/pythonhome{.data,-data.js}.gz"
 	-bash -c "gunzip $(BUILD)/t/pyapp{.data,-data.js}.gz"
-	-bash -c "gunzip $(BUILD)/t/asmjs.{em,html,html.mem,js}.gz"
 	-gunzip $(BUILD)/t/zee.js.gz
 	rm -f $(BUILD)/t/.htaccess
 

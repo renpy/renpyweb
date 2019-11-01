@@ -1,89 +1,74 @@
 https://github.com/emscripten-ports/SDL2/issues/70
+commit 0b918f692ec913d7abaf3e2ce86e89186b834457
+Author: Sylvain Beucler <beuc@beuc.net>
+Date:   Fri Nov 1 13:59:57 2019 +0100
+
+    Support pseudo-synchronous screen refresh and events update using asyncify
 
 diff --git a/src/timer/unix/SDL_systimer.c b/src/timer/unix/SDL_systimer.c
-index 5045996f3..f53abad9f 100644
+index 5045996f3..d5a5d0f19 100644
 --- a/src/timer/unix/SDL_systimer.c
 +++ b/src/timer/unix/SDL_systimer.c
-@@ -31,6 +31,8 @@
+@@ -31,6 +31,10 @@
  #include "SDL_assert.h"
  #include "../SDL_timer_c.h"
  
++#ifdef __EMSCRIPTEN__
 +#include <emscripten.h>
++#endif
 +
  /* The clock_gettime provides monotonous time, so we should use it if
     it's available. The clock_gettime function is behind ifdef
     for __USE_POSIX199309
-@@ -184,9 +186,18 @@ SDL_GetPerformanceFrequency(void)
-     return 1000000;
- }
- 
-+#ifdef __EMSCRIPTEN__
-+void (*emscripten_sdl_async_callback)(Uint32) = 0;
-+#endif
+@@ -187,6 +191,13 @@ SDL_GetPerformanceFrequency(void)
  void
  SDL_Delay(Uint32 ms)
  {
 +#ifdef __EMSCRIPTEN__
-+    if (emscripten_sdl_async_callback) {
-+        emscripten_sdl_async_callback(ms);
++    if (emscripten_has_asyncify()) {
++        /* pseudo-synchronous pause */
++        emscripten_sleep(ms);
 +        return;
 +    }
-+#else
++#endif
      int was_error;
  
  #if HAVE_NANOSLEEP
-@@ -225,6 +236,7 @@ SDL_Delay(Uint32 ms)
-         was_error = select(0, NULL, NULL, NULL, &tv);
- #endif /* HAVE_NANOSLEEP */
-     } while (was_error && (errno == EINTR));
-+#endif /* __EMSCRIPTEN__ */
- }
- 
- #endif /* SDL_TIMER_UNIX */
 diff --git a/src/video/emscripten/SDL_emscriptenframebuffer.c b/src/video/emscripten/SDL_emscriptenframebuffer.c
-index bfdec3b56..c9014f683 100644
+index bfdec3b56..f1ec3d5f5 100644
 --- a/src/video/emscripten/SDL_emscriptenframebuffer.c
 +++ b/src/video/emscripten/SDL_emscriptenframebuffer.c
-@@ -56,6 +56,8 @@ int Emscripten_CreateWindowFramebuffer(_THIS, SDL_Window * window, Uint32 * form
-     return 0;
- }
- 
-+extern void (*emscripten_sdl_async_callback)(Uint32);
-+
- int Emscripten_UpdateWindowFramebuffer(_THIS, SDL_Window * window, const SDL_Rect * rects, int numrects)
- {
-     SDL_Surface *surface;
-@@ -162,6 +164,11 @@ int Emscripten_UpdateWindowFramebuffer(_THIS, SDL_Window * window, const SDL_Rec
+@@ -162,6 +162,12 @@ int Emscripten_UpdateWindowFramebuffer(_THIS, SDL_Window * window, const SDL_Rec
                       SDL_GetWindowID(window), ++frame_number);
          SDL_SaveBMP(surface, file);
      }*/
 +
-+    if (emscripten_sdl_async_callback) {
-+        emscripten_sdl_async_callback(0);
++    if (emscripten_has_asyncify()) {
++        /* give back control to browser for screen refresh */
++        emscripten_sleep(0);
 +    }
 +
      return 0;
  }
  
 diff --git a/src/video/emscripten/SDL_emscriptenopengles.c b/src/video/emscripten/SDL_emscriptenopengles.c
-index f83954cfa..fd49a55f8 100644
+index f83954cfa..b75ac6a3b 100644
 --- a/src/video/emscripten/SDL_emscriptenopengles.c
 +++ b/src/video/emscripten/SDL_emscriptenopengles.c
-@@ -82,9 +82,20 @@ Emscripten_GLES_LoadLibrary(_THIS, const char *path) {
+@@ -82,9 +82,19 @@ Emscripten_GLES_LoadLibrary(_THIS, const char *path) {
  }
  
  SDL_EGL_CreateContext_impl(Emscripten)
 -SDL_EGL_SwapWindow_impl(Emscripten)
  SDL_EGL_MakeCurrent_impl(Emscripten)
  
-+extern void (*emscripten_sdl_async_callback)(Uint32);
-+
 +int
 +Emscripten_GLES_SwapWindow(_THIS, SDL_Window * window)
 +{
 +    EGLBoolean ret = SDL_EGL_SwapBuffers(_this, ((SDL_WindowData *) window->driverdata)->egl_surface);
-+    if (emscripten_sdl_async_callback) {
-+        emscripten_sdl_async_callback(0);
++    if (emscripten_has_asyncify()) {
++        /* give back control to browser for screen refresh */
++        emscripten_sleep(0);
 +    }
 +    return ret;
 +}

@@ -16,8 +16,8 @@ This is the build environment for RenPyWeb.
 
       git clone https://github.com/emscripten-core/emsdk/
       pushd emsdk/
-      ./emsdk install 1.39.0
-      ./emsdk activate --embedded 1.39.0
+      ./emsdk install 1.39.1
+      ./emsdk activate --embedded 1.39.1
       popd
       source emsdk/emsdk_env.sh
 

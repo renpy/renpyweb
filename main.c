@@ -34,15 +34,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 PyMODINIT_FUNC initemscripten(void);
 #endif
 
-#ifdef ASYNC
-extern void (*emscripten_sdl_async_callback)(Uint32);
-void async_callback(Uint32 ms) {
-  //emscripten_run_script("console.trace('before sleep');");
-  emscripten_sleep(ms);
-  //emscripten_run_script("console.trace('after sleep');");
-}
-#endif
-
 void pyapp_runmain();
 
 
@@ -204,10 +195,6 @@ int main(int argc, char* argv[]) {
 
 	PySys_SetArgv(argc, argv);
 	PyRun_SimpleString("print 'Python loaded.'");
-
-#ifdef ASYNC
-	emscripten_sdl_async_callback = async_callback;
-#endif
 
 #if __EMSCRIPTEN__ && RENPY
 	// Return without exiting so we can keep using Python
