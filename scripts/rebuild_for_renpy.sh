@@ -8,7 +8,7 @@ set -e
 RENPYWEB="$(dirname $(readlink -f $0))/.."
 cd "$RENPYWEB"
 
-. toolchain/env.sh
+. emsdk/emsdk_env.sh
 
 rm -Rf build/t
 rm -f build/renpy.built
