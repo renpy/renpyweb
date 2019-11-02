@@ -13,7 +13,7 @@
 FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
 PACKAGEDIR=build/package-pyapp-pygame-example
 OUTDIR=build/t
-
+HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/bin/python
 
 rm -rf $PACKAGEDIR/
 mkdir -p $PACKAGEDIR
@@ -29,7 +29,7 @@ mkdir -p $PACKAGEDIR/lib/python2.7
 cp -a patches/pystub/threading.py  $PACKAGEDIR/lib/python2.7
 
 # Compile manually added Python scripts
-find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 python -OO -m py_compile
+find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 $HOSTPYTHON -OO -m py_compile
 find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 rm
 
 # Copy game data and remove source files
@@ -38,7 +38,7 @@ cp -a pygame-example/* $PACKAGEDIR/
 # Compile Python scripts
 for i in $(cd pygame-example/ && find . -name "*.py"); do
     if [ pygame-example/$i -nt pygame-example/${i%.py}.pyo ]; then
-	python -OO -m py_compile pygame-example/$i
+	$HOSTPYTHON -OO -m py_compile pygame-example/$i
     fi
 done
 

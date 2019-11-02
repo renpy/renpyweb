@@ -20,6 +20,7 @@
 FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
 PACKAGEDIR=build/package-pyapp-renpy
 OUTDIR=build/t
+HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/bin/python
 
 rm -rf $PACKAGEDIR/
 mkdir -p $PACKAGEDIR
@@ -35,7 +36,7 @@ mkdir -p $PACKAGEDIR/lib/python2.7
 cp -a patches/pystub/*.py  $PACKAGEDIR/lib/python2.7
 
 # Compile manually added Python scripts
-(cd $PACKAGEDIR/ && find -name "*.py" -print0 | xargs -r0 python -OO -m py_compile)
+(cd $PACKAGEDIR/ && find -name "*.py" -print0 | xargs -r0 $HOSTPYTHON -OO -m py_compile)
 find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 rm
 
 # RenPyWeb-specific files

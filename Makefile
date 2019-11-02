@@ -148,7 +148,7 @@ common: check_emscripten dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
 common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built package-pygame-example-static
 common-pygame-example-dynamic: common $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/main-pygame_sdl2-dynamic.bc
 
-common-renpyweb: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpyweb $(BUILD)/zee.js.built
+common-renpy: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpy $(BUILD)/zee.js.built
 
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
@@ -159,11 +159,10 @@ package-pygame-example-static: package-python-minimal
 package-pygame-example-dynamic: package-python-minimal $(BUILD)/pygame_sdl2-dynamic.built
 	$(CURDIR)/scripts/package-pyapp-pygame-example-dynamic.sh
 
-package-renpyweb:
+package-renpy:
 	# repr.py: for Developer mode > Variable viewer
 	# encodings/raw_unicode_escape.py base64.py: for Ren'Py's tutorial
 	# encodings/utf-32-be.py: .rpy from Ren'Py 6.x
-	# encoding/ascii.py: for presplash?
 	# webbrowser.py + shlex.py dep: click on URLs within Ren'Py
 	# socket.py: websockets + urllib dependency
 	# urllib.py: urllib.urlencode useful for encoding POST data
@@ -174,7 +173,6 @@ package-renpyweb:
 	  repr.py \
 	  encodings/raw_unicode_escape.py base64.py \
 	  encodings/utf_32_be.py \
-	  encodings/ascii.py \
 	  webbrowser.py shlex.py \
 	  socket.py \
 	  urllib.py \
@@ -231,7 +229,7 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
 ##
 # renpyweb-static-asyncify
 ##
-asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpyweb versionmark
+asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpy versionmark
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 \
 	emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
@@ -339,7 +337,7 @@ $(BUILD)/python.built:
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
 	    cd python-emscripten; \
-	    fossil open ../python-emscripten.fossil 4c22eafeb3; \
+	    fossil open ../python-emscripten.fossil 8487653348; \
 	fi
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
