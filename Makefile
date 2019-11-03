@@ -330,7 +330,7 @@ testserver:
 	(cd build/t && python3 $(CURDIR)/testserver.py)
 
 cythonclean:
-	rm -rf pygame_sdl2/*-static/ pygame_sdl2/*-dynamic/ renpy/module/*-static/
+	rm -rf pygame_sdl2/*-static/ pygame_sdl2/*-dynamic/ renpy/module/*-static/ build/emscripten.c
 	rm -f build/pygame_sdl2-*.built build/renpy.built
 
 

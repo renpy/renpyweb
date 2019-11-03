@@ -11,8 +11,7 @@ cd "$RENPYWEB"
 . emsdk/emsdk_env.sh
 
 rm -Rf build/t
-rm -f build/renpy.built
-rm -f build/pygame_sdl2-static.built
+make cythonclean
 nice make
 
 scripts/install_in_renpy.sh
