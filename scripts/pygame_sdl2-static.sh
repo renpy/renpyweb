@@ -32,7 +32,7 @@ CACHEROOT=$(dirname $(readlink -f $0))/../cache
 BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
-HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/bin/python
+CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/crosspython-static/bin/python
 
 PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 (
@@ -42,17 +42,16 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     # work-around USE_* - https://github.com/emscripten-core/emscripten/issues/8650
     mkdir -p 8650
     ar q 8650/libSDL2_ttf.a
-    CC=emcc LDSHARED=emcc \
-      CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2" \
-      LDFLAGS="-L$INSTALLDIR/lib -L$(pwd)/8650" \
+    CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2" \
+      LDFLAGS="-L$(pwd)/8650" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' PYGAME_SDL2_STATIC=1 \
-      $HOSTPYTHON \
+      $CROSSPYTHON \
       setup.py \
         build_ext --include-dirs $INSTALLDIR/include/python2.7 \
           -b emscripten-static/build-lib -t emscripten-static/build-temp \
         build \
-	install -O2 --prefix $INSTALLDIR
-    $HOSTPYTHON setup.py install_headers -d $INSTALLDIR/include/
+	install -O2 --root $INSTALLDIR --prefix ''
+    $CROSSPYTHON setup.py install_headers -d $INSTALLDIR/include/
 
     #for i in $INSTALLDIR/lib/python2.7/site-packages/pygame_sdl2/*.so; do
     #    if file $i | grep -q 'LLVM IR bitcode'; then

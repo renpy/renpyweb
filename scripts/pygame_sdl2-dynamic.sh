@@ -27,7 +27,7 @@ CACHEROOT=$(dirname $(readlink -f $0))/../cache
 BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
-HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/bin/python
+CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/crosspython-dynamic/bin/python
 
 PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 
@@ -35,37 +35,35 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     cd $PYGAME_SDL2_ROOT/
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
-    CC=emcc LDSHARED=emcc \
-      CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2 -s USE_ZLIB=1" \
-      LDFLAGS="-s ERROR_ON_MISSING_LIBRARIES=0" \
+    # work-around USE_* - https://github.com/emscripten-core/emscripten/issues/8650
+    mkdir -p 8650
+    ar q 8650/libSDL2_ttf.a
+    ar q 8650/libSDL2_image.a
+    CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2 -s USE_ZLIB=1" \
+      LDFLAGS="-L$(pwd)/8650" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' \
-      $HOSTPYTHON \
+      $CROSSPYTHON \
       setup.py \
         build_ext --include-dirs $INSTALLDIR/include/python2.7 \
-          -t emscripten-dynamic/build-temp \
+          -b emscripten-dynamic/build-lib -t emscripten-dynamic/build-temp \
         build \
-	install -O2 --prefix $INSTALLDIR
-    $HOSTPYTHON setup.py install_headers -d $INSTALLDIR/include/
+	install -O2 --root $INSTALLDIR --prefix ''
+    $CROSSPYTHON setup.py install_headers -d $INSTALLDIR/include/
 
     # https://github.com/emscripten-core/emscripten/wiki/Linking
     # https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone
-    # TODO: this was meant for the old emscripten "fastcomp" backend
+    # https://github.com/emscripten-core/emscripten/issues/9770
+    # Note: Chromium has async compilation requirements incompatible with plain dlopen()
     (
 	cd $INSTALLDIR/lib/python2.7/site-packages/pygame_sdl2/
 	for i in *.so; do
-            if file $i | grep -q 'LLVM IR bitcode'; then
+            if file $i | grep -q 'WebAssembly'; then
 		base=${i%.so}
 		mv $i $base.bc
-		# TODO: store .so variants for ASMJS and for WASM somewhere
-		# ASMJS
-		#emcc $base.bc -o $base.js \
-                #     -s SIDE_MODULE=1 -s EXPORT_ALL=1 \
-		#     -s EMULATE_FUNCTION_POINTER_CASTS=1 -O2 -s WASM=0
-		#mv $base.js $base.so
 		# WASM
 		emcc $base.bc -o $base.wasm \
                      -s SIDE_MODULE=1 -s EXPORT_ALL=1 \
-		     -s EMULATE_FUNCTION_POINTER_CASTS=1 -O2
+		     -s EMULATE_FUNCTION_POINTER_CASTS=1 -O3
 		mv $base.wasm $base.so
             fi
 	done

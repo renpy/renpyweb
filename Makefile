@@ -47,7 +47,7 @@ all: asyncify
 
 PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen-static/*.o pygame_sdl2/emscripten-static/build-temp/src/*.o
 
-RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc \
+RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc \
 	$(PYGAME_SDL2_STATIC_OBJS) \
 	renpy/module/emscripten-static/build-temp/*.o renpy/module/emscripten-static/build-temp/gen-static/*.o
 
@@ -61,7 +61,6 @@ RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc \
 # Cf. emscripten/src/settings.js
 COMMON_LDFLAGS = \
 	-L $(INSTALLDIR)/lib $(LDFLAGS) \
-	$(BUILD)/emscripten.bc \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1 \
 	-s FORCE_FILESYSTEM=1 -s LZ4=1 -s RETAIN_COMPILER_SETTINGS=1 \
 	-s MINIFY_HTML=0 \
@@ -131,24 +130,27 @@ RENPY_LDFLAGS = \
 dirs:
 	mkdir -p $(BUILD)/t/
 
-$(BUILD)/emscripten.bc: $(BUILD)/python.built python-emscripten/emscripten.pyx
+$(BUILD)/emscripten.c: $(BUILD)/python.built python-emscripten/emscripten.pyx
 	cython -2 python-emscripten/emscripten.pyx -o $(BUILD)/emscripten.c
-	emcc -c $(BUILD)/emscripten.c -o $(BUILD)/emscripten.bc -I install/include/python2.7
+$(BUILD)/emscripten-static.bc: $(BUILD)/python.built $(BUILD)/emscripten.c
+	emcc -c $(CFLAGS) $(BUILD)/emscripten.c -o $(BUILD)/emscripten-static.bc -I install/include/python2.7
+$(BUILD)/emscripten-dynamic.bc: $(BUILD)/python.built $(BUILD)/emscripten.c
+	emcc -c $(CFLAGS) -fPIC -s MAIN_MODULE=1 $(BUILD)/emscripten.c -o $(BUILD)/emscripten-dynamic.bc -I install/include/python2.7
 
 $(BUILD)/main-pygame_sdl2-static.bc: main.c
 	emcc -c $(CFLAGS) -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-static.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-pygame_sdl2-dynamic.bc: main.c
-	emcc -c $(CFLAGS) main.c -o $(BUILD)/main-pygame_sdl2-dynamic.bc -s USE_SDL=2 -I install/include/python2.7
+	emcc -c $(CFLAGS) -fPIC -s MAIN_MODULE=1 main.c -o $(BUILD)/main-pygame_sdl2-dynamic.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/main-renpyweb-static.bc: main.c
 	emcc -c $(CFLAGS) -DASYNC=1 -DSTATIC=1 -DRENPY=1 main.c -o $(BUILD)/main-renpyweb-static.bc -s USE_SDL=2 -I install/include/python2.7
 $(BUILD)/importexport.bc: importexport.c $(BUILD)/libzip.built
 	emcc -c $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
 
-common: check_emscripten dirs $(BUILD)/emscripten.bc $(BUILD)/SDL2.built
-common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built package-pygame-example-static
-common-pygame-example-dynamic: common $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/main-pygame_sdl2-dynamic.bc
+common: check_emscripten dirs $(BUILD)/SDL2.built
+common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built $(BUILD)/emscripten-static.bc package-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
+common-pygame-example-dynamic: common $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/emscripten-dynamic.bc package-pygame-example-dynamic $(BUILD)/main-pygame_sdl2-dynamic.bc
 
-common-renpy: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/importexport.bc package-renpy $(BUILD)/zee.js.built
+common-renpy: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc package-renpy $(BUILD)/zee.js.built
 
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
@@ -183,17 +185,17 @@ package-renpy:
 ##
 # pygame-example for faster configuration experiments
 ##
-pygame-example-static: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
-	emcc $(BUILD)/main-pygame_sdl2-static.bc \
+pygame-example-static: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc
+	emcc $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
-pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
+pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 \
-	emcc $(BUILD)/main-pygame_sdl2-static.bc \
+	emcc $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
@@ -202,22 +204,22 @@ pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-stat
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
 #pygame-example-dynamic-asyncify: TODO
-pygame-example-dynamic: $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic
-	emcc $(BUILD)/main-pygame_sdl2-dynamic.bc \
+pygame-example-dynamic: $(BUILD)/python.built common-pygame-example-dynamic package-pygame-example-dynamic $(BUILD)/emscripten-dynamic.bc
+	emcc $(BUILD)/main-pygame_sdl2-dynamic.bc $(BUILD)/emscripten-dynamic.bc \
 	    -s MAIN_MODULE=1 -s EXPORT_ALL=1 \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
 	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
-pygame-example-worker: $(BUILD)/python.built common-pygame-example-static
+pygame-example-worker: $(BUILD)/python.built common-pygame-example-static $(BUILD)/emscripten-static.bc
 # Not supported well enough, effort moved to PROXY_TO_PTHREAD
 # Also not useful for Ren'Py as workers still need to return before they get events (cf. emterpreter)
 # Requires https://github.com/kripken/emscripten/issues/5380 to fix incomplete SDL2 support in --proxy-to-worker
 	mkdir build/package-worker/
 	cp -a python-emscripten/2.7.10/package/* build/package-worker/
 	cp -a build/package-pyapp-pygame-example/* build/package-worker/
-	emcc $(BUILD)/main-pygame_sdl2-static.bc \
+	emcc $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
@@ -261,7 +263,7 @@ pthreads:
 	    -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=2 -s PROXY_TO_PTHREAD=1 -s WASM=1 \
 	    \
 	    -L $(INSTALLDIR)/lib -O2 -s ASSERTIONS=1 \
-	    $(BUILD)/main.bc $(BUILD)/emscripten.bc \
+	    $(BUILD)/main.bc $(BUILD)/emscripten-static.bc \
 	    $(BUILD)/pygame_sdl2/emscripten-static/build-temp/gen/*.o $(BUILD)/pygame_sdl2/emscripten-static/build-temp/src/*.o \
 	    $(BUILD)/renpy/module/emscripten-static/build-temp/*.o $(BUILD)/renpy/module/emscripten-static/build-temp/gen/*.o \
 	    -s USE_SDL=2 -s USE_FREETYPE=1 \
@@ -328,7 +330,8 @@ testserver:
 	(cd build/t && python3 $(CURDIR)/testserver.py)
 
 cythonclean:
-	rm -rf pygame_sdl2/*-static/ renpy/module/*-static/ build/pygame_sdl2-static.built build/renpy.built
+	rm -rf pygame_sdl2/*-static/ pygame_sdl2/*-dynamic/ renpy/module/*-static/
+	rm -f build/pygame_sdl2-*.built build/renpy.built
 
 
 $(BUILD)/python.built:
@@ -337,7 +340,7 @@ $(BUILD)/python.built:
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
 	    cd python-emscripten; \
-	    fossil open ../python-emscripten.fossil 8487653348; \
+	    fossil open ../python-emscripten.fossil 85d91ca06f; \
 	fi
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
