@@ -93,6 +93,7 @@ RENPY_LDFLAGS = \
 	-s USE_FREETYPE=1 \
 	-lavformat -lavcodec -lavutil -lswresample -lswscale -lfribidi \
 	-lzip \
+	-lidbfs.js \
 	-s EXPORTED_FUNCTIONS='["_main", "_Py_Initialize", "_PyRun_SimpleString", "_pyapp_runmain", "_emSavegamesImport", "_emSavegamesExport"]' \
 	-s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' \
 	-s FULL_ES2=1 \

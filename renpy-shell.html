@@ -410,7 +410,8 @@
           FS.mkdir('/home/web_user/.renpy');
           FS.mount(IDBFS, {}, '/home/web_user/.renpy');
         } catch(e) {
-          Module.print("Could not create ~/.renpy/\n");
+          console.log(e);
+          Module.print("Could not create ~/.renpy/ : " + e.message + "\n");
         }
         FS.syncfs(true, function(err) {
           if (err) {
