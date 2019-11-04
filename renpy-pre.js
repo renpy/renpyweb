@@ -68,9 +68,10 @@ Module.instantiateWasm = function(imports, successCallback) {
     var wasm = httpRequest('GET', module_name+'.wasm.gz');
     wasm.then(
       function(xhr) {
-        compressed = xhr.response
+        compressed = xhr.response;
         var t = Date.now();
         var wasmBinary = Zee.decompress(new Uint8Array(compressed));
+        // note: if somehow xhr.response is already decompressed, Zee.decompress returns the buffer as-is
         console.log(module_name+'.wasm.gz decompressed in ' + ((Date.now() - t)/1000).toFixed(2) + ' secs');
         var wasmInstantiate = WebAssembly.instantiate(new Uint8Array(wasmBinary), imports).then(function(output) {
             successCallback(output.instance);
