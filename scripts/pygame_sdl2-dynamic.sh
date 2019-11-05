@@ -40,7 +40,7 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     ar q 8650/libSDL2_ttf.a
     ar q 8650/libSDL2_image.a
     CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2 -s USE_ZLIB=1" \
-      LDFLAGS="-L$(pwd)/8650" \
+      LDFLAGS="-L$INSTALLDIR/lib -L$(pwd)/8650" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' \
       $CROSSPYTHON \
       setup.py \
@@ -48,7 +48,7 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
           -b emscripten-dynamic/build-lib -t emscripten-dynamic/build-temp \
         build \
 	install -O2 --root $INSTALLDIR --prefix ''
-    $CROSSPYTHON setup.py install_headers -d $INSTALLDIR/include/
+    $CROSSPYTHON setup.py install_headers
 
     # https://github.com/emscripten-core/emscripten/wiki/Linking
     # https://github.com/emscripten-core/emscripten/wiki/WebAssembly-Standalone

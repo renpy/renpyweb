@@ -54,10 +54,10 @@ unset RENPY_STEAM_SDK
       RENPY_EMSCRIPTEN=1 RENPY_STATIC=1 \
       $HOSTPYTHON \
         setup.py \
-          build_ext --include-dirs $INSTALLDIR/include/python2.7 \
+          build_ext \
             -b emscripten-static/build-lib -t emscripten-static/build-temp \
           build \
-          install -O2 --prefix $INSTALLDIR
+          install -O2 --root $INSTALLDIR --prefix ''
 
     rm -f $INSTALLDIR/lib/python2.7/site-packages/_renpy*.so
     rm -f $INSTALLDIR/lib/python2.7/site-packages/renpy/*.so
