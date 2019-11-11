@@ -180,7 +180,7 @@ Module['onRuntimeInitialized'] = function() {
     xhr.onerror = function(event) {
         console.log(xhr);
         console.log(event);
-	Module.print("Cannot download game. Maybe the download was blocked, see the JavaScript console for more information.\n");
+	Module.print("Cannot download Story. Maybe the download was blocked, see the JavaScript console for more information.\n");
     }
     xhr.onload = function(event) {
         if (xhr.status == 200 || xhr.status == 304 || xhr.status == 206 || (xhr.status == 0 && xhr.response)) {
@@ -191,7 +191,7 @@ Module['onRuntimeInitialized'] = function() {
         } else {
             console.log(xhr);
             console.log(event);
-	    Module.print("Error while downloading " + xhr.responseURL
+	    Module.print("Error while downloading Story " + xhr.responseURL
                          + " : " + xhr.statusText + " (status code " + xhr.status + ")\n");
         }
     };
