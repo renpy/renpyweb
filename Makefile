@@ -233,6 +233,7 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static $(BUIL
 # renpyweb-static-asyncify
 ##
 asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpy versionmark
+	touch $(BUILD)/SDL2/README.txt  # https://github.com/emscripten-core/emscripten/issues/9342
 	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 \
 	emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
@@ -341,7 +342,7 @@ $(BUILD)/python.built:
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
 	    cd python-emscripten; \
-	    fossil open ../python-emscripten.fossil b536b452a4; \
+	    fossil open ../python-emscripten.fossil f139ce4ce9; \
 	fi
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
