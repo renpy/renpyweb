@@ -37,7 +37,8 @@ class Event(object):
 
 
 class Thread(object):
-    def __init__(self, *args, **kwargs): pass
+    def __init__(self, *args, **kwargs):
+        self.name = ''  # never 'MainThread'
 
     def start(self): pass
 
