@@ -299,8 +299,6 @@ native:
 check_emscripten:
 	which emcc
 	which emconfigure
-	# Init emscripten libs (binaryen) outside of emconfigure so it won't complain
-	tmpdir=$$(mktemp -d) && (cd $$tmpdir && echo 'int main(void){}' > tmp.c && emcc tmp.c) && rm -rf $$tmpdir
 
 versionmark:
 	git describe --tags --dirty > $(BUILD)/t/renpyweb-version.txt
