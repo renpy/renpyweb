@@ -120,11 +120,11 @@ RENPY_LDFLAGS = \
 # 1.39.0 still has several issues with dynamic linking, including linking -fPIC in static projects
 
 # Memory usage
-# TOTAL_MEMORY=64MB is not enough to run 'the_question' and 'tutorial'
+# INITIAL_MEMORY=64MB is not enough to run 'the_question' and 'tutorial'
 # (2019-10, with --no-heap-copy so without filesystem; minimal Python fits in ~6MB)
-# TOTAL_MEMORY=96MB works for 'the_question' and 'tutorial'; beware: memory growth is x2
-# TOTAL_MEMORY=128MB leaves a nice margin
-# TOTAL_MEMORY=512MB usually won't run at all on mobile platforms and/or picky browsers
+# INITIAL_MEMORY=96MB works for 'the_question' and 'tutorial'; beware: memory growth is x2
+# INITIAL_MEMORY=128MB leaves a nice margin
+# INITIAL_MEMORY=512MB usually won't run at all on mobile platforms and/or picky browsers
 # ALLOW_MEMORY_GROWTH=1 so we can run any game; documented as efficient with WASM
 
 
@@ -191,7 +191,7 @@ pygame-example-static: $(BUILD)/python.built common-pygame-example-static $(BUIL
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
-	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
+	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
 pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc
@@ -201,7 +201,7 @@ pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-stat
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
 	    $(ASYNCIFY_LDFLAGS) \
-	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
+	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
 #pygame-example-dynamic-asyncify: TODO
@@ -210,7 +210,7 @@ pygame-example-dynamic: $(BUILD)/python.built common-pygame-example-dynamic pack
 	    -s MAIN_MODULE=1 -s EXPORT_ALL=1 \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
-	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
+	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
 pygame-example-worker: $(BUILD)/python.built common-pygame-example-static $(BUILD)/emscripten-static.bc
@@ -224,7 +224,7 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static $(BUIL
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
 	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
-	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
+	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
             --preload-file build/package-worker@/ \
 	    -o $(BUILD)/t/index.html --proxy-to-worker
 
@@ -238,7 +238,7 @@ asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpy versionmark
 	emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    $(ASYNCIFY_LDFLAGS) \
-	    -s TOTAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
+	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    -o $(BUILD)/t/index.html
 	# fallback compression
 	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
@@ -273,7 +273,7 @@ pthreads:
 	    -lpython2.7 \
 	    -lavformat -lavcodec -lavutil -lswresample -lswscale -lfribidi \
 	    -s EMULATE_FUNCTION_POINTER_CASTS=1 \
-	    -s TOTAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
+	    -s INITIAL_MEMORY=256MB -s ALLOW_MEMORY_GROWTH=0 \
 	    -s FORCE_FILESYSTEM=1 \
 	    -s EXPORTED_FUNCTIONS="['_main', '_malloc', '_Py_Initialize', '_PyRun_SimpleString', '_pyapp_runmain']" \
 	    -s EXTRA_EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' \
