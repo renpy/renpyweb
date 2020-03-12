@@ -19,4 +19,5 @@ if [ ! -e renpy/lib ] ; then
     popd
 fi
 
+# TODO: this doesn't support progressive download, only the initial game.zip
 renpy/renpy.sh renpy/launcher distribute --package web --packagedest build/t/game ${1:-renpy/the_question}
