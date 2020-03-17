@@ -379,7 +379,7 @@ $(BUILD)/zlib.built: $(CACHEROOT)/zlib-1.2.11.tar.gz
 	$(SCRIPTSDIR)/zlib.sh
 	touch $(BUILD)/zlib.built
 
-$(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.5.2.tar.gz
+$(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.6.1.tar.gz
 	$(SCRIPTSDIR)/libzip.sh
 	touch $(BUILD)/libzip.built
 
@@ -422,5 +422,5 @@ $(CACHEROOT)/SDL2_mixer-2.0.1.tar.gz:
 $(CACHEROOT)/zlib-1.2.11.tar.gz:
 	wget http://prdownloads.sourceforge.net/libpng/zlib-1.2.11.tar.gz -P $(CACHEROOT)
 
-$(CACHEROOT)/libzip-1.5.2.tar.gz:
-	wget https://libzip.org/download/libzip-1.5.2.tar.gz -P $(CACHEROOT)
+$(CACHEROOT)/libzip-1.6.1.tar.gz:
+	wget https://libzip.org/download/libzip-1.6.1.tar.gz -P $(CACHEROOT)

@@ -31,8 +31,9 @@ MODE=opti
 CFLAGS=-O3
 
 cd $BUILD/
-tar xf $CACHEROOT/libzip-1.5.2.tar.gz
-cd libzip-1.5.2/
+tar xf $CACHEROOT/libzip-1.6.1.tar.gz
+cd libzip-1.6.1/
+patch -p1 < $PATCHESDIR/libzip-1.6.1.patch
 
 # This thing can't properly set its own LIBS (-lz), disable executables generation
 sed -i -e 's/ADD_SUBDIRECTORY(man)/#&/' CMakeLists.txt
@@ -46,6 +47,7 @@ CPPFLAGS="-I$INSTALLDIR/include" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS -L$INSTALLDI
   emcmake cmake \
     -D CMAKE_INSTALL_PREFIX=$INSTALLDIR \
     -D ENABLE_GNUTLS=false -D ENABLE_OPENSSL=false -D ENABLE_COMMONCRYPTO=false \
+    -D ENABLE_BZIP2=false -D ENABLE_LZMA=false \
     -D BUILD_SHARED_LIBS=false \
     -D ZLIB_LIBRARY=$INSTALLDIR/lib -D ZLIB_INCLUDE_DIR=$INSTALLDIR/include \
     ..
