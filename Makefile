@@ -147,7 +147,7 @@ $(BUILD)/main-renpyweb-static.bc: main.c
 $(BUILD)/importexport.bc: importexport.c $(BUILD)/libzip.built
 	emcc -c $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
 
-common: check_emscripten dirs $(BUILD)/SDL2.built
+common: check_emscripten dirs
 common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built $(BUILD)/emscripten-static.bc package-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
 common-pygame-example-dynamic: common $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/emscripten-dynamic.bc package-pygame-example-dynamic $(BUILD)/main-pygame_sdl2-dynamic.bc
 
@@ -195,7 +195,6 @@ pygame-example-static: $(BUILD)/python.built common-pygame-example-static $(BUIL
 	    --shell-file pygame-example-shell.html \
 	    -o $(BUILD)/t/index.html
 pygame-example-static-asyncify: $(BUILD)/python.built common-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc
-	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 \
 	emcc $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
 	    $(COMMON_LDFLAGS) \
@@ -233,8 +232,6 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static $(BUIL
 # renpyweb-static-asyncify
 ##
 asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpy versionmark
-	touch $(BUILD)/SDL2/README.txt  # https://github.com/emscripten-core/emscripten/issues/9342
-	EMCC_LOCAL_PORTS=sdl2=$(BUILD)/SDL2 \
 	emcc $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    $(ASYNCIFY_LDFLAGS) \
@@ -362,11 +359,11 @@ $(BUILD)/ffmpeg.built: $(CACHEROOT)/ffmpeg-3.0.tar.bz2
 	$(SCRIPTSDIR)/ffmpeg-audioonly.sh
 	touch $(BUILD)/ffmpeg.built
 
-$(BUILD)/pygame_sdl2-static.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng.built $(BUILD)/SDL2_image.built $(BUILD)/SDL2_mixer.built
+$(BUILD)/pygame_sdl2-static.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng.built $(BUILD)/SDL2_image.built
 	$(SCRIPTSDIR)/pygame_sdl2-static.sh
 	touch $(BUILD)/pygame_sdl2-static.built
 
-$(BUILD)/pygame_sdl2-dynamic.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng.built $(BUILD)/SDL2_image.built $(BUILD)/SDL2_mixer.built
+$(BUILD)/pygame_sdl2-dynamic.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng.built $(BUILD)/SDL2_image.built
 	$(SCRIPTSDIR)/pygame_sdl2-dynamic.sh
 	touch $(BUILD)/pygame_sdl2-dynamic.built
 
@@ -394,24 +391,11 @@ $(BUILD)/zee.js.built:
 		make -j$(nproc)
 	touch $(BUILD)/zee.js.built
 
-$(BUILD)/SDL2.built:
-	-git clone --depth 1 --branch version_18 https://github.com/emscripten-ports/SDL2 $(BUILD)/SDL2
-	cd $(BUILD)/SDL2 && \
-		patch -p1 < $(PATCHESDIR)/SDL2-pseudosync.patch && \
-		patch -p1 < $(PATCHESDIR)/SDL2-beforeunload.patch
-	touch $(BUILD)/SDL2.built
-
 # Note: do not mix USE_SDL_IMAGE=2 (2.0.0 and -lSDL2_image (2.0.2)
 # I got weird errors with dynamic linking, possibly they are not 100% compatible
 $(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.0.2.tar.gz
 	$(SCRIPTSDIR)/SDL2_image.sh
 	touch $(BUILD)/SDL2_image.built
-
-# Note: SDL2_mixer needed for pygame_sdl2's headers / initial compilation;
-# there's a new USE_SDL_MIXER=2 but its .h is not installed properly
-$(BUILD)/SDL2_mixer.built: $(CACHEROOT)/SDL2_mixer-2.0.1.tar.gz
-	$(SCRIPTSDIR)/SDL2_mixer.sh
-	touch $(BUILD)/SDL2_mixer.built
 
 $(CACHEROOT)/libjpeg-turbo-1.4.0.tar.gz:
 	wget https://sourceforge.net/projects/libjpeg-turbo/files/1.4.0/libjpeg-turbo-1.4.0.tar.gz -P $(CACHEROOT)

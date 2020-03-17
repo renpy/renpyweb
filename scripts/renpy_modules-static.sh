@@ -45,12 +45,9 @@ unset RENPY_STEAM_SDK
 (
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
-    # work-around USE_* - https://github.com/emscripten-core/emscripten/issues/8650
-    mkdir -p 8650
-    ar q 8650/libSDL2.a; ar q 8650/libSDL2_ttf.a; ar q 8650/libfreetype.a
     CC=emcc LDSHARED=emcc \
       CFLAGS="-I$INSTALLDIR/include -s USE_SDL=2 -s USE_FREETYPE=1" \
-      LDFLAGS="-L$INSTALLDIR/lib -L$(pwd)/8650" \
+      LDFLAGS="-L$INSTALLDIR/lib" \
       RENPY_EMSCRIPTEN=1 RENPY_STATIC=1 \
       $HOSTPYTHON \
         setup.py \

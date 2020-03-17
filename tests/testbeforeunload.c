@@ -116,5 +116,5 @@ EMCC_LOCAL_PORTS="sdl2emterpreter=$(pwd)/SDL2" emcc -DASYNC ../testbeforeunload.
 
 EMCC_LOCAL_PORTS="sdl2emterpreter=$(pwd)/SDL2" emcc -DASYNC ../testbeforeunload.c -o index.html -s USE_SDL=2 -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 -s EMTERPRETIFY_FILE=index.em -s EMTERPRETIFY_WHITELIST='["_main","_SDL_RenderPresent","_GLES2_RenderPresent","_SDL_GL_SwapWindow","_Emscripten_GLES_SwapWindow","_SDL_WaitEvent", "_SDL_WaitEventTimeout", "_SDL_Delay", "_one_iter"]'
 
-EMCC_LOCAL_PORTS="sdl2=$(pwd)/SDL2" emcc ../testbeforeunload.c -o index.html -s USE_SDL=2
+emcc ../testbeforeunload.c -o index.html -s USE_SDL=2
 */

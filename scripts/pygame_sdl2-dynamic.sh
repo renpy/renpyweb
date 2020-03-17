@@ -35,12 +35,8 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     cd $PYGAME_SDL2_ROOT/
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
-    # work-around USE_* - https://github.com/emscripten-core/emscripten/issues/8650
-    mkdir -p 8650
-    ar q 8650/libSDL2_ttf.a
-    ar q 8650/libSDL2_image.a
-    CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_TTF=2 -s USE_ZLIB=1" \
-      LDFLAGS="-L$INSTALLDIR/lib -L$(pwd)/8650" \
+    CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -s" \
+      LDFLAGS="-L$INSTALLDIR/lib" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' \
       $CROSSPYTHON \
       setup.py \
