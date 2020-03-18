@@ -115,9 +115,6 @@ emconfigure ../configure --prefix=$INSTALLDIR \
 # --enable-cross-compile: requests specifying target and host OS,
 #   let's rely on emconfigure instead
 
-# Fix missing prototype; alternatively disable --std=c99 which seems strict about this
-echo "extern int arc4random(void);" >> config.h
-
 emmake make -j$(nproc) V=1 || true
 cp -p /bin/true doc/print_options
 touch doc/print_options

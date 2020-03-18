@@ -1,3 +1,29 @@
+diff --git a/src/deps_info.json b/src/deps_info.json
+index b857d221c..d4456c571 100644
+--- a/src/deps_info.json
++++ b/src/deps_info.json
+@@ -1,5 +1,4 @@
+ {
+-  "arc4random": ["rand"],
+   "freopen": ["free"],
+   "munmap": ["emscripten_builtin_free", "free"],
+   "getenv": ["malloc", "free", "_get_environ"],
+diff --git a/src/library.js b/src/library.js
+index 0527eb6e7..90d803c18 100644
+--- a/src/library.js
++++ b/src/library.js
+@@ -930,10 +930,7 @@ LibraryManager.library = {
+     return limit;
+   },
+ 
+-  // For compatibility, call to rand() when code requests arc4random(), although this is *not* at all
+-  // as strong as rc4 is. See https://man.openbsd.org/arc4random
+-  arc4random__sig: 'i',
+-  arc4random: 'rand',
++  // https://github.com/emscripten-core/emscripten/pull/10711
+ 
+   // ==========================================================================
+   // string.h
 diff --git a/tools/ports/sdl2.py b/tools/ports/sdl2.py
 index 1db6d3a08..7b9d6de26 100644
 --- a/tools/ports/sdl2.py

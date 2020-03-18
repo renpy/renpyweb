@@ -33,7 +33,6 @@ CFLAGS=-O3
 cd $BUILD/
 tar xf $CACHEROOT/libzip-1.6.1.tar.gz
 cd libzip-1.6.1/
-patch -p1 < $PATCHESDIR/libzip-1.6.1.patch
 
 # This thing can't properly set its own LIBS (-lz), disable executables generation
 sed -i -e 's/ADD_SUBDIRECTORY(man)/#&/' CMakeLists.txt
