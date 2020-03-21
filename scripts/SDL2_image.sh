@@ -64,7 +64,7 @@ fi
         --disable-bmp --disable-xpm --disable-gif --disable-lbm --disable-pcx \
         --disable-svg --disable-tga --disable-xcf  \
       PKG_CONFIG_LIBDIR=$INSTALLDIR/lib/pkgconfig:$(emconfigure env|grep ^PKG_CONFIG_LIBDIR|sed 's/^PKG_CONFIG_LIBDIR=//') \
-      CPPFLAGS="-I$INSTALLDIR/include" LDFLAGS="-L$INSTALLDIR/lib" CFLAGS="$CFLAGS"
+      CPPFLAGS="-I$INSTALLDIR/include" LDFLAGS="-s USE_SDL=2 -L$INSTALLDIR/lib" CFLAGS="$CFLAGS"
 
     emmake make -j$(nproc)
     emmake make install

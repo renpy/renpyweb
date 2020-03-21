@@ -16,8 +16,8 @@ This is the build environment for RenPyWeb.
 
       git clone https://github.com/emscripten-core/emsdk/
       pushd emsdk/
-      ./emsdk install 1.39.10
-      ./emsdk activate --embedded 1.39.10
+      ./emsdk install 1.39.11
+      ./emsdk activate --embedded 1.39.11
       popd
       source emsdk/emsdk_env.sh
 
@@ -25,10 +25,11 @@ This is the build environment for RenPyWeb.
 
       rm -rf build/ install/ python-emscripten/2.7.10/build/
       make cythonclean
+      emcc --clear-ports
 
 - Emscripten: apply pending fixes:
 
-      cd emsdk/upstream/emscripten/ && patch -p1 < ../../../patches/emscripten.patch
+      (cd emsdk/upstream/emscripten/ && patch -p1 < ../../../patches/emscripten.patch)
 
 - Compile:
   `make`
