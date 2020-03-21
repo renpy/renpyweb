@@ -416,9 +416,6 @@ $(CACHEROOT)/ffmpeg-3.0.tar.bz2:
 $(CACHEROOT)/SDL2_image-2.0.2.tar.gz:
 	wget https://libsdl.org/projects/SDL_image/release/SDL2_image-2.0.2.tar.gz -P $(CACHEROOT)
 
-$(CACHEROOT)/SDL2_mixer-2.0.1.tar.gz:
-	wget https://libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.1.tar.gz -P $(CACHEROOT)
-
 $(CACHEROOT)/zlib-1.2.11.tar.gz:
 	wget http://prdownloads.sourceforge.net/libpng/zlib-1.2.11.tar.gz -P $(CACHEROOT)
 
