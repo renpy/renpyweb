@@ -21,15 +21,15 @@ This is the build environment for RenPyWeb.
       popd
       source emsdk/emsdk_env.sh
 
+- Emscripten: apply pending fixes:
+
+      (cd emsdk/upstream/emscripten/ && patch -p1 < ../../../patches/emscripten.patch)
+
 - Emscripten: you need to recompile everything on upgrade:
 
       rm -rf build/ install/ python-emscripten/2.7.10/build/
       make cythonclean
       emcc --clear-ports
-
-- Emscripten: apply pending fixes:
-
-      (cd emsdk/upstream/emscripten/ && patch -p1 < ../../../patches/emscripten.patch)
 
 - Compile:
   `make`
