@@ -30,6 +30,7 @@ function httpRequest(method, url) {
         // Tell browser not to corrupt the cache on HEAD + max-age=0...
         if (method == 'HEAD') wasmXHR.setRequestHeader("Cache-Control", "no-store");
         wasmXHR.responseType = 'arraybuffer';
+        wasmXHR.errorURL = url;
         wasmXHR.onload = function() {
 	    if (wasmXHR.status == 200 || wasmXHR.status == 304 || wasmXHR.status == 206 || (wasmXHR.status == 0 && wasmXHR.response)) {
 		resolve(wasmXHR);
@@ -80,8 +81,12 @@ Module.instantiateWasm = function(imports, successCallback) {
         });
       },
       function(xhr) {
-        Module.setStatus("Error while downloading " + xhr.responseURL
-                     + " : " + xhr.statusText + " (status code " + xhr.status + ")");
+        console.log(xhr);
+        if (location.href.startsWith('file://'))
+          Module.setStatus("Error: your browser requires the game to be run from a local HTTP server (i.e. double-clicking on index.html won't work).");
+        else
+          Module.setStatus("Error while downloading " + (xhr.responseURL || xhr.errorURL)
+            + " : " + xhr.statusText + " (status code " + xhr.status + ")");
       }
     );
     return {}; // Compiling asynchronously, no exports.
