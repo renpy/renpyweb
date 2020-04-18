@@ -1,22 +1,8 @@
-diff --git a/tools/acorn-optimizer.js b/tools/acorn-optimizer.js
-index 7cdd1b59e..dc4249542 100644
---- a/tools/acorn-optimizer.js
-+++ b/tools/acorn-optimizer.js
-@@ -685,7 +685,8 @@ function emitDCEGraph(ast) {
-               value = assign.right;
-             }
-           }
--          if (target.type === 'Identifier' && target.name === 'asm' && value) {
-+          // https://github.com/emscripten-core/emscripten/issues/10745
-+          if (target && target.type === 'Identifier' && target.name === 'asm' && value) {
-             if (value.type === 'MemberExpression' &&
-                 value.object.type === 'MemberExpression' &&
-                 value.object.object.type === 'Identifier' &&
 diff --git a/tools/system_libs.py b/tools/system_libs.py
 index 11fe8646f..02a772513 100755
 --- a/tools/system_libs.py
 +++ b/tools/system_libs.py
-@@ -53,7 +53,8 @@ def dir_is_newer(dir_a, dir_b):
+@@ -63,7 +63,8 @@ def dir_is_newer(dir_a, dir_b):
    assert os.path.exists(dir_b)
    newest_a = max([os.path.getmtime(x) for x in get_all_files_under(dir_a)])
    newest_b = max([os.path.getmtime(x) for x in get_all_files_under(dir_b)])
@@ -26,3 +12,17 @@ index 11fe8646f..02a772513 100755
  
  
  def get_cflags(force_object_files=False):
+diff --git a/emcc.py b/emcc.py
+index a5f8dcecc26..ca4101cb034 100755
+--- a/emcc.py
++++ b/emcc.py
+@@ -745,7 +745,8 @@ def is_minus_s_for_emcc(args, i):
+ 
+     # if CONFIGURE_CC is defined, use that. let's you use local gcc etc. if you need that
+     compiler = os.environ.get('CONFIGURE_CC') or shared.EMXX
+-    if run_via_emxx:
++    # https://github.com/emscripten-core/emscripten/pull/10951
++    if not run_via_emxx:
+       compiler = shared.to_cc(compiler)
+ 
+     def filter_emscripten_options(argv):
