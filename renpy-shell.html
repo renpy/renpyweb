@@ -257,6 +257,8 @@
           presplash = FS.readFile('/web-presplash.png');
         } else if (FS.readdir('/').indexOf('web-presplash.jpg') >= 0) {
           presplash = FS.readFile('/web-presplash.jpg');
+        } else if (FS.readdir('/').indexOf('web-presplash.webp') >= 0) {
+          presplash = FS.readFile('/web-presplash.webp');
         } else if (FS.readdir('/').indexOf('web-presplash-default.jpg') >= 0) {
           presplash = FS.readFile('/web-presplash-default.jpg');
         }
