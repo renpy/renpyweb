@@ -182,6 +182,31 @@ package-renpy:
 	  wave.py sunau.py chunk.py
 	$(CURDIR)/scripts/package-pyapp-renpy.sh
 
+package-renpy-python3:
+	# repr.py: for Developer mode > Variable viewer
+	# encodings/raw_unicode_escape.py base64.py: for Ren'Py's tutorial
+	# encodings/utf-32-be.py: .rpy from Ren'Py 6.x
+	# struct.py ... enum.py: common Ren'Py/Python deps
+	# webbrowser.py + shlex.py dep: click on URLs within Ren'Py
+	# socket.py: websockets + urllib dependency
+	# urllib.py: urllib.urlencode useful for encoding POST data
+	# wave.py sunau.py chunk.py: for AudioData()
+	PREFIX=$(INSTALLDIR) \
+	  OUTDIR=$(BUILD)/t \
+	  python-emscripten/3.8/package-pythonhome.sh \
+	  repr.py \
+	  encodings/raw_unicode_escape.py base64.py \
+	  encodings/utf_32_be.py \
+          struct.py operator.py datetime.py random.py functools.py types.py \
+          collections/__init__.py collections/abc.py \
+          pickle.py copyreg.py _compat_pickle.py keyword.py heapq.py reprlib.py \
+          re.py sre_compile.py sre_parse.py sre_constants.py enum.py \
+	  webbrowser.py shlex.py \
+	  socket.py \
+	  urllib.py \
+	  wave.py sunau.py chunk.py
+	$(CURDIR)/scripts/package-pyapp-renpy.sh
+
 
 ##
 # pygame-example for faster configuration experiments
