@@ -55,7 +55,7 @@ def main():
 
     if sys.platform == 'emscripten':
         import emscripten
-        print "calling set_main_loop"
+        print("calling set_main_loop")
         emscripten.set_main_loop(one_iter, 0, True)
     else:
         ret = True
@@ -82,7 +82,7 @@ def one_iter():
 
         while ev != pygame.event.NOEVENT_EVENT:
     
-            print "event type:", ev.type
+            print("event type:", ev.type)
             # Pygame quit.
             if ev.type == pygame.QUIT:
                 return False
@@ -92,7 +92,7 @@ def one_iter():
                 return False
     
             elif ev.type == pygame.MOUSEBUTTONDOWN:
-                print "MOUSEBUTTONDOWN"
+                print("MOUSEBUTTONDOWN")
                 x, y  = ev.pos
     
             elif ev.type == pygame.APP_WILLENTERBACKGROUND:

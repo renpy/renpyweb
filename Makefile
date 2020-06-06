@@ -1,6 +1,6 @@
 # RenPyWeb - build system entry point
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -187,6 +187,8 @@ package-renpy-python3:
 	# encodings/raw_unicode_escape.py base64.py: for Ren'Py's tutorial
 	# encodings/utf-32-be.py: .rpy from Ren'Py 6.x
 	# struct.py ... enum.py: common Ren'Py/Python deps
+	# __future__.py .. fnmatch.py: pygame_sdl2
+	# importlib/* json/*: static submodules work-around
 	# webbrowser.py + shlex.py dep: click on URLs within Ren'Py
 	# socket.py: websockets + urllib dependency
 	# urllib.py: urllib.urlencode useful for encoding POST data
@@ -194,13 +196,15 @@ package-renpy-python3:
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
 	  python-emscripten/3.8/package-pythonhome.sh \
-	  repr.py \
 	  encodings/raw_unicode_escape.py base64.py \
 	  encodings/utf_32_be.py \
           struct.py operator.py datetime.py random.py functools.py types.py \
           collections/__init__.py collections/abc.py \
           pickle.py copyreg.py _compat_pickle.py keyword.py heapq.py reprlib.py \
           re.py sre_compile.py sre_parse.py sre_constants.py enum.py \
+	  __future__.py importlib/__init__.py warnings.py glob.py fnmatch.py \
+	  importlib/abc.py importlib/machinery.py json/__init__.py \
+	  json/decoder.py json/scanner.py json/encoder.py \
 	  webbrowser.py shlex.py \
 	  socket.py \
 	  urllib.py \
@@ -251,6 +255,49 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static $(BUIL
 	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
             --preload-file build/package-worker@/ \
 	    -o $(BUILD)/t/index.html --proxy-to-worker
+
+PYGAME_SDL2_PY3_STATIC_OBJS=pygame_sdl2/emscripten-py3-static/build-temp/gen3-static/*.o pygame_sdl2/emscripten-py3-static/build-temp/src/*.o
+COMMON_LDFLAGS_PY3 = \
+	-L $(INSTALLDIR)/lib $(LDFLAGS) \
+	-s EMULATE_FUNCTION_POINTER_CASTS=1 \
+	-s FORCE_FILESYSTEM=1 -s LZ4=1 -s RETAIN_COMPILER_SETTINGS=1 \
+	-s MINIFY_HTML=0 \
+	-s ENVIRONMENT=web \
+	-lpython3.8 \
+	-s USE_SDL=2 \
+	-lSDL2_image -ljpeg -lpng -lwebp -lz
+$(BUILD)/emscripten-py3.c: $(BUILD)/python3.built python-emscripten/emscripten.pyx
+	cython -3 python-emscripten/emscripten.pyx -o $(BUILD)/emscripten-py3.c
+$(BUILD)/emscripten-py3-static.bc: $(BUILD)/python3.built $(BUILD)/emscripten-py3.c
+	emcc -c $(CFLAGS) $(BUILD)/emscripten.c -o $(BUILD)/emscripten-py3-static.bc -I install/include/python3.8
+$(BUILD)/main-pygame_sdl2-py3-static.bc: main.c
+	emcc -c $(CFLAGS) -DSTATIC=1 main.c -o $(BUILD)/main-pygame_sdl2-py3-static.bc -s USE_SDL=2 -I install/include/python3.8
+package-python3-minimal:
+	PREFIX=$(INSTALLDIR) \
+	  OUTDIR=$(BUILD)/t \
+	  python-emscripten/3.8/package-pythonhome.sh \
+	  encodings/raw_unicode_escape.py base64.py \
+	  encodings/utf_32_be.py \
+          struct.py operator.py datetime.py random.py functools.py types.py \
+          collections/__init__.py collections/abc.py \
+          pickle.py copyreg.py _compat_pickle.py keyword.py heapq.py reprlib.py \
+          re.py sre_compile.py sre_parse.py sre_constants.py enum.py \
+	  __future__.py importlib/__init__.py warnings.py glob.py fnmatch.py \
+	  importlib/abc.py importlib/machinery.py json/__init__.py \
+	  json/decoder.py json/scanner.py json/encoder.py \
+
+common-pygame-example-py3-static: common $(BUILD)/pygame_sdl2-py3-static.built $(BUILD)/emscripten-py3-static.bc package-pygame-example-py3-static $(BUILD)/main-pygame_sdl2-py3-static.bc
+package-pygame-example-py3-static: package-python3-minimal
+	$(CURDIR)/scripts/package-pyapp-pygame-example-py3-static.sh
+pygame-example-py3-static: $(BUILD)/python3.built common-pygame-example-py3-static $(BUILD)/main-pygame_sdl2-py3-static.bc $(BUILD)/emscripten-py3-static.bc
+	emcc $(BUILD)/main-pygame_sdl2-py3-static.bc $(BUILD)/emscripten-py3-static.bc \
+	    $(PYGAME_SDL2_PY3_STATIC_OBJS) \
+	    $(COMMON_LDFLAGS_PY3) \
+	    $(COMMON_PYGAME_EXAMPLE_LDFLAGS) \
+	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
+	    --shell-file pygame-example-shell.html \
+	    -o $(BUILD)/t/index.html
+
 
 
 ##
@@ -360,17 +407,19 @@ python-emscripten:
 	fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	mkdir python-emscripten; \
 	cd python-emscripten; \
-	fossil open ../python-emscripten.fossil 65dc11f4b9
+	fossil open ../python-emscripten.fossil 1a1988d51c
 
-$(BUILD)/python.built: python-emscripten
+$(BUILD)/python.built:
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
+	$(MAKE) python-emscripten  # id. wrt directory timestamp
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
 	  $(CURDIR)/python-emscripten/2.7.10/python.sh
 	touch $(BUILD)/python.built
 
-$(BUILD)/python3.built: python-emscripten
+$(BUILD)/python3.built:
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
+	$(MAKE) python-emscripten  # id. wrt directory timestamp
 	if [ ! -d python-emscripten ]; then \
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	    mkdir python-emscripten; \
@@ -400,6 +449,10 @@ $(BUILD)/ffmpeg.built: $(CACHEROOT)/ffmpeg-3.0.tar.bz2
 $(BUILD)/pygame_sdl2-static.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng.built $(BUILD)/SDL2_image.built
 	$(SCRIPTSDIR)/pygame_sdl2-static.sh
 	touch $(BUILD)/pygame_sdl2-static.built
+
+$(BUILD)/pygame_sdl2-py3-static.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng.built $(BUILD)/SDL2_image.built
+	$(SCRIPTSDIR)/pygame_sdl2-py3-static.sh
+	touch $(BUILD)/pygame_sdl2-py3-static.built
 
 $(BUILD)/pygame_sdl2-dynamic.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng.built $(BUILD)/SDL2_image.built
 	$(SCRIPTSDIR)/pygame_sdl2-dynamic.sh
