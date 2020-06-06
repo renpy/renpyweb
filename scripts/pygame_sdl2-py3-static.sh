@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile pygame_sdl2 for Emscripten, as static modules
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -25,14 +25,12 @@
 # Compile statically for performance and to avoid Emscripten
 # limitations with dynamic linking
 
-# Cf. https://mdqinc.com/blog/2011/08/statically-linking-python-with-cython-generated-modules-and-packages/
-
 ROOT=$(dirname $(readlink -f $0))/..
 CACHEROOT=$(dirname $(readlink -f $0))/../cache
 BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
-CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/crosspython-static/bin/python
+CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/3.8/crosspython-static/bin/python3
 
 PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 (
@@ -45,10 +43,10 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
       $CROSSPYTHON \
       setup.py \
         build_ext \
-          -b emscripten-static/build-lib -t emscripten-static/build-temp \
+          -b emscripten-py3-static/build-lib -t emscripten-py3-static/build-temp \
         build \
 	install -O2 --root $INSTALLDIR --prefix ''
     $CROSSPYTHON setup.py install_headers
 
-    rm -f $INSTALLDIR/lib/python2.7/site-packages/pygame_sdl2/*.so
+    rm -f $INSTALLDIR/lib/python3.8/site-packages/pygame_sdl2/*.so
 )

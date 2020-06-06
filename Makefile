@@ -356,7 +356,20 @@ cythonclean:
 	rm -f build/pygame_sdl2-*.built build/renpy.built
 
 
-$(BUILD)/python.built:
+python-emscripten:
+	fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
+	mkdir python-emscripten; \
+	cd python-emscripten; \
+	fossil open ../python-emscripten.fossil 65dc11f4b9
+
+$(BUILD)/python.built: python-emscripten
+	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
+	DESTDIR=$(INSTALLDIR) \
+	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
+	  $(CURDIR)/python-emscripten/2.7.10/python.sh
+	touch $(BUILD)/python.built
+
+$(BUILD)/python3.built: python-emscripten
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
 	if [ ! -d python-emscripten ]; then \
 	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
@@ -365,9 +378,9 @@ $(BUILD)/python.built:
 	    fossil open ../python-emscripten.fossil 65dc11f4b9; \
 	fi
 	DESTDIR=$(INSTALLDIR) \
-	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
-	  $(CURDIR)/python-emscripten/2.7.10/python.sh
-	touch $(BUILD)/python.built
+	  SETUPLOCAL=$(CURDIR)/Python3-Modules-Setup.local \
+	  $(CURDIR)/python-emscripten/3.8/python.sh
+	touch $(BUILD)/python3.built
 
 $(BUILD)/renpy.built: $(BUILD)/pygame_sdl2-static.built $(BUILD)/fribidi.built $(BUILD)/ffmpeg.built
 	$(SCRIPTSDIR)/renpy_modules-static.sh

@@ -7,7 +7,6 @@ math mathmodule.c _math.c
 
 # Ren'Py deps:
 _pickle _pickle.c
-
 _random _randommodule.c
 _datetime _datetimemodule.c
 zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
