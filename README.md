@@ -6,11 +6,14 @@ This is the build environment for RenPyWeb.
 
 ## How to build
 
+- Install general dependencies: python3, make, git, fossil, quilt
+
 - Install Ren'Py to `renpy/` and pygame\_sdl2 to `pygame_sdl2/`.  To
   build a game.zip, it's also necessary to either build Ren'Py for the
   host computer, or copy a lib directory from a similar Ren'Py version
   to `renpy/lib/`. This can be done for you with
-  `scripts/checkout_renpy.sh`.
+  `scripts/checkout_renpy.sh`.  Note: as of 2020-06, Ren'Py master is
+  unstable, use https://github.com/Beuc/renpy/tree/red-7.3.5
 
 - Emscripten: download prebuilt binaries (or [build from source](https://emscripten.org/docs/building_from_source/))
 
