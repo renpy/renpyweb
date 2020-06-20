@@ -1,8 +1,8 @@
-#ifdef __EMSCRIPTEN__
 /**
  * Test case for duplicate click events on touch devices
  * https://github.com/emscripten-ports/SDL2/pull/64
  */
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 #include "SDL.h"

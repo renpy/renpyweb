@@ -1,6 +1,3 @@
-/**
- * Simple sine wave audio test
- */
 #include <SDL2/SDL.h>
 #include <math.h>
 #include <stdio.h>
