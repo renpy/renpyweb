@@ -159,6 +159,7 @@
 
       // Work-around chromium autoplay policy
       // https://github.com/emscripten-core/emscripten/issues/6511
+      // https://github.com/emscripten-ports/SDL2/pull/104
       function resumeAudio(e) {
           if (typeof Module === 'undefined'
               || typeof Module.SDL2 == 'undefined'

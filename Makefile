@@ -407,7 +407,7 @@ python-emscripten:
 	fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	mkdir python-emscripten; \
 	cd python-emscripten; \
-	fossil open ../python-emscripten.fossil 1a1988d51c
+	fossil open ../python-emscripten.fossil 59f1b3b50e
 
 $(BUILD)/python.built:
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time

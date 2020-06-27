@@ -43,5 +43,5 @@ cd cross-emscripten-$MODE/
 sed -i -e 's/-fPIC//' ../configure
 
 emconfigure env CFLAGS="$CFLAGS" ../configure --prefix $INSTALLDIR
-emmake make -j$(nproc)
+emmake make -j$(nproc) static
 emmake make install

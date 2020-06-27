@@ -12,17 +12,3 @@ index 11fe8646f..02a772513 100755
  
  
  def get_cflags(force_object_files=False):
-diff --git a/emcc.py b/emcc.py
-index a5f8dcecc26..ca4101cb034 100755
---- a/emcc.py
-+++ b/emcc.py
-@@ -745,7 +745,8 @@ def is_minus_s_for_emcc(args, i):
- 
-     # if CONFIGURE_CC is defined, use that. let's you use local gcc etc. if you need that
-     compiler = os.environ.get('CONFIGURE_CC') or shared.EMXX
--    if run_via_emxx:
-+    # https://github.com/emscripten-core/emscripten/pull/10951
-+    if not run_via_emxx:
-       compiler = shared.to_cc(compiler)
- 
-     def filter_emscripten_options(argv):
