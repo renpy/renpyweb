@@ -42,6 +42,10 @@ void loop(void) {
       break;
     case SDL_KEYDOWN:
       SDL_Log("KEYDOWN: %s (%d)\n", SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.sym);
+      break;
+    case SDL_KEYUP:
+      SDL_Log("KEYUP: %s (%d)\n", SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.sym);
+      break;
     }
   }
   if (SDL_HasScreenKeyboardSupport()) {
@@ -85,6 +89,13 @@ int main(int argc, char *argv[]) {
   
   return 0;
 }
+
+/*
+  Synthetize from JS:
+  document.getElementById('canvas').dispatchEvent(new KeyboardEvent('keydown',  { target:document.body, key:'f',code:'KeyF',keyCode:70, view:window, bubbles:true, cancelable:true }));
+  document.getElementById('canvas').dispatchEvent(new KeyboardEvent('keypress', { target:document.body, key:'f',code:'KeyF',keyCode:70, view:window, bubbles:true, cancelable:true }));
+  document.getElementById('canvas').dispatchEvent(new KeyboardEvent('keyup',    { target:document.body, key:'f',code:'KeyF',keyCode:70, view:window, bubbles:true, cancelable:true }));
+*/
 
 /**
  * Local Variables:

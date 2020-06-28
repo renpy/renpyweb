@@ -1,0 +1,125 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <button onclick="javascript:keyboard_show()">show proxy</button>
+- <button onclick="javascript:keyboard_hide()">hide proxy</button>
+- <button onclick="javascript:StartTextInput()">StartTextInput</button>
+- <button onclick="javascript:StartTextInput_delayed()">trigger StartTextInput in 2s</button>
+- <button onclick="javascript:StopTextInput_delayed()">trigger StopTextInput in 2s</button>
+
+<br />
+
+<input type="text" id="textinput" style="position: absolute; top: -100px;"
+ autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"> <!-- not handled by Firefox mobile AFAICS -->
+</input>
+
+<textarea id="log" readonly="readonly" style="width: 100%;" rows=10>
+</textarea>
+
+<textarea id="maincanvas" style="width: 100%;" rows=10>
+mainapp
+</textarea>
+
+<script>
+//document.getElementById('textinput').hidden = true;
+document.getElementById('textinput').addEventListener("input", onInput);
+
+// Forward events to SDL2 canvas so KEYDOWN/KEYUP events are generated
+// TODO: all keycodes except Enter/13 are reset to 229
+//       in particular Backspace can't be forwarded to the SDL app
+//       https://bugs.chromium.org/p/chromium/issues/detail?id=118639
+document.getElementById('textinput').addEventListener("keydown", forward);
+document.getElementById('textinput').addEventListener("keyup", forward);
+document.getElementById('textinput').addEventListener("keypress", forward);
+// debug:
+document.getElementById('maincanvas').addEventListener("keydown", mainKeydown);
+document.getElementById('maincanvas').addEventListener("keyup", mainKeyup);
+document.getElementById('maincanvas').addEventListener("keypress", mainKeypress);
+
+function forward(e) {
+    maincanvas = document.getElementById('maincanvas');
+    maincanvas.dispatchEvent(new KeyboardEvent(e.type, e));
+}
+
+function onInput(e) {
+    console.log(e);
+    log = document.getElementById('log');
+    log.value += 'JS: ' + e.inputType + ": " + e.data + "\n";
+    log.scrollTop = log.scrollHeight;
+
+    // safety
+    e.preventDefault();
+    e.stopPropagation();
+
+    // limit text size? may break composition; dup events in Firefox but prevents word suggestions
+    //e.target.value = '';
+
+    // that's what we want, but Chromium-only?
+    if (e.inputType == 'insertText') {
+	log.value += 'SDL_TEXTINPUT: ' + e.data + "\n";	
+    }
+
+    // tested with word suggestions
+    if (e.inputType == 'insertCompositionText') {
+	log.value += 'SDL_TEXTEDITING: ' + e.data + "\n";	
+	// Note: doesn't trigger a TEXTINPUT when word is selected
+    }
+
+    // untested
+    if (e.inputType == 'insertFromComposition') {
+	log.value += 'SDL_TEXTINPUT: ' + e.data + "\n";	
+    }
+
+    // Backspace
+    if (e.inputType == 'deleteContentBackward') {
+	// possibly handle Backspace specially
+	// not triggered if there's no text to remove..
+    }
+}
+
+
+function keyboard_show() {
+    document.getElementById('textinput').style.top = 100;
+}
+function keyboard_hide() {
+    document.getElementById('textinput').style.opacity = -100;
+}
+function StartTextInput() {
+    textinput = document.getElementById('textinput');
+    textinput.focus();
+}
+function StartTextInput_delayed() {
+    setTimeout(StartTextInput, 2000);
+    //StartTextInput(); // check if the focus can be done async
+}
+function StopTextInput() {
+    document.getElementById('textinput').blur();
+}
+function StopTextInput_delayed() {
+    setTimeout(StopTextInput, 2000);
+    StartTextInput(); // don't stay focused on button
+}
+
+
+function mainKeydown(e) {
+    //console.log(e);
+    e.target.value += 'SDL_KEYDOWN: ' + e.keyCode + "\n";
+    e.target.scrollTop = e.target.scrollHeight;
+}
+function mainKeyup(e) {
+    //console.log(e);
+    e.target.value += 'SDL_KEYUP: ' + e.keyCode + "\n";
+    e.target.scrollTop = e.target.scrollHeight;
+}
+// doesn't seem to be taken into account on mobile
+function mainKeypress(e) {
+    //console.log(e);
+    e.target.value += 'keypress: ' + e.keyCode + "\n";
+    e.target.scrollTop = e.target.scrollHeight;
+}
+
+</script>
+</body>
+</html>
