@@ -29,3 +29,6 @@ _sha512 sha512module.c
 
 # websockets
 _socket socketmodule.c timemodule.c
+
+# small module used in some games
+_bisect _bisectmodule.c

@@ -170,6 +170,7 @@ package-renpy:
 	# socket.py: websockets + urllib dependency
 	# urllib.py: urllib.urlencode useful for encoding POST data
 	# wave.py sunau.py chunk.py: for AudioData()
+	# bisect.py: small module used in some games
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
 	  python-emscripten/2.7.10/package-pythonhome.sh \
@@ -179,7 +180,8 @@ package-renpy:
 	  webbrowser.py shlex.py \
 	  socket.py \
 	  urllib.py \
-	  wave.py sunau.py chunk.py
+	  wave.py sunau.py chunk.py \
+	  bisect.py
 	$(CURDIR)/scripts/package-pyapp-renpy.sh
 
 package-renpy-python3:
