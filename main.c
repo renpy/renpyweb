@@ -2,6 +2,7 @@
 RenPyWeb entry point - load and start Python
 
 Copyright (C) 2019, 2020  Sylvain Beucler
+Copyright (C) 2020  Tom Rothamel
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation files
@@ -226,7 +227,31 @@ int main(int argc, char* argv[]) {
 			   "sys.meta_path.append(Finder())\n"		\
 			   );
 #else
-	// Patched Py2
+	// Patched Py2 and/or:
+	PyRun_SimpleString(
+			   "import imp\n"                                              \
+			   "import sys\n"                                              \
+			   "\n"	                                                       \
+			   "class BuiltinSubmoduleImporter(object):\n"                 \
+			   "\n"	                                                       \
+			   "    def find_module(self, name, path=None):\n"             \
+			   "        if path is None:\n"                                \
+			   "            return None\n"                                 \
+			   "\n"                                                        \
+			   "        if '.' not in name:\n"                             \
+			   "            return None\n"                                 \
+			   "\n"                                                        \
+			   "        if name in sys.builtin_module_names:\n"            \
+			   "            return self\n"                                 \
+			   "\n"                                                        \
+			   "        return None\n"                                     \
+			   "\n"                                                        \
+			   "    def load_module(self, name):\n"                        \
+			   "        f, pathname, desc = imp.find_module(name, None)\n" \
+			   "        return imp.load_module(name, f, pathname, desc)\n" \
+			   "\n"                                                        \
+			   "sys.meta_path.append(BuiltinSubmoduleImporter())\n"        \
+			   );
 #endif
 	PyRun_SimpleString("print('Python loaded.')");
 
