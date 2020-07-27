@@ -45,6 +45,9 @@ LDFLAGS=-O3 -s ASSERTIONS=0
 
 all: asyncify
 
+PY2VER=2.7.10
+PY3VER=3.8
+
 PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen-static/*.o pygame_sdl2/emscripten-static/build-temp/src/*.o
 
 RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc \
@@ -156,7 +159,7 @@ common-renpy: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
-	  python-emscripten/2.7.10/package-pythonhome.sh
+	  python-emscripten/$(PY2VER)/package-pythonhome.sh
 package-pygame-example-static: package-python-minimal
 	$(CURDIR)/scripts/package-pyapp-pygame-example-static.sh
 package-pygame-example-dynamic: package-python-minimal $(BUILD)/pygame_sdl2-dynamic.built
@@ -173,7 +176,7 @@ package-renpy:
 	# bisect.py: small module used in some games
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
-	  python-emscripten/2.7.10/package-pythonhome.sh \
+	  python-emscripten/$(PY2VER)/package-pythonhome.sh \
 	  repr.py \
 	  encodings/raw_unicode_escape.py base64.py \
 	  encodings/utf_32_be.py \
@@ -197,7 +200,7 @@ package-renpy-python3:
 	# wave.py sunau.py chunk.py: for AudioData()
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
-	  python-emscripten/3.8/package-pythonhome.sh \
+	  python-emscripten/$(PY3VER)/package-pythonhome.sh \
 	  encodings/raw_unicode_escape.py base64.py \
 	  encodings/utf_32_be.py \
           struct.py operator.py datetime.py random.py functools.py types.py \
@@ -248,7 +251,7 @@ pygame-example-worker: $(BUILD)/python.built common-pygame-example-static $(BUIL
 # Also not useful for Ren'Py as workers still need to return before they get events (cf. emterpreter)
 # Requires https://github.com/kripken/emscripten/issues/5380 to fix incomplete SDL2 support in --proxy-to-worker
 	mkdir build/package-worker/
-	cp -a python-emscripten/2.7.10/package/* build/package-worker/
+	cp -a python-emscripten/$(PY2VER)/package/* build/package-worker/
 	cp -a build/package-pyapp-pygame-example/* build/package-worker/
 	emcc $(BUILD)/main-pygame_sdl2-static.bc $(BUILD)/emscripten-static.bc \
 	    $(PYGAME_SDL2_STATIC_OBJS) \
@@ -277,7 +280,7 @@ $(BUILD)/main-pygame_sdl2-py3-static.bc: main.c
 package-python3-minimal:
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
-	  python-emscripten/3.8/package-pythonhome.sh \
+	  python-emscripten/$(PY3VER)/package-pythonhome.sh \
 	  encodings/raw_unicode_escape.py base64.py \
 	  encodings/utf_32_be.py \
           struct.py operator.py datetime.py random.py functools.py types.py \
@@ -362,7 +365,7 @@ pthreads:
 native:
 	# scripts/native-static.sh
 	mkdir -p $(BUILD)/native/pythonhome
-	cp -a $(CURDIR)/python-emscripten/2.7.10/package/* $(BUILD)/native/pythonhome/
+	cp -a $(CURDIR)/python-emscripten/$(PY2VER)/package/* $(BUILD)/native/pythonhome/
 	cp -a $(BUILD)/package-pyapp-renpy/lib $(BUILD)/native/pythonhome/
 	cd $(BUILD)/renpy/ && PYTHONHOME=$(BUILD)/native/pythonhome RENPY_EMSCRIPTEN=1 PATH= ./main
 
@@ -416,7 +419,7 @@ $(BUILD)/python.built:
 	$(MAKE) python-emscripten  # id. wrt directory timestamp
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
-	  $(CURDIR)/python-emscripten/2.7.10/python.sh
+	  $(CURDIR)/python-emscripten/$(PY2VER)/python.sh
 	touch $(BUILD)/python.built
 
 $(BUILD)/python3.built:
@@ -430,7 +433,7 @@ $(BUILD)/python3.built:
 	fi
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python3-Modules-Setup.local \
-	  $(CURDIR)/python-emscripten/3.8/python.sh
+	  $(CURDIR)/python-emscripten/$(PY3VER)/python.sh
 	touch $(BUILD)/python3.built
 
 $(BUILD)/renpy.built: $(BUILD)/pygame_sdl2-static.built $(BUILD)/fribidi.built $(BUILD)/ffmpeg.built
