@@ -32,7 +32,7 @@ CACHEROOT=$(dirname $(readlink -f $0))/../cache
 BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
-CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/crosspython-static/bin/python
+CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/crosspython-static/bin/python
 
 PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 (
