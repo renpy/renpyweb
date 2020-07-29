@@ -43,6 +43,11 @@ unset RENPY_STEAM_SDK
 # (cd "$RENPY_MODULES_ROOT" && python -O distribute.py || true)
 
 (
+    # Install Python modules needed by Ren'Py.
+    $HOSTPYTHON -m ensurepip
+    $HOSTPYTHON -m pip install future
+    $HOSTPYTHON -m pip install --root $INSTALLDIR future rsa pyasn1 six
+
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
     CC=emcc LDSHARED=emcc \
