@@ -13,7 +13,7 @@
 FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
 PACKAGEDIR=build/package-pyapp-pygame-example
 OUTDIR=build/t
-HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/2.7.10/build/hostpython/bin/python
+HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/build/hostpython/bin/python
 
 rm -rf $PACKAGEDIR/
 mkdir -p $PACKAGEDIR

@@ -22,8 +22,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-PYTHON=$(pwd)/python-emscripten/2.7.10/build/hostpython/bin/python
-PYTHONHOME=$(pwd)/python-emscripten/2.7.10/build/hostpython/
+PYTHON=$(pwd)/python-emscripten/$PY2VER/build/hostpython/bin/python
+PYTHONHOME=$(pwd)/python-emscripten/$PY2VER/build/hostpython/
 
 (
     cd build/pygame_sdl2-static/
