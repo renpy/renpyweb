@@ -177,14 +177,74 @@ package-renpy:
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
 	  python-emscripten/$(PY2VER)/package-pythonhome.sh \
-	  repr.py \
-	  encodings/raw_unicode_escape.py base64.py \
+	  atexit.py \
+	  base64.py \
+	  bisect.py \
+	  calendar.py \
+	  cgi.py \
+	  chunk.py \
+	  cmd.py \
+	  commands.py \
+	  compileall.py \
+	  cookielib.py \
+	  Cookie.py \
+	  cProfile.py \
+	  decimal.py \
+	  dummy_threading.py \
+	  email/base64mime.py \
+	  encodings/base64_codec.py \
+	  encodings/cp437.py \
+	  encodings/idna.py \
+	  encodings/mbcs.py \
+	  encodings/raw_unicode_escape.py \
+	  encodings/string_escape.py \
+	  encodings/unicode_escape.py \
+	  encodings/utf_16_be.py \
+	  encodings/utf_16_le.py \
+	  encodings/utf_16.py \
 	  encodings/utf_32_be.py \
-	  webbrowser.py shlex.py \
+	  encodings/utf_8.py \
+	  ftplib.py \
+	  getopt.py \
+	  gzip.py \
+	  hmac.py \
+	  httplib.py \
+	  imghdr.py \
+	  logging/__init__.py \
+	  _LWPCookieJar.py \
+	  mimetools.py \
+	  mimetypes.py \
+	  _MozillaCookieJar.py \
+	  ntpath.py \
+	  nturl2path.py \
+	  numbers.py \
+	  optparse.py \
+	  pstats.py \
+	  py_compile.py \
+	  Queue.py \
+	  quopri.py \
+	  repr.py \
+	  rfc822.py \
+	  shlex.py \
+	  SimpleHTTPServer.py \
 	  socket.py \
+	  SocketServer.py \
+	  ssl.py \
+	  StringIO.py \
+	  stringprep.py \
+	  _strptime.py \
+	  sunau.py \
+	  urllib2.py \
 	  urllib.py \
-	  wave.py sunau.py chunk.py \
-	  bisect.py
+	  UserList.py \
+	  UserString.py \
+	  uuid.py \
+	  uu.py \
+	  wave.py \
+	  webbrowser.py \
+	  xml/parsers/expat.py \
+	  xml/parsers/__init__.py
+
 	$(CURDIR)/scripts/package-pyapp-renpy.sh
 
 package-renpy-python3:
