@@ -20,6 +20,9 @@ zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
 _md5 md5module.c md5.c
 array arraymodule.c
 
+# future deps:
+future_builtins future_builtins.c
+
 # avoid warnings from hashlib module (and dragging logging module)
 _sha shamodule.c
 _sha256 sha256module.c

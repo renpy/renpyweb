@@ -25,6 +25,10 @@ HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/build/hostp
 rm -rf $PACKAGEDIR/
 mkdir -p $PACKAGEDIR
 
+# Ren'Py dependencies from pip.
+mkdir -p $PACKAGEDIR
+$HOSTPYTHON -m pip install --target $PACKAGEDIR future rsa pyasn1 six
+
 # pygame_sdl2-static
 mkdir -p $PACKAGEDIR/lib/python2.7/site-packages/pygame_sdl2/threads
 for i in $(cd install && find lib/python2.7/site-packages/pygame_sdl2/ -name "*.pyo"); do
@@ -37,7 +41,9 @@ cp -a patches/pystub/*.py  $PACKAGEDIR/lib/python2.7
 
 # Compile manually added Python scripts
 (cd $PACKAGEDIR/ && find -name "*.py" -print0 | xargs -r0 $HOSTPYTHON -OO -m py_compile)
+
 find $PACKAGEDIR/ -name "*.py" -print0 | xargs -r0 rm
+find $PACKAGEDIR/ -name "*.pyc" -print0 | xargs -r0 rm
 
 # RenPyWeb-specific files
 cp -a web-presplash-default.jpg $PACKAGEDIR/

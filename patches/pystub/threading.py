@@ -49,6 +49,8 @@ class Thread(object):
     def isAlive(self):
         return False
 
+class local(object):
+    pass
 
 _current_thread = Thread()
 
