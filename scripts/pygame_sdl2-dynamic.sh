@@ -35,7 +35,8 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     cd $PYGAME_SDL2_ROOT/
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
-    CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -s" \
+    CC="$EMCC" LDSHARED="$EMCC" \
+      CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -s" \
       LDFLAGS="-L$INSTALLDIR/lib" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' \
       $CROSSPYTHON \

@@ -49,7 +49,7 @@ unset RENPY_STEAM_SDK
 
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
-    CC=emcc LDSHARED=emcc \
+    CC="$EMCC" LDSHARED="$EMCC" \
       CFLAGS="-I$INSTALLDIR/include -s USE_SDL=2 -s USE_FREETYPE=1" \
       LDFLAGS="-L$INSTALLDIR/lib" \
       RENPY_EMSCRIPTEN=1 RENPY_STATIC=1 \
