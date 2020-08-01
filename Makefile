@@ -45,7 +45,7 @@ LDFLAGS=-O3 -s ASSERTIONS=0
 
 all: asyncify
 
-PY2VER=2.7.10
+PY2VER=2.7.18
 PY3VER=3.8
 
 PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen-static/*.o pygame_sdl2/emscripten-static/build-temp/src/*.o
