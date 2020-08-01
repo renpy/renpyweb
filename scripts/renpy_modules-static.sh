@@ -45,7 +45,7 @@ unset RENPY_STEAM_SDK
 (
     # Install Python modules needed by Ren'Py.
     $HOSTPYTHON -m ensurepip
-    $HOSTPYTHON -m pip install future
+    $HOSTPYTHON -m pip install future==0.18.2
 
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
