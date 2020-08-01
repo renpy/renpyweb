@@ -50,8 +50,11 @@ PY3VER=3.8
 
 PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen-static/*.o pygame_sdl2/emscripten-static/build-temp/src/*.o
 
+# Filter down the PYGAME_SDL2_STATIC_OBJS list to remove objects that Ren'Py doesn't use.
+PYGAME_SDL2_RENPY_STATIC_OBJS=$(shell ls ${PYGAME_SDL2_STATIC_OBJS} | egrep -v 'pygame_sdl2.(font|mixer|mixer_music|render).o')
+
 RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc \
-	$(PYGAME_SDL2_STATIC_OBJS) \
+	$(PYGAME_SDL2_RENPY_STATIC_OBJS) \
 	renpy/module/emscripten-static/build-temp/*.o renpy/module/emscripten-static/build-temp/gen-static/*.o
 
 # EMULATE_FUNCTION_POINTER_CASTS=1: for Python

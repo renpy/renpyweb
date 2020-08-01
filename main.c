@@ -44,70 +44,7 @@ PyMODINIT_FUNC MODINIT(emscripten)(void);
 void pyapp_runmain();
 
 
-#ifdef STATIC
-PyMODINIT_FUNC MODINIT(pygame_sdl2_color)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_controller)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_display)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_draw)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_error)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_event)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_event)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_image)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_joystick)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_key)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_locals)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_mouse)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_power)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_pygame_time)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_rect)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_rwobject)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_scrap)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_surface)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_transform)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_gfxdraw)(void);
-#  ifndef RENPY
-PyMODINIT_FUNC MODINIT(pygame_sdl2_font)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_mixer)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_mixer_music)(void);
-PyMODINIT_FUNC MODINIT(pygame_sdl2_render)(void);
-#  endif
 
-#  ifdef RENPY
-PyMODINIT_FUNC MODINIT(_renpy)(void);
-PyMODINIT_FUNC MODINIT(_renpybidi)(void);
-PyMODINIT_FUNC MODINIT(renpy_audio_renpysound)(void);
-PyMODINIT_FUNC MODINIT(renpy_parsersupport)(void);
-PyMODINIT_FUNC MODINIT(renpy_pydict)(void);
-PyMODINIT_FUNC MODINIT(renpy_style)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_styleclass)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_stylesets)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_activate_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_hover_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_idle_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_insensitive_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_selected_activate_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_selected_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_selected_hover_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_selected_idle_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_styledata_style_selected_insensitive_functions)(void);
-PyMODINIT_FUNC MODINIT(renpy_display_matrix)(void);
-PyMODINIT_FUNC MODINIT(renpy_display_render)(void);
-PyMODINIT_FUNC MODINIT(renpy_display_accelerator)(void);
-PyMODINIT_FUNC MODINIT(renpy_gl_gl)(void);
-//PyMODINIT_FUNC MODINIT(renpy_gl_gl1)(void);
-PyMODINIT_FUNC MODINIT(renpy_gl_gldraw)(void);
-PyMODINIT_FUNC MODINIT(renpy_gl_gltexture)(void);
-PyMODINIT_FUNC MODINIT(renpy_gl_glenviron_shader)(void);
-//PyMODINIT_FUNC MODINIT(renpy_gl_glenviron_fixed)(void);
-//PyMODINIT_FUNC MODINIT(renpy_gl_glenviron_limited)(void);
-PyMODINIT_FUNC MODINIT(renpy_gl_glrtt_copy)(void);
-PyMODINIT_FUNC MODINIT(renpy_gl_glrtt_fbo)(void);
-PyMODINIT_FUNC MODINIT(renpy_text_textsupport)(void);
-PyMODINIT_FUNC MODINIT(renpy_text_texwrap)(void);
-PyMODINIT_FUNC MODINIT(renpy_text_ftfont)(void);
-#  endif
-#endif
 
 int main(int argc, char* argv[]) {
 	// Load additional modules installed relative to current directory
@@ -128,72 +65,6 @@ int main(int argc, char* argv[]) {
 	static struct _inittab builtins[] = {
 #if defined(__EMSCRIPTEN__) || defined(MOCK)
 	  {"emscripten", MODINIT(emscripten)},
-#endif
-#ifdef STATIC
-	  {"pygame_sdl2.event", MODINIT(pygame_sdl2_event)},
-	  {"pygame_sdl2.error", MODINIT(pygame_sdl2_error)},
-	  {"pygame_sdl2.color", MODINIT(pygame_sdl2_color)},
-	  {"pygame_sdl2.controller", MODINIT(pygame_sdl2_controller)},
-	  {"pygame_sdl2.rect", MODINIT(pygame_sdl2_rect)},
-	  {"pygame_sdl2.rwobject", MODINIT(pygame_sdl2_rwobject)},
-	  {"pygame_sdl2.surface", MODINIT(pygame_sdl2_surface)},
-	  {"pygame_sdl2.display", MODINIT(pygame_sdl2_display)},
-	  {"pygame_sdl2.event", MODINIT(pygame_sdl2_event)},
-	  {"pygame_sdl2.locals", MODINIT(pygame_sdl2_locals)},
-	  {"pygame_sdl2.key", MODINIT(pygame_sdl2_key)},
-	  {"pygame_sdl2.mouse", MODINIT(pygame_sdl2_mouse)},
-	  {"pygame_sdl2.joystick", MODINIT(pygame_sdl2_joystick)},
-	  {"pygame_sdl2.power", MODINIT(pygame_sdl2_power)},
-	  {"pygame_sdl2.pygame_time", MODINIT(pygame_sdl2_pygame_time)},
-	  {"pygame_sdl2.image", MODINIT(pygame_sdl2_image)},
-	  {"pygame_sdl2.transform", MODINIT(pygame_sdl2_transform)},
-	  {"pygame_sdl2.gfxdraw", MODINIT(pygame_sdl2_gfxdraw)},
-	  {"pygame_sdl2.draw", MODINIT(pygame_sdl2_draw)},
-#  ifndef RENPY
-	  {"pygame_sdl2.font", MODINIT(pygame_sdl2_font)},
-	  {"pygame_sdl2.mixer", MODINIT(pygame_sdl2_mixer)},
-	  {"pygame_sdl2.mixer_music", MODINIT(pygame_sdl2_mixer_music)},
-#  endif
-	  {"pygame_sdl2.scrap", MODINIT(pygame_sdl2_scrap)},
-#  ifndef RENPY
-	  {"pygame_sdl2.render", MODINIT(pygame_sdl2_render)},
-#  endif
-
-#  ifdef RENPY
-	  {"_renpy", MODINIT(_renpy)},
-	  {"_renpybidi", MODINIT(_renpybidi)},
-	  {"renpy.audio.renpysound", MODINIT(renpy_audio_renpysound)},
-	  {"renpy.parsersupport", MODINIT(renpy_parsersupport)},
-	  {"renpy.pydict", MODINIT(renpy_pydict)},
-	  {"renpy.style", MODINIT(renpy_style)},
-	  {"renpy.styledata.styleclass", MODINIT(renpy_styledata_styleclass)},
-	  {"renpy.styledata.stylesets", MODINIT(renpy_styledata_stylesets)},
-	  {"renpy.styledata.style_activate_functions", MODINIT(renpy_styledata_style_activate_functions)},
-	  {"renpy.styledata.style_functions", MODINIT(renpy_styledata_style_functions)},
-	  {"renpy.styledata.style_hover_functions", MODINIT(renpy_styledata_style_hover_functions)},
-	  {"renpy.styledata.style_idle_functions", MODINIT(renpy_styledata_style_idle_functions)},
-	  {"renpy.styledata.style_insensitive_functions", MODINIT(renpy_styledata_style_insensitive_functions)},
-	  {"renpy.styledata.style_selected_activate_functions", MODINIT(renpy_styledata_style_selected_activate_functions)},
-	  {"renpy.styledata.style_selected_functions", MODINIT(renpy_styledata_style_selected_functions)},
-	  {"renpy.styledata.style_selected_hover_functions", MODINIT(renpy_styledata_style_selected_hover_functions)},
-	  {"renpy.styledata.style_selected_idle_functions", MODINIT(renpy_styledata_style_selected_idle_functions)},
-	  {"renpy.styledata.style_selected_insensitive_functions", MODINIT(renpy_styledata_style_selected_insensitive_functions)},
-	  {"renpy.display.matrix", MODINIT(renpy_display_matrix)},
-	  {"renpy.display.render", MODINIT(renpy_display_render)},
-	  {"renpy.display.accelerator", MODINIT(renpy_display_accelerator)},
-	  {"renpy.gl.gl", MODINIT(renpy_gl_gl)},
-	  //{"renpy.gl.gl1", MODINIT(renpy_gl_gl1)},
-	  {"renpy.gl.gldraw", MODINIT(renpy_gl_gldraw)},
-	  {"renpy.gl.gltexture", MODINIT(renpy_gl_gltexture)},
-	  {"renpy.gl.glenviron_shader", MODINIT(renpy_gl_glenviron_shader)},
-	  //{"renpy.gl.glenviron_fixed", MODINIT(renpy_gl_glenviron_fixed)},
-	  //{"renpy.gl.glenviron_limited", MODINIT(renpy_gl_glenviron_limited)},
-	  {"renpy.gl.glrtt_copy", MODINIT(renpy_gl_glrtt_copy)},
-	  {"renpy.gl.glrtt_fbo", MODINIT(renpy_gl_glrtt_fbo)},
-	  {"renpy.text.textsupport", MODINIT(renpy_text_textsupport)},
-	  {"renpy.text.texwrap", MODINIT(renpy_text_texwrap)},
-	  {"renpy.text.ftfont", MODINIT(renpy_text_ftfont)},
-#  endif
 #endif
 	  {NULL, NULL}
 	};
