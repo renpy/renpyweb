@@ -471,6 +471,9 @@ cythonclean:
 	rm -rf pygame_sdl2/*-static/ pygame_sdl2/*-dynamic/ renpy/module/*-static/ build/emscripten.c
 	rm -f build/pygame_sdl2-*.built build/renpy.built
 
+cythonemscriptenclean:
+	rm -rf pygame_sdl2/emscripten*-static/ pygame_sdl2/emacripten*-dynamic/ renpy/module/emscripten*-static/ build/emscripten.c
+	rm -f build/pygame_sdl2-*.built build/renpy.built
 
 python-emscripten:
 	fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
