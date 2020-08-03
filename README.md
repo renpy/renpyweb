@@ -12,8 +12,7 @@ This is the build environment for RenPyWeb.
   build a game.zip, it's also necessary to either build Ren'Py for the
   host computer, or copy a lib directory from a similar Ren'Py version
   to `renpy/lib/`. This can be done for you with
-  `scripts/checkout_renpy.sh`.  Note: as of 2020-06, Ren'Py master is
-  unstable, use https://github.com/Beuc/renpy/tree/red-7.3.5
+  `scripts/checkout_renpy.sh`.
 
 - Emscripten: download prebuilt binaries (or [build from source](https://emscripten.org/docs/building_from_source/))
 

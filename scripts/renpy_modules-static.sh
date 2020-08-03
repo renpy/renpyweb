@@ -32,7 +32,7 @@ CACHEROOT=$(dirname $(readlink -f $0))/../cache
 BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
-HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/crosspython-static/bin/python
+CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/crosspython-static/bin/python
 
 RENPY_MODULES_ROOT="$ROOT/renpy"
 
@@ -49,7 +49,7 @@ unset RENPY_STEAM_SDK
       CFLAGS="-I$INSTALLDIR/include -s USE_SDL=2 -s USE_FREETYPE=1" \
       LDFLAGS="-L$INSTALLDIR/lib" \
       RENPY_EMSCRIPTEN=1 RENPY_STATIC=1 \
-      $HOSTPYTHON \
+      $CROSSPYTHON \
         setup.py \
           build_ext \
             -b emscripten-static/build-lib -t emscripten-static/build-temp \
