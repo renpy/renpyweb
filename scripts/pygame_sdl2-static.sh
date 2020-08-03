@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile pygame_sdl2 for Emscripten, as static modules
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -22,10 +22,9 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Compile statically for performance and to avoid Emscripten
-# limitations with dynamic linking
-
-# Cf. https://mdqinc.com/blog/2011/08/statically-linking-python-with-cython-generated-modules-and-packages/
+# Compile statically for performance and to avoid Emscripten current
+# limitations with dynamic linking. See also
+# https://github.com/renpy/pygame_sdl2/blob/master/setuplib.py
 
 ROOT=$(dirname $(readlink -f $0))/..
 CACHEROOT=$(dirname $(readlink -f $0))/../cache

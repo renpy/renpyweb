@@ -22,8 +22,9 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Compile statically for performance and to avoid Emscripten
-# limitations with dynamic linking
+# Compile statically for performance and to avoid Emscripten current
+# limitations with dynamic linking. See also
+# https://github.com/renpy/pygame_sdl2/blob/master/setuplib.py
 
 ROOT=$(dirname $(readlink -f $0))/..
 CACHEROOT=$(dirname $(readlink -f $0))/../cache

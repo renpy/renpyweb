@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile RenPy Cython modules for Emscripten, as static modules
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -22,17 +22,16 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Compile statically so we can use 'emcc -s EMTERPRETER_ASYNC' in the main program
-
-# Cf. https://mdqinc.com/blog/2011/08/statically-linking-python-with-cython-generated-modules-and-packages/
-# + patches for setuplib.py
+# Compile statically for performance and to avoid Emscripten current
+# limitations with dynamic linking. See also
+# https://github.com/renpy/pygame_sdl2/blob/master/setuplib.py
 
 ROOT=$(dirname $(readlink -f $0))/..
 CACHEROOT=$(dirname $(readlink -f $0))/../cache
 BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
-HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/crosspython-static/bin/python
+CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/crosspython-static/bin/python
 
 RENPY_MODULES_ROOT="$ROOT/renpy"
 
@@ -44,8 +43,8 @@ unset RENPY_STEAM_SDK
 
 (
     # Install Python modules needed by Ren'Py.
-    $HOSTPYTHON -m ensurepip
-    $HOSTPYTHON -m pip install future==0.18.2
+    $CROSSPYTHON -m ensurepip
+    $CROSSPYTHON -m pip install future==0.18.2
 
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
@@ -53,7 +52,7 @@ unset RENPY_STEAM_SDK
       CFLAGS="-I$INSTALLDIR/include -s USE_SDL=2 -s USE_FREETYPE=1" \
       LDFLAGS="-L$INSTALLDIR/lib" \
       RENPY_EMSCRIPTEN=1 RENPY_STATIC=1 \
-      $HOSTPYTHON \
+      $CROSSPYTHON \
         setup.py \
           build_ext \
             -b emscripten-static/build-lib -t emscripten-static/build-temp \

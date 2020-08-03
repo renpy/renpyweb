@@ -472,7 +472,7 @@ cythonclean:
 	rm -f build/pygame_sdl2-*.built build/renpy.built
 
 cythonemscriptenclean:
-	rm -rf pygame_sdl2/emscripten*-static/ pygame_sdl2/emacripten*-dynamic/ renpy/module/emscripten*-static/ build/emscripten.c
+	rm -rf pygame_sdl2/emscripten*-static/ pygame_sdl2/emscripten*-dynamic/ renpy/module/emscripten*-static/ build/emscripten.c
 	rm -f build/pygame_sdl2-*.built build/renpy.built
 
 python-emscripten:
