@@ -178,6 +178,7 @@ package-renpy:
 	# urllib.py: urllib.urlencode useful for encoding POST data
 	# wave.py sunau.py chunk.py: for AudioData()
 	# bisect.py: small module used in some games
+	# logging/__init__.py atexit.py: basic logging included in Ren'Py
 	PREFIX=$(INSTALLDIR) \
 	  OUTDIR=$(BUILD)/t \
 	  python-emscripten/$(PY2VER)/package-pythonhome.sh \
