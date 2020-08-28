@@ -138,10 +138,6 @@
       </div>
     </div>
 
-    <input id="rpw_text_input" type="text"
-      style="position: absolute; left: 0; top: 0; width: 80%; margin-left: 10%; margin-right: 10%; opacity: 0.8;"
-      hidden="hidden"></input>
-
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
 
     <script>
@@ -290,14 +286,10 @@
         }, 200);  // smaller delay doesn't update the DOM, esp. on mobile
       }
 
-      ////
-      // hooks for Ren'Py
-      ////
-
+      // hook for Ren'Py
       function presplashEnd() {
         document.getElementById('presplash').remove();
       }
-
       function FSDownload(filename) {
         console.log('download', filename);
         a = document.createElement('a');
@@ -312,38 +304,6 @@
         a.click();
         window.URL.revokeObjectURL(a.href);
         document.body.removeChild(a);
-      }
-
-      // line-based text input for renpy.input()
-      // see https://github.com/emscripten-ports/SDL2/issues/80 for why this isn't in SDL2
-      var rpw_text_input = document.getElementById('rpw_text_input');
-      function rpw_is_screen_keyboard_shown() {
-          return !rpw_text_input.hidden;
-      }
-      function rpw_set_text_input_rect(x,y,w,h) {
-          if (x != null) {
-	      // Browser relayout on keyboard pop-up makes things even worse
-	      // Just let it at the top...
-              //rpw_text_input.style.top = ((y / document.getElementById('canvas').height)
-              //  * document.getElementById('canvas').clientHeight) + 'px';
-          }
-      }
-      function rpw_start_text_input() {
-          rpw_text_input.hidden = false;
-          rpw_text_input.focus();
-      }
-      function rpw_stop_text_input() {
-          rpw_text_input.hidden = true;
-          rpw_text_input.blur();
-          document.getElementById('canvas').focus();
-      }
-      function rpw_set_text_input(text) {
-          rpw_text_input.value = text;
-      }
-      function rpw_grab_text_input() {
-          var ret = rpw_text_input.value;
-          rpw_text_input.value = '';
-          return ret;
       }
     </script>
     <script type='text/javascript'>
