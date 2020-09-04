@@ -183,7 +183,7 @@
         <input id="ID_SavegamesImport" type="file" onchange="onSavegamesImport(this)" accept="application/zip" style=display:none></input>
         <a href="javascript:document.getElementById('ID_SavegamesImport').click();">Import saves</a><br />
         <a href="javascript:onSavegamesExport();">Export saves</a><br />
-        <a href="javascript:FSDownload('/log.txt');">Ren'Py log</a><br />
+        <a href="javascript:FSDownload('/log.txt', 'text/plain');">Ren'Py log</a><br />
         <a href="https://renpy.beuc.net/" target="_blank">
           <span style="font-size: smaller">
             <span style="color: dimgrey">Powered by</span>
@@ -228,7 +228,7 @@
       function onSavegamesExport() {
         ret = Module._emSavegamesExport();
         if (ret) {
-          FSDownload('savegames.zip');
+          FSDownload('savegames.zip', 'application/zip');
         }
       }
 
@@ -290,20 +290,25 @@
       function presplashEnd() {
         document.getElementById('presplash').remove();
       }
-      function FSDownload(filename) {
+      function FSDownload(filename, mimetype) {
         console.log('download', filename);
-        a = document.createElement('a');
+        var a = document.createElement('a');
         a.download = filename.replace(/.*\//, '');
         try {
-          a.href = window.URL.createObjectURL(new Blob([FS.readFile(filename)]));
+          a.href = window.URL.createObjectURL(new Blob([FS.readFile(filename)],
+                                                       { type: mimetype || '' }));
         } catch(e) {
           Module.print("Error opening " + filename + "\n");
           return;
         }
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(a.href);
-        document.body.removeChild(a);
+        // delay clean-up to avoid iOS issue:
+        // The operation couldn’t be completed. (WebKitBlobResourse error 1.)
+        setTimeout(function() {
+            window.URL.revokeObjectURL(a.href);
+            document.body.removeChild(a);
+        }, 1000);
       }
     </script>
     <script type='text/javascript'>
