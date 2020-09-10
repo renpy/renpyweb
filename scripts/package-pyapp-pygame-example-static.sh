@@ -2,7 +2,7 @@
 
 # Packages pygame-example files (for use in Emscripten MEMFS)
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -10,7 +10,7 @@
 # without any warranty.
 
 
-FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
+FILE_PACKAGER="python3 $(dirname $(which emcc))/tools/file_packager.py"
 PACKAGEDIR=build/package-pyapp-pygame-example
 OUTDIR=build/t
 HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/build/hostpython/bin/python

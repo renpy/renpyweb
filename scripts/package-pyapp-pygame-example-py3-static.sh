@@ -10,7 +10,7 @@
 # without any warranty.
 
 
-FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
+FILE_PACKAGER="python3 $(dirname $(which emcc))/tools/file_packager.py"
 PACKAGEDIR=build/package-pyapp-pygame-example
 OUTDIR=build/t
 HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY3VER/build/hostpython/bin/python3

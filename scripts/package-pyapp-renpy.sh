@@ -2,7 +2,7 @@
 
 # Packages Ren'Py files (for use in Emscripten MEMFS)
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -17,7 +17,7 @@
 # by Ren'Py, so this only contains pygame_sdl2 and some overrides
 # to python files that are needed for Ren'Py to run.
 
-FILE_PACKAGER="python $(dirname $(which emcc))/tools/file_packager.py"
+FILE_PACKAGER="python3 $(dirname $(which emcc))/tools/file_packager.py"
 PACKAGEDIR=build/package-pyapp-renpy
 OUTDIR=build/t
 HOSTPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/build/hostpython/bin/python

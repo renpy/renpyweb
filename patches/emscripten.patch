@@ -2,7 +2,7 @@ diff --git a/tools/system_libs.py b/tools/system_libs.py
 index 11fe8646f..02a772513 100755
 --- a/tools/system_libs.py
 +++ b/tools/system_libs.py
-@@ -63,7 +63,8 @@ def dir_is_newer(dir_a, dir_b):
+@@ -53,7 +53,8 @@ def dir_is_newer(dir_a, dir_b):
    assert os.path.exists(dir_b)
    newest_a = max([os.path.getmtime(x) for x in get_all_files_under(dir_a)])
    newest_b = max([os.path.getmtime(x) for x in get_all_files_under(dir_b)])
@@ -12,26 +12,15 @@ index 11fe8646f..02a772513 100755
  
  
  def get_cflags(force_object_files=False):
-diff --git a/src/library_html5.js b/src/library_html5.js
-index 0b6e3cd78c3..ef3040b8619 100644
---- a/src/library_html5.js
-+++ b/src/library_html5.js
-@@ -39,13 +39,16 @@ var LibraryJSEvents = {
-     removeEventListenersRegistered: false, 
+--- emscripten-git/emcc.py	2020-09-10 12:56:16.876047227 +0200
++++ upstream/emscripten/emcc.py	2020-09-10 12:57:09.611839316 +0200
+@@ -1305,7 +1305,8 @@
+       else:
+         link_to_object = True
  
- #if HTML5_SUPPORT_DEFERRING_USER_SENSITIVE_REQUESTS
--    // If positive, we are currently executing in a JS event handler.
--    inEventHandler: 0,
-     // If we are in an event handler, specifies the event handler object from the eventHandlers array that is currently running.
-     currentEventHandler: null,
- #endif
- */
- 
-+    // https://github.com/emscripten-core/emscripten/issues/11515
-+    // If positive, we are currently executing in a JS event handler.
-+    // (this particular property must be initialized to zero, as we ++/-- it)
-+    inEventHandler: 0,
-+
-     removeAllEventListeners: function() {
-       for(var i = JSEvents.eventHandlers.length-1; i >= 0; --i) {
-         JSEvents._removeHandler(i);
+-    if not link_to_object and not compile_only and final_suffix not in EXECUTABLE_ENDINGS:
++    # https://github.com/emscripten-core/emscripten/issues/12148
++    if not link_to_object and not compile_only and final_suffix not in EXECUTABLE_ENDINGS and not os.environ.get('EMMAKEN_JUST_CONFIGURE'):
+       # TODO(sbc): Remove this emscripten-specific special case.  We should only generate object
+       # file output with an explicit `-c` or `-r`.
+       diagnostics.warning('emcc', 'assuming object file output, based on output filename alone.  Add an explict `-c`, `-r` or `-shared` to avoid this warning')
