@@ -209,17 +209,13 @@ package-renpy:
 	  encodings/utf_16.py \
 	  encodings/utf_32_be.py \
 	  encodings/utf_8.py \
-	  ftplib.py \
 	  getopt.py \
 	  gzip.py \
 	  hmac.py \
-	  httplib.py \
 	  imghdr.py \
 	  logging/__init__.py \
-	  _LWPCookieJar.py \
 	  mimetools.py \
 	  mimetypes.py \
-	  _MozillaCookieJar.py \
 	  ntpath.py \
 	  nturl2path.py \
 	  numbers.py \
@@ -231,10 +227,7 @@ package-renpy:
 	  repr.py \
 	  rfc822.py \
 	  shlex.py \
-	  SimpleHTTPServer.py \
 	  socket.py \
-	  SocketServer.py \
-	  ssl.py \
 	  StringIO.py \
 	  stringprep.py \
 	  _strptime.py \
@@ -249,6 +242,13 @@ package-renpy:
 	  webbrowser.py \
 	  xml/parsers/expat.py \
 	  xml/parsers/__init__.py
+	  #SimpleHTTPServer.py \
+	  #SocketServer.py \
+	  #ftplib.py \
+	  #httplib.py \
+	  #_LWPCookieJar.py \
+	  #_MozillaCookieJar.py \
+	  #ssl.py \
 
 	$(CURDIR)/scripts/package-pyapp-renpy.sh
 
