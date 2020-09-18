@@ -6,26 +6,13 @@ This is the build environment for RenPyWeb.
 
 ## How to build
 
-- Install general dependencies: python3, make, git, fossil, quilt
+- See https://github.com/renpy/renpy-build/ - something like:
 
-- Install Ren'Py to `renpy/` and pygame\_sdl2 to `pygame_sdl2/`.  To
-  build a game.zip, it's also necessary to either build Ren'Py for the
-  host computer, or copy a lib directory from a similar Ren'Py version
-  to `renpy/lib/`. This can be done for you with
-  `scripts/checkout_renpy.sh`.
-
-- Emscripten: download prebuilt binaries (or [build from source](https://emscripten.org/docs/building_from_source/))
-
-      git clone https://github.com/emscripten-core/emsdk/
-      pushd emsdk/
-      ./emsdk install 2.0.2
-      ./emsdk activate 2.0.2
-      popd
-      source emsdk/emsdk_env.sh
-
-- Emscripten: apply pending fixes:
-
-      (cd emsdk/upstream/emscripten/ && patch -p1 < ../../../patches/emscripten.patch)
+      git clone https://github.com/renpy/renpy-build/
+      cd renpy-build/
+      BASE=. bash ./nightly/git.sh
+      # fix-up tasks ordering
+      ./build.py --platform web
 
 - Emscripten: you need to recompile everything on upgrade:
 
@@ -33,13 +20,13 @@ This is the build environment for RenPyWeb.
       make cythonclean
       emcc --clear-ports
 
-- Compile:
-  `make`
+- Recompile:
 
-- Install the 'web' add-on to Ren'Py:
-  `scripts/install_in_renpy.sh`
+      make
+      scripts/install_in_renpy.sh
 
-- Package the game: from the Ren'Py interface, or using `scripts/distribute_game.sh`
+- Package the game: from the Ren'Py interface,
+  or using `scripts/distribute_game.sh` (basic testing only)
 
 
 ## How to run locally
