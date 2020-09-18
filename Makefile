@@ -468,12 +468,11 @@ gunzip:
 testserver:
 	(cd build/t && python3 $(CURDIR)/testserver.py)
 
-cythonclean:
-	rm -rf pygame_sdl2/*-static/ pygame_sdl2/*-dynamic/ renpy/module/*-static/ build/emscripten.c
-	rm -f build/pygame_sdl2-*.built build/renpy.built
+cythonclean: cythonobjclean
+	rm -rf pygame_sdl2/*-static/ pygame_sdl2/*-dynamic/ renpy/module/*-static/ build/emscripten.c build/emscripten-*.c
 
-cythonemscriptenclean:
-	rm -rf pygame_sdl2/emscripten*-static/ pygame_sdl2/emscripten*-dynamic/ renpy/module/emscripten*-static/ build/emscripten.c
+cythonobjclean:
+	rm -rf pygame_sdl2/emscripten*-static/ pygame_sdl2/emscripten*-dynamic/ renpy/module/emscripten*-static/ build/emscripten-*.bc
 	rm -f build/pygame_sdl2-*.built build/renpy.built
 
 python-emscripten:
