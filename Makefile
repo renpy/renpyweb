@@ -512,7 +512,7 @@ $(BUILD)/fribidi.built: $(CACHEROOT)/fribidi-0.19.2.tar.gz
 	touch $(BUILD)/fribidi.built
 
 # avformat avcodec avutil swresample swscale
-$(BUILD)/ffmpeg.built: $(CACHEROOT)/ffmpeg-3.0.tar.bz2
+$(BUILD)/ffmpeg.built: $(CACHEROOT)/ffmpeg-4.3.1.tar.bz2
 	# Video currently unavailable, let's optimize size and (compilation) speed
 	#$(SCRIPTSDIR)/ffmpeg.sh
 	$(SCRIPTSDIR)/ffmpeg-audioonly.sh
@@ -569,8 +569,8 @@ $(CACHEROOT)/libpng-1.6.34.tar.gz:
 $(CACHEROOT)/fribidi-0.19.2.tar.gz:
 	wget https://web.archive.org/web/20160305193708/http://fribidi.org/download/fribidi-0.19.2.tar.gz -P $(CACHEROOT)
 
-$(CACHEROOT)/ffmpeg-3.0.tar.bz2:
-	wget https://ffmpeg.org/releases/ffmpeg-3.0.tar.bz2 -P $(CACHEROOT)
+$(CACHEROOT)/ffmpeg-4.3.1.tar.bz2:
+	wget https://ffmpeg.org/releases/ffmpeg-4.3.1.tar.bz2 -P $(CACHEROOT)
 
 #$(CACHEROOT)/SDL2-2.0.9.tar.gz:
 #	wget https://libsdl.org/release/SDL2-2.0.9.tar.gz -P $(CACHEROOT)
