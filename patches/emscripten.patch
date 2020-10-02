@@ -24,3 +24,15 @@ index 11fe8646f..02a772513 100755
        # TODO(sbc): Remove this emscripten-specific special case.  We should only generate object
        # file output with an explicit `-c` or `-r`.
        diagnostics.warning('emcc', 'assuming object file output, based on output filename alone.  Add an explict `-c`, `-r` or `-shared` to avoid this warning')
+--- emscripten/src/library_idbfs.js	2020-09-02 17:52:17.000000000 +0200
++++ emscripten/src/library_idbfs.js	2020-10-02 16:18:33.566465230 +0200
+@@ -231,7 +231,8 @@
+       Object.keys(src.entries).forEach(function (key) {
+         var e = src.entries[key];
+         var e2 = dst.entries[key];
+-        if (!e2 || e['timestamp'] > e2['timestamp']) {
++        // https://github.com/emscripten-core/emscripten/issues/12348
++        if (!e2 || e['timestamp'] != e2['timestamp']) {
+           create.push(key);
+           total++;
+         }
