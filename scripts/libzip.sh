@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile libzip for Emscripten
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -27,29 +27,24 @@ BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
 HOSTPYTHON=$BUILD/hostpython/bin/python
-MODE=opti
-CFLAGS=-O3
 
 cd $BUILD/
-tar xf $CACHEROOT/libzip-1.6.1.tar.gz
-cd libzip-1.6.1/
+tar xf $CACHEROOT/libzip-1.7.3.tar.gz
+cd libzip-1.7.3/
 
-# This thing can't properly set its own LIBS (-lz), disable executables generation
-sed -i -e 's/ADD_SUBDIRECTORY(man)/#&/' CMakeLists.txt
-sed -i -e 's/ADD_SUBDIRECTORY(src)/#&/' CMakeLists.txt
-sed -i -e 's/ADD_SUBDIRECTORY(regress)/#&/' CMakeLists.txt
-sed -i -e 's/ADD_SUBDIRECTORY(examples)/#&/' CMakeLists.txt
-mkdir -p cross-emscripten-$MODE
-cd cross-emscripten-$MODE/
+mkdir -p build
+cd build/
 
-CPPFLAGS="-I$INSTALLDIR/include" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS -L$INSTALLDIR/lib" \
+CPPFLAGS="-I$INSTALLDIR/include" CFLAGS="-O3" LDFLAGS="-L$INSTALLDIR/lib" \
   emcmake cmake \
     -D CMAKE_INSTALL_PREFIX=$INSTALLDIR \
-    -D ENABLE_GNUTLS=false -D ENABLE_OPENSSL=false -D ENABLE_COMMONCRYPTO=false \
+    -D ENABLE_COMMONCRYPTO=false -D ENABLE_GNUTLS=false \
+    -D ENABLE_MBEDTLS=false -D ENABLE_OPENSSL=false  \
     -D ENABLE_BZIP2=false -D ENABLE_LZMA=false \
+    -D BUILD_TOOLS=false -D BUILD_REGRESS=false \
+    -D BUILD_EXAMPLES=false -D BUILD_DOC=false \
     -D BUILD_SHARED_LIBS=false \
     -D ZLIB_LIBRARY=$INSTALLDIR/lib -D ZLIB_INCLUDE_DIR=$INSTALLDIR/include \
     ..
-sed -i -e 's/^#define SIZEOF_OFF_T 7/#define SIZEOF_OFF_T 4/' config.h
-emmake make -j$(nproc)
+emmake make -j$(nproc) VERBOSE=1
 emmake make install

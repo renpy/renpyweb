@@ -36,3 +36,13 @@ index 11fe8646f..02a772513 100755
            create.push(key);
            total++;
          }
+--- emscripten/system/bin/sdl2-config	2020-09-02 17:52:17.000000000 +0200
++++ emscripten/system/bin/sdl2-config	2020-10-16 17:07:51.734317365 +0200
+@@ -10,5 +10,6 @@
+ if '--cflags' in args or '--libs' in args:
+   print('-s USE_SDL=2')
+ elif '--version' in args:
+-  print('2.0.0')
++  # https://github.com/emscripten-core/emscripten/pull/12538
++  print('2.0.10')
+ 

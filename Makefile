@@ -501,7 +501,7 @@ $(BUILD)/renpy.built: $(BUILD)/pygame_sdl2-static.built $(BUILD)/fribidi.built $
 	$(SCRIPTSDIR)/renpy_modules-static.sh
 	touch $(BUILD)/renpy.built
 
-$(BUILD)/fribidi.built: $(CACHEROOT)/fribidi-0.19.2.tar.gz
+$(BUILD)/fribidi.built: $(CACHEROOT)/fribidi-1.0.7.tar.bz2
 	$(SCRIPTSDIR)/fribidi.sh
 	touch $(BUILD)/fribidi.built
 
@@ -524,11 +524,11 @@ $(BUILD)/pygame_sdl2-dynamic.built: $(BUILD)/libjpeg-turbo.built $(BUILD)/libpng
 	$(SCRIPTSDIR)/pygame_sdl2-dynamic.sh
 	touch $(BUILD)/pygame_sdl2-dynamic.built
 
-$(BUILD)/libjpeg-turbo.built: $(CACHEROOT)/libjpeg-turbo-1.4.0.tar.gz
+$(BUILD)/libjpeg-turbo.built: $(CACHEROOT)/libjpeg-turbo-1.5.3.tar.gz
 	$(SCRIPTSDIR)/libjpeg-turbo.sh
 	touch $(BUILD)/libjpeg-turbo.built
 
-$(BUILD)/libpng.built: $(CACHEROOT)/libpng-1.6.34.tar.gz $(BUILD)/zlib.built
+$(BUILD)/libpng.built: $(CACHEROOT)/libpng-1.6.37.tar.gz $(BUILD)/zlib.built
 	$(SCRIPTSDIR)/libpng.sh
 	touch $(BUILD)/libpng.built
 
@@ -536,7 +536,11 @@ $(BUILD)/zlib.built: $(CACHEROOT)/zlib-1.2.11.tar.gz
 	$(SCRIPTSDIR)/zlib.sh
 	touch $(BUILD)/zlib.built
 
-$(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.6.1.tar.gz
+$(BUILD)/libwebp.built: $(CACHEROOT)/libwebp-1.1.0.tar.gz
+	$(SCRIPTSDIR)/libwebp.sh
+	touch $(BUILD)/libwebp.built
+
+$(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.7.3.tar.gz
 	$(SCRIPTSDIR)/libzip.sh
 	touch $(BUILD)/libzip.built
 
@@ -548,20 +552,20 @@ $(BUILD)/zee.js.built:
 		make -j$(nproc)
 	touch $(BUILD)/zee.js.built
 
-# Note: do not mix USE_SDL_IMAGE=2 (2.0.0 and -lSDL2_image (2.0.2)
+# Note: do not mix USE_SDL_IMAGE=2 (2.0.0 and -lSDL2_image (2.0.5)
 # I got weird errors with dynamic linking, possibly they are not 100% compatible
-$(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.0.2.tar.gz
+$(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.0.5.tar.gz $(BUILD)/libpng.built $(BUILD)/libjpeg-turbo.built $(BUILD)/libwebp.built
 	$(SCRIPTSDIR)/SDL2_image.sh
 	touch $(BUILD)/SDL2_image.built
 
-$(CACHEROOT)/libjpeg-turbo-1.4.0.tar.gz:
-	wget https://sourceforge.net/projects/libjpeg-turbo/files/1.4.0/libjpeg-turbo-1.4.0.tar.gz -P $(CACHEROOT)
+$(CACHEROOT)/libjpeg-turbo-1.5.3.tar.gz:
+	wget https://sourceforge.net/projects/libjpeg-turbo/files/1.5.3/libjpeg-turbo-1.5.3.tar.gz -P $(CACHEROOT)
 
-$(CACHEROOT)/libpng-1.6.34.tar.gz:
-	wget http://prdownloads.sourceforge.net/libpng/libpng-1.6.34.tar.gz -P $(CACHEROOT)
+$(CACHEROOT)/libpng-1.6.37.tar.gz:
+	wget http://prdownloads.sourceforge.net/libpng/libpng-1.6.37.tar.gz -P $(CACHEROOT)
 
-$(CACHEROOT)/fribidi-0.19.2.tar.gz:
-	wget https://web.archive.org/web/20160305193708/http://fribidi.org/download/fribidi-0.19.2.tar.gz -P $(CACHEROOT)
+$(CACHEROOT)/fribidi-1.0.7.tar.bz2:
+	wget https://github.com/fribidi/fribidi/releases/download/v1.0.7/fribidi-1.0.7.tar.bz2 -P $(CACHEROOT)
 
 $(CACHEROOT)/ffmpeg-4.3.1.tar.bz2:
 	wget https://ffmpeg.org/releases/ffmpeg-4.3.1.tar.bz2 -P $(CACHEROOT)
@@ -570,11 +574,14 @@ $(CACHEROOT)/ffmpeg-4.3.1.tar.bz2:
 #	wget https://libsdl.org/release/SDL2-2.0.9.tar.gz -P $(CACHEROOT)
 # => USE_SDL=2 for now, it has lots of Emscripten fixes
 
-$(CACHEROOT)/SDL2_image-2.0.2.tar.gz:
-	wget https://libsdl.org/projects/SDL_image/release/SDL2_image-2.0.2.tar.gz -P $(CACHEROOT)
+$(CACHEROOT)/SDL2_image-2.0.5.tar.gz:
+	wget https://libsdl.org/projects/SDL_image/release/SDL2_image-2.0.5.tar.gz -P $(CACHEROOT)
 
 $(CACHEROOT)/zlib-1.2.11.tar.gz:
 	wget http://prdownloads.sourceforge.net/libpng/zlib-1.2.11.tar.gz -P $(CACHEROOT)
 
-$(CACHEROOT)/libzip-1.6.1.tar.gz:
-	wget https://libzip.org/download/libzip-1.6.1.tar.gz -P $(CACHEROOT)
+$(CACHEROOT)/libwebp-1.1.0.tar.gz:
+	wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.1.0.tar.gz -P $(CACHEROOT)
+
+$(CACHEROOT)/libzip-1.7.3.tar.gz:
+	wget https://libzip.org/download/libzip-1.7.3.tar.gz -P $(CACHEROOT)

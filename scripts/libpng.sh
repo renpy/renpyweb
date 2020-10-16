@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile libpng for Emscripten
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -31,8 +31,8 @@ MODE=opti
 CFLAGS=-O3
 
 cd $BUILD/
-tar xf $CACHEROOT/libpng-1.6.34.tar.gz
-cd libpng-1.6.34/
+tar xf $CACHEROOT/libpng-1.6.37.tar.gz
+cd libpng-1.6.37/
 
 #official config.sub/config.guess don't recognize 'asmjs-unknown-emscripten' :/
 #cp -a ../config/config.sub ../config/config.guess .

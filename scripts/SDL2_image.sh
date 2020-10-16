@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile SDL2_image for Emscripten
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -27,44 +27,39 @@ BUILD=$(dirname $(readlink -f $0))/../build
 INSTALLDIR=$(dirname $(readlink -f $0))/../install
 PATCHESDIR=$(dirname $(readlink -f $0))/../patches
 HOSTPYTHON=$BUILD/hostpython/bin/python
-MODE=opti
-CFLAGS=-O3
 
 cd $BUILD/
-if [ ! -d SDL2_image-2.0.2/ ]; then
-    tar xf $CACHEROOT/SDL2_image-2.0.2.tar.gz
+if [ ! -d SDL2_image-2.0.5/ ]; then
+    tar xf $CACHEROOT/SDL2_image-2.0.5.tar.gz
 fi
 (
-    cd SDL2_image-2.0.2/
+    cd SDL2_image-2.0.5/
 
-    # webp
-    (
-        # prevent libtoolize from messing the parent ltmain.sh
-	mkdir -p t1/t2/t3
-	cp -a external/libwebp-0.6.0/ t1/t2/t3/
-	cd t1/t2/t3/libwebp-0.6.0/
-	if [ ! -e configure ]; then ./autogen.sh; fi
-	mkdir -p cross-emscripten-$MODE
-	cd cross-emscripten-$MODE/
-	# Disable SIMD/SSE; check -s SIMD=1 for WASM and browser support some day
-	EMCONFIGURE_JS=1 emconfigure ../configure --prefix $INSTALLDIR \
-            --disable-shared --disable-threading --disable-sse2 --disable-sse4.1
-	emmake make -j$(nproc)
-	emmake make install
-    )
+    mkdir -p build
+    cd build/
 
-
-    mkdir -p cross-emscripten-$MODE
-    cd cross-emscripten-$MODE/
-    EMCONFIGURE_JS=1 emconfigure ../configure --prefix $INSTALLDIR \
+    emconfigure ../configure --prefix $INSTALLDIR \
       --disable-shared \
-      --enable-png --enable-jpg --enable-webp \
-        --disable-png-shared --disable-jpg-shared --disable-webp-shared \
-        --disable-tif --disable-tif-shared \
-        --disable-bmp --disable-xpm --disable-gif --disable-lbm --disable-pcx \
-        --disable-svg --disable-tga --disable-xcf  \
+      \
+      --disable-tif \
+      --disable-imageio \
+      --disable-jpg-shared \
+      --disable-png-shared \
+      --enable-webp \
+      --disable-webp-shared \
+      --disable-xcf  \
+      --disable-svg \
+      \
+      --disable-tif-shared \
+      --disable-xpm \
+      --disable-gif \
+      --disable-lbm \
+      --disable-pcx \
+      --disable-tga \
+      --disable-bmp \
+      \
       PKG_CONFIG_LIBDIR=$INSTALLDIR/lib/pkgconfig:$(emconfigure env|grep ^PKG_CONFIG_LIBDIR|sed 's/^PKG_CONFIG_LIBDIR=//') \
-      CPPFLAGS="-I$INSTALLDIR/include" LDFLAGS="-s USE_SDL=2 -L$INSTALLDIR/lib" CFLAGS="$CFLAGS"
+      CPPFLAGS="-I$INSTALLDIR/include" LDFLAGS="-s USE_SDL=2 -L$INSTALLDIR/lib" CFLAGS="-O3"
 
     emmake make -j$(nproc)
     emmake make install

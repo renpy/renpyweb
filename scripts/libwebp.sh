@@ -1,5 +1,5 @@
 #!/bin/bash -ex
-# Cross-compile libjpeg-turbo for Emscripten
+# Cross-compile libwebp for Emscripten
 
 # Copyright (C) 2019, 2020  Sylvain Beucler
 
@@ -29,20 +29,14 @@ PATCHESDIR=$(dirname $(readlink -f $0))/../patches
 HOSTPYTHON=$BUILD/hostpython/bin/python
 
 cd $BUILD/
-tar xf $CACHEROOT/libjpeg-turbo-1.5.3.tar.gz
-cd libjpeg-turbo-1.5.3/
+tar xf $CACHEROOT/libwebp-1.1.0.tar.gz
+cd libwebp-1.1.0/
 
-#official config.sub/config.guess don't recognize 'asmjs-unknown-emscripten' :/
-#cp -a ../config/config.sub ../config/config.guess .
-#cp -a ../SDL2/config.sub ../SDL2/config.guess .
-cp -a $PATCHESDIR/config.{sub,guess} .
 mkdir -p build
 cd build/
 
-# emconfigure ../configure --prefix $INSTALLDIR
-# => errors when trying to test assembly, weird test
-
-emconfigure ../configure --host asmjs-unknown-emscripten --build $(sh ../config.guess) \
-  --prefix $INSTALLDIR --disable-shared --without-turbojpeg
+# Disable SIMD/SSE; check -s SIMD=1 for WASM and browser support some day
+emconfigure ../configure --prefix $INSTALLDIR \
+    --disable-shared --disable-threading --disable-sse2 --disable-sse4.1
 emmake make -j$(nproc)
 emmake make install

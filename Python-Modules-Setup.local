@@ -19,6 +19,7 @@ datetime datetimemodule.c
 zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
 _md5 md5module.c md5.c
 array arraymodule.c
+unicodedata unicodedata.c
 
 # future deps:
 future_builtins future_builtins.c

@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile fribidi for Emscripten
 
-# Copyright (C) 2019  Sylvain Beucler
+# Copyright (C) 2019, 2020  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -29,8 +29,8 @@ PATCHESDIR=$(dirname $(readlink -f $0))/../patches
 HOSTPYTHON=$BUILD/hostpython/bin/python
 
 cd $BUILD/
-tar xf $CACHEROOT/fribidi-0.19.2.tar.gz
-cd fribidi-0.19.2/
+tar xf $CACHEROOT/fribidi-1.0.7.tar.bz2
+cd fribidi-1.0.7/
 
 mkdir -p build
 cd build/
