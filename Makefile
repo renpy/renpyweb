@@ -492,12 +492,6 @@ $(BUILD)/python.built:
 $(BUILD)/python3.built:
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
 	$(MAKE) python-emscripten  # id. wrt directory timestamp
-	if [ ! -d python-emscripten ]; then \
-	    fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
-	    mkdir python-emscripten; \
-	    cd python-emscripten; \
-	    fossil open ../python-emscripten.fossil 65dc11f4b9; \
-	fi
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python3-Modules-Setup.local \
 	  $(CURDIR)/python-emscripten/$(PY3VER)/python.sh
