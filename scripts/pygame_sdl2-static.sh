@@ -38,8 +38,9 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
     cd $PYGAME_SDL2_ROOT/
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
+    # -s SDL2_MIXER_FORMATS='[]': temporary work-around for https://github.com/emscripten-core/emscripten/issues/12589
     CC="$EMCC" LDSHARED="$EMCC" \
-      CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2" \
+      CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -s SDL2_MIXER_FORMATS='[]'" \
       LDFLAGS="-L$INSTALLDIR/lib" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' PYGAME_SDL2_STATIC=1 \
       $CROSSPYTHON \

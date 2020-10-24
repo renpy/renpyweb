@@ -1,0 +1,15 @@
+https://github.com/kripken/zee.js/pull/12
+
+diff --git a/Makefile b/Makefile
+index 441674f..4d8fb16 100644
+--- a/Makefile
++++ b/Makefile
+@@ -114,7 +114,7 @@ test64: all64
+ 	-@rm -f foo.gz
+ 
+ libz.bc: $(OBJS)
+-	$(EMCC) $(OBJS) -o $@
++	$(EMCC) -r $(OBJS) -o $@
+ 	#-@ ($(RANLIB) $@ || true) >/dev/null 2>&1
+ 
+ match.o: match.S

@@ -479,7 +479,7 @@ python-emscripten:
 	fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
 	mkdir python-emscripten; \
 	cd python-emscripten; \
-	fossil open ../python-emscripten.fossil af3ca87849
+	fossil open ../python-emscripten.fossil c90a1d71b9
 
 $(BUILD)/python.built:
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
@@ -547,7 +547,8 @@ $(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.7.3.tar.gz
 $(BUILD)/zee.js.built:
 	-git clone https://github.com/kripken/zee.js $(BUILD)/zee.js
 	cd $(BUILD)/zee.js && \
-		git checkout 4324d2ca65ced2c7e75d85baf6bdab11ccfed8ac && \
+		git checkout 70c2b160ed1db2bcd73365e221b939f91fb25436 && \
+		patch -p1 < ../../patches/zee.js.patch && \
 		make clean && \
 		make -j$(nproc)
 	touch $(BUILD)/zee.js.built

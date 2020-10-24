@@ -12,27 +12,15 @@ index 11fe8646f..02a772513 100755
  
  
  def get_cflags(force_object_files=False):
---- emscripten-git/emcc.py	2020-09-10 12:56:16.876047227 +0200
-+++ upstream/emscripten/emcc.py	2020-09-10 12:57:09.611839316 +0200
-@@ -1305,7 +1305,8 @@
-       else:
-         link_to_object = True
- 
--    if not link_to_object and not compile_only and final_suffix not in EXECUTABLE_ENDINGS:
-+    # https://github.com/emscripten-core/emscripten/issues/12148
-+    if not link_to_object and not compile_only and final_suffix not in EXECUTABLE_ENDINGS and not os.environ.get('EMMAKEN_JUST_CONFIGURE'):
-       # TODO(sbc): Remove this emscripten-specific special case.  We should only generate object
-       # file output with an explicit `-c` or `-r`.
-       diagnostics.warning('emcc', 'assuming object file output, based on output filename alone.  Add an explict `-c`, `-r` or `-shared` to avoid this warning')
 --- emscripten/src/library_idbfs.js	2020-09-02 17:52:17.000000000 +0200
 +++ emscripten/src/library_idbfs.js	2020-10-02 16:18:33.566465230 +0200
 @@ -231,7 +231,8 @@
        Object.keys(src.entries).forEach(function (key) {
          var e = src.entries[key];
          var e2 = dst.entries[key];
--        if (!e2 || e['timestamp'] > e2['timestamp']) {
-+        // https://github.com/emscripten-core/emscripten/issues/12348
-+        if (!e2 || e['timestamp'] != e2['timestamp']) {
+-        if (!e2 || e['timestamp'] != e2['timestamp']) {
++        // https://github.com/emscripten-core/emscripten/pull/12560
++         if (!e2 || e['timestamp'].getTime() != e2['timestamp'].getTime()) {
            create.push(key);
            total++;
          }
