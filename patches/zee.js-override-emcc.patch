@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 441674f..0acf140 100644
+--- a/Makefile
++++ b/Makefile
+@@ -17,7 +17,7 @@
+ #    make install prefix=$HOME
+ 
+ # -s WASM=0 -s WASM_ASYNC_COMPILATION=0 -s SINGLE_FILE=1: allow loading zee.js synchronously
+-EMCC=emcc -O2 -s WASM=0 -s WASM_ASYNC_COMPILATION=0 -s SINGLE_FILE=1 -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_FUNCTIONS="['_gzopen', '_gzread', '_gzwrite', '_gzclose', '_gzerror', '_gzeof']" --pre-js pre.js --post-js post.js
++override EMCC=emcc -O2 -s WASM=0 -s WASM_ASYNC_COMPILATION=0 -s SINGLE_FILE=1 -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_FUNCTIONS="['_gzopen', '_gzread', '_gzwrite', '_gzclose', '_gzerror', '_gzeof']" --pre-js pre.js --post-js post.js
+ # -s INLINING_LIMIT=0
+ CC=$(EMCC)
+ # gcc

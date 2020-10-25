@@ -550,6 +550,7 @@ $(BUILD)/zee.js.built:
 	cd $(BUILD)/zee.js && \
 		git checkout 70c2b160ed1db2bcd73365e221b939f91fb25436 && \
 		patch -p1 < ../../patches/zee.js.patch && \
+		patch -p1 < ../../patches/zee.js-override-emcc.patch && \
 		make clean && \
 		make -j$(nproc)
 	touch $(BUILD)/zee.js.built
