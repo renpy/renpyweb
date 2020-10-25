@@ -50,7 +50,7 @@ unset RENPY_STEAM_SDK
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
     CC="$EMCC" LDSHARED="$EMCC" \
       CFLAGS="-I$INSTALLDIR/include -s USE_SDL=2 -s USE_FREETYPE=1" \
-      LDFLAGS="-L$INSTALLDIR/lib" \
+      LDFLAGS="-r -L$INSTALLDIR/lib" \
       RENPY_EMSCRIPTEN=1 RENPY_STATIC=1 \
       $CROSSPYTHON \
         setup.py \
