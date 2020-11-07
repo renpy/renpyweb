@@ -484,8 +484,7 @@ $(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.6.1.tar.gz
 $(BUILD)/zee.js.built:
 	-git clone https://github.com/kripken/zee.js $(BUILD)/zee.js
 	cd $(BUILD)/zee.js && \
-		git checkout 70c2b160ed1db2bcd73365e221b939f91fb25436 && \
-		patch -p1 < ../../patches/zee.js.patch && \
+		git checkout 715ab4d6b28053437fe4c38863b71ce18bc307ad && \
 		make clean && \
 		make -j$(nproc)
 	touch $(BUILD)/zee.js.built
