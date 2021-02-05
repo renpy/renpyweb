@@ -3,7 +3,6 @@ Options +MultiViews
 RemoveType .gz
 AddEncoding x-gzip .gz
 AddType application/octet-stream .data
-AddType application/octet-stream .em
 AddType application/wasm .wasm
 
 # CPU-intensive, better pre-gzip
