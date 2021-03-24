@@ -1,6 +1,6 @@
 # RenPyWeb - build system entry point
 
-# Copyright (C) 2019, 2020  Sylvain Beucler
+# Copyright (C) 2019, 2020, 2021  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -160,7 +160,7 @@ common: check_emscripten dirs
 common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built $(BUILD)/emscripten-static.bc package-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
 common-pygame-example-dynamic: common $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/emscripten-dynamic.bc package-pygame-example-dynamic $(BUILD)/main-pygame_sdl2-dynamic.bc
 
-common-renpy: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc package-renpy $(BUILD)/zee.js.built
+common-renpy: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc package-renpy
 
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
@@ -381,9 +381,6 @@ asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpy versionmark
 	    $(ASYNCIFY_LDFLAGS) \
 	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    -o $(BUILD)/t/index.html
-	# fallback compression
-	cp -a $(BUILD)/zee.js/zee.js $(BUILD)/t/
-	gzip -f $(BUILD)/t/index.wasm
 
 
 # Experimental - doesn't work
@@ -457,14 +454,12 @@ hosting-gzip: preupload-clean
 	-bash -c "gzip -f $(BUILD)/t/index.{em,js,html}"
 	-bash -c "gzip -f $(BUILD)/t/pythonhome{.data,-data.js}"
 	-bash -c "gzip -f $(BUILD)/t/pyapp{.data,-data.js}"
-	-gzip -f $(BUILD)/t/zee.js
 	cp -a htaccess.txt $(BUILD)/t/.htaccess
 
 gunzip:
 	-bash -c "gunzip $(BUILD)/t/index.{em,js,html}.gz"
 	-bash -c "gunzip $(BUILD)/t/pythonhome{.data,-data.js}.gz"
 	-bash -c "gunzip $(BUILD)/t/pyapp{.data,-data.js}.gz"
-	-gunzip $(BUILD)/t/zee.js.gz
 	rm -f $(BUILD)/t/.htaccess
 
 testserver:
@@ -545,15 +540,6 @@ $(BUILD)/libwebp.built: $(CACHEROOT)/libwebp-1.1.0.tar.gz
 $(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.7.3.tar.gz
 	$(SCRIPTSDIR)/libzip.sh
 	touch $(BUILD)/libzip.built
-
-$(BUILD)/zee.js.built:
-	-git clone https://github.com/kripken/zee.js $(BUILD)/zee.js
-	cd $(BUILD)/zee.js && \
-		git checkout 715ab4d6b28053437fe4c38863b71ce18bc307ad && \
-		patch -p1 < ../../patches/zee.js-override-emcc.patch && \
-		make clean && \
-		make -j$(nproc)
-	touch $(BUILD)/zee.js.built
 
 # Note: do not mix USE_SDL_IMAGE=2 (2.0.0 and -lSDL2_image (2.0.5)
 # I got weird errors with dynamic linking, possibly they are not 100% compatible

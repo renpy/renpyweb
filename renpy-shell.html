@@ -152,6 +152,11 @@
           // R.I.P.
       }
 
+      // Clear error when running without server
+      if (location.href.startsWith('file://')) {
+          alert("Error: your browser requires the game to be run from a local HTTP server (i.e. double-clicking on index.html won't work).");
+      }
+
       // Work-around iframe focus
       // https://github.com/emscripten-core/emscripten/pull/7631
       document.getElementById('canvas').addEventListener('mouseenter', function(e) { window.focus() });
@@ -176,7 +181,7 @@
     </div>
 
     <script type='text/javascript'>
-      /* Copyright (C) 2018, 2019  Sylvain Beucler */
+      /* Copyright (C) 2018, 2019, 2020, 2021  Sylvain Beucler */
 
       /* Context menu */
       document.getElementById('ContextButton').addEventListener('click', function (e) {
