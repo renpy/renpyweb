@@ -49,7 +49,9 @@ PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
           -b emscripten-static/build-lib -t emscripten-static/build-temp \
         build \
 	install -O2 --root $INSTALLDIR --prefix ''
-    $CROSSPYTHON setup.py install_headers
+    PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' \
+      $CROSSPYTHON \
+      setup.py install_headers
 
     rm -f $INSTALLDIR/lib/python2.7/site-packages/pygame_sdl2/*.so
 )
