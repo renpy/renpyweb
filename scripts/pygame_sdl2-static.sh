@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile pygame_sdl2 for Emscripten, as static modules
 
-# Copyright (C) 2019, 2020  Sylvain Beucler
+# Copyright (C) 2019, 2020, 2021  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -36,11 +36,15 @@ CROSSPYTHON=$(dirname $(readlink -f $0))/../python-emscripten/$PY2VER/crosspytho
 PYGAME_SDL2_ROOT=$ROOT/pygame_sdl2
 (
     cd $PYGAME_SDL2_ROOT/
+
+    # Ensure harfbuzz is compiled without CFLAGS set, work-around for:
+    # https://github.com/emscripten-core/emscripten/issues/13648#issuecomment-805844779
+    embuilder build harfbuzz
+
     # PYGAME_SDL2_CFLAGS='': inhibit running sdl2-config --cflags
     # PYGAME_SDL2_LDFLAGS='': inhibit running sdl2-config --libs
-    # -s SDL2_MIXER_FORMATS='[]': temporary work-around for https://github.com/emscripten-core/emscripten/issues/12589
     CC="$EMCC" LDSHARED="$EMCC" \
-      CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -s SDL2_MIXER_FORMATS='[]'" \
+      CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/SDL2 -s USE_SDL=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2" \
       LDFLAGS="-r -L$INSTALLDIR/lib" \
       PYGAME_SDL2_CFLAGS='' PYGAME_SDL2_LDFLAGS='' PYGAME_SDL2_STATIC=1 \
       $CROSSPYTHON \
