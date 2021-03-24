@@ -97,8 +97,7 @@ COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 # See below for flags explanation
 RENPY_LDFLAGS = \
 	$(COMMON_LDFLAGS) \
-	-s USE_FREETYPE=1 \
-	-lavformat -lavcodec -lavutil -lswresample -lswscale -lfribidi \
+	-lavformat -lavcodec -lavutil -lswresample -lswscale -lfreetype -lfribidi \
 	-lzip \
 	-lidbfs.js \
 	-s EXPORTED_FUNCTIONS='["_main", "_Py_Initialize", "_PyRun_SimpleString", "_pyapp_runmain", "_emSavegamesImport", "_emSavegamesExport"]' \
@@ -494,9 +493,13 @@ $(BUILD)/python3.built:
 	  $(CURDIR)/python-emscripten/$(PY3VER)/python.sh
 	touch $(BUILD)/python3.built
 
-$(BUILD)/renpy.built: $(BUILD)/pygame_sdl2-static.built $(BUILD)/fribidi.built $(BUILD)/ffmpeg.built
+$(BUILD)/renpy.built: $(BUILD)/pygame_sdl2-static.built $(BUILD)/freetype.built $(BUILD)/fribidi.built $(BUILD)/ffmpeg.built
 	$(SCRIPTSDIR)/renpy_modules-static.sh
 	touch $(BUILD)/renpy.built
+
+$(BUILD)/freetype.built: $(CACHEROOT)/freetype-2.10.1.tar.gz
+	$(SCRIPTSDIR)/freetype.sh
+	touch $(BUILD)/freetype.built
 
 $(BUILD)/fribidi.built: $(CACHEROOT)/fribidi-1.0.7.tar.bz2
 	$(SCRIPTSDIR)/fribidi.sh
@@ -552,6 +555,9 @@ $(CACHEROOT)/libjpeg-turbo-1.5.3.tar.gz:
 
 $(CACHEROOT)/libpng-1.6.37.tar.gz:
 	wget http://prdownloads.sourceforge.net/libpng/libpng-1.6.37.tar.gz -P $(CACHEROOT)
+
+$(CACHEROOT)/freetype-2.10.1.tar.gz:
+	wget https://download.savannah.gnu.org/releases/freetype/freetype-2.10.1.tar.gz -P $(CACHEROOT)
 
 $(CACHEROOT)/fribidi-1.0.7.tar.bz2:
 	wget https://github.com/fribidi/fribidi/releases/download/v1.0.7/fribidi-1.0.7.tar.bz2 -P $(CACHEROOT)

@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Cross-compile RenPy Cython modules for Emscripten, as static modules
 
-# Copyright (C) 2019, 2020  Sylvain Beucler
+# Copyright (C) 2019, 2020, 2021  Sylvain Beucler
 
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation files
@@ -49,7 +49,7 @@ unset RENPY_STEAM_SDK
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'
     CC="$EMCC" LDSHARED="$EMCC" \
-      CFLAGS="-I$INSTALLDIR/include -s USE_SDL=2 -s USE_FREETYPE=1" \
+      CFLAGS="-I$INSTALLDIR/include -I$INSTALLDIR/include/freetype2 -s USE_SDL=2" \
       LDFLAGS="-r -L$INSTALLDIR/lib" \
       RENPY_EMSCRIPTEN=1 RENPY_STATIC=1 \
       $CROSSPYTHON \
