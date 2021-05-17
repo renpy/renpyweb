@@ -11,6 +11,8 @@ class Condition():
 
     def notifyAll(self): pass
 
+    def notify_all(self): pass
+
     def wait(self, duration=None): pass
 
 
@@ -31,6 +33,8 @@ class Event(object):
 
     def isSet(self): return True
 
+    def is_set(self): return True
+
     def clear(self): pass
 
     def wait(self, timeout=None): return True
@@ -47,6 +51,9 @@ class Thread(object):
     def setDaemon(self, value): pass
 
     def isAlive(self):
+        return False
+
+    def is_alive(self):
         return False
 
 class local(object):
