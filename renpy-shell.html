@@ -388,7 +388,16 @@
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
         //Module.setStatus('Exception thrown, see JavaScript console');
         // Explicitly display meaningful errors such as "uncaught exception: out of memory":
-        Module.setStatus('Error: ' + event.split('\n')[0] + ' (see JavaScript console for details)');
+
+        var iOSSafari = /iP(ad|od|hone)/i.test(window.navigator.userAgent) && /WebKit/i.test(window.navigator.userAgent) && !(/(CriOS|FxiOS|OPiOS|mercury)/i.test(window.navigator.userAgent));
+
+        if (iOSSafari) {
+            var appleWarning = "\n<p>\nMobile Safari has known compatibility issues. Please contact Apple if this game does not load properly.";
+        } else {
+            var appleWarning = "";
+        }
+
+        Module.setStatus('Error: ' + event.split('\n')[0] + ' (see JavaScript console for details)' + appleWarning);
         spinnerElement.style.display = 'none';
         Module.setStatus = function(text) {
           if (text) Module.printErr('[post-exception status] ' + text);
