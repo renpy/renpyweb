@@ -389,12 +389,10 @@
         //Module.setStatus('Exception thrown, see JavaScript console');
         // Explicitly display meaningful errors such as "uncaught exception: out of memory":
 
-        var iOSSafari = /iP(ad|od|hone)/i.test(window.navigator.userAgent) && /WebKit/i.test(window.navigator.userAgent) && !(/(CriOS|FxiOS|OPiOS|mercury)/i.test(window.navigator.userAgent));
+        var appleWarning = "";
 
-        if (iOSSafari) {
-            var appleWarning = "\n<p>\nMobile Safari has known compatibility issues. Please contact Apple if this game does not load properly.";
-        } else {
-            var appleWarning = "";
+        if (/RangeError/.test(event)) {
+            appleWarning = "\n<p>This is a known issue in Safari and Webkit browsers. Please report this issue to Apple.";
         }
 
         Module.setStatus('Error: ' + event.split('\n')[0] + ' (see JavaScript console for details)' + appleWarning);
