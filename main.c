@@ -126,6 +126,7 @@ int main(int argc, char* argv[]) {
 #endif
 	PyRun_SimpleString("print('Python loaded.')");
 
+#if 0
 #if __EMSCRIPTEN__ && RENPY
 	// Return without exiting so we can keep using Python
 	emscripten_exit_with_live_runtime();
@@ -135,6 +136,7 @@ int main(int argc, char* argv[]) {
 #else
 	// Mock Emscripten
 	pyapp_runmain();
+#endif
 #endif
 }
 
@@ -153,14 +155,14 @@ void pyapp_runmain() {
   //printf("Loading game, please wait...\n");
   //emscripten_sleep(0);
 #endif
-  
+
   int ret = PyRun_SimpleFileEx(f, "main.py", 1);
   //Module['quit'] will be called and display "Quit"
   //printf("Game completed.\n");
 
   //if (ret)
   //  printf("Exit code %d.\n", ret);
-  
+
   // De-init Python
   //Py_Finalize();
 }
