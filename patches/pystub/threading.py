@@ -1,4 +1,6 @@
 class Condition():
+    def __init__(self, lock=None): pass
+    
     def __enter__(self): pass
 
     def __exit__(self, _type, value, traceback): pass
