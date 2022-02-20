@@ -82,10 +82,8 @@
 
     dbg_log(wrapper);
 
-    FS.writeFile('/_js_cmd.py.new', wrapper);
-    // Rename the file after writing its content to make sure the content
-    // has been fully written before Ren'Py sees the file
-    FS.rename('/_js_cmd.py.new', '/_js_cmd.py');
+    // Write script to the global variable Ren'Py is monitoring
+    window._renpy_cmd = wrapper;
   }
 
   /** Add a command to the queue and execute it if the queue was empty. */
