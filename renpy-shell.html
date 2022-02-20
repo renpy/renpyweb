@@ -184,13 +184,20 @@
       /* Copyright (C) 2018, 2019, 2020, 2021  Sylvain Beucler */
 
       /* Context menu */
+      const menu = document.getElementById('ContextMenu');
       document.getElementById('ContextButton').addEventListener('click', function (e) {
-        var menu = document.getElementById('ContextMenu');
         if (menu.style.display == 'none')
           menu.style.display = 'block';
         else
           menu.style.display = 'none';
         e.preventDefault();
+      });
+
+      menu.addEventListener('click', function (e) {
+        if (e.target.tagName == 'A') {
+          // Close context menu when a menu item is selected
+          menu.style.display = 'none';
+        }
       });
 
       function onSavegamesImport(input) {
