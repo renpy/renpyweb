@@ -203,7 +203,12 @@
               console.trace(); console.log(err, err.message);
               Module.print("Warning: cannot import savegames: write error: " + err.message + "\n");
             } else {
-              Module.print("Saves imported - restart game to apply.\n");
+                renpy_exec('renpy.loadsave.location.scan()').then(result => {
+                  Module.print("Saves imported successfully\n");
+                }).catch(error => {
+                  console.error('Cannot rescan saves folder', error);
+                  Module.print("Saves imported - restart game to apply.\n");
+                });
             }
           });
         }
@@ -404,6 +409,7 @@
     </script>
     <script type='text/javascript' src="pythonhome-data.js"></script>
     <script type='text/javascript' src="pyapp-data.js"></script>
+    <script type='text/javascript' src="js_cmd.js"></script>
     <script type='text/javascript'>
       function create_persistent() {
         // populate savegames
