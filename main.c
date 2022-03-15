@@ -43,7 +43,7 @@ PyMODINIT_FUNC MODINIT(emscripten)(void);
 
 void pyapp_runmain();
 
-
+void init_librenpy();
 
 
 int main(int argc, char* argv[]) {
@@ -68,7 +68,10 @@ int main(int argc, char* argv[]) {
 #endif
 	  {NULL, NULL}
 	};
+
 	PyImport_ExtendInittab(builtins);
+	init_librenpy();
+
 	Py_InitializeEx(0);  // 0 = get rid of 'Calling stub instead of sigaction()'
 
 #if PY_MAJOR_VERSION >= 3

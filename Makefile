@@ -54,7 +54,7 @@ PYGAME_SDL2_STATIC_OBJS=pygame_sdl2/emscripten-static/build-temp/gen-static/*.o 
 # Filter down the PYGAME_SDL2_STATIC_OBJS list to remove objects that Ren'Py doesn't use.
 PYGAME_SDL2_RENPY_STATIC_OBJS=$(shell ls ${PYGAME_SDL2_STATIC_OBJS} | egrep -v 'pygame_sdl2.(font|mixer|mixer_music|render).o')
 
-RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc \
+RENPY_OBJS=$(BUILD)/main-renpyweb-static.bc $(BUILD)/inittab.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc \
 	$(PYGAME_SDL2_RENPY_STATIC_OBJS) \
 	renpy/module/emscripten-static/build-temp/*.o renpy/module/emscripten-static/build-temp/gen-static/*.o
 
@@ -155,11 +155,15 @@ $(BUILD)/main-renpyweb-static.bc: main.c
 $(BUILD)/importexport.bc: importexport.c $(BUILD)/libzip.built
 	$(EMCC) -c $(CFLAGS) importexport.c -o $(BUILD)/importexport.bc -I install/include/
 
+$(BUILD)/inittab.bc: inittab.c
+	$(EMCC) -c $(CFLAGS) inittab.c -o $(BUILD)/inittab.bc -I install/include/ -I install/include/python2.7
+
+
 common: check_emscripten dirs
 common-pygame-example-static: common $(BUILD)/pygame_sdl2-static.built $(BUILD)/emscripten-static.bc package-pygame-example-static $(BUILD)/main-pygame_sdl2-static.bc
 common-pygame-example-dynamic: common $(BUILD)/pygame_sdl2-dynamic.built $(BUILD)/emscripten-dynamic.bc package-pygame-example-dynamic $(BUILD)/main-pygame_sdl2-dynamic.bc
 
-common-renpy: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc package-renpy
+common-renpy: common $(BUILD)/main-renpyweb-static.bc $(BUILD)/inittab.bc $(BUILD)/emscripten-static.bc $(BUILD)/importexport.bc package-renpy
 
 package-python-minimal:
 	PREFIX=$(INSTALLDIR) \
