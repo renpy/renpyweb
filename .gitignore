@@ -2,8 +2,6 @@ build
 cache
 install
 pygame-example/main.py
-python-emscripten
-python-emscripten.fossil
 *.pyo
 *~
 toolchain

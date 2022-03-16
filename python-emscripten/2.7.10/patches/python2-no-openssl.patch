@@ -1,0 +1,35 @@
+Ignore OpenSSL detection: Python 2.7.10 uses openssl 1.0.2 but tries
+to compile with 1.1 if present, and compilation fails.
+
+Taken from
+https://github.com/renpy/renpy-deps/blob/master/source/python-minimize-openssl.diff
+
+--- a/setup.py	2015-05-23 12:09:25.000000000 -0400
++++ b/setup.py	2017-11-02 23:20:09.131537016 -0400
+@@ -842,7 +842,7 @@
+         have_usable_openssl = (have_any_openssl and
+                                openssl_ver >= min_openssl_ver)
+ 
+-        if have_any_openssl:
++        if False and have_any_openssl:
+             if have_usable_openssl:
+                 # The _hashlib module wraps optimized implementations
+                 # of hash functions from the OpenSSL library.
+@@ -854,7 +854,7 @@
+                 print ("warning: openssl 0x%08x is too old for _hashlib" %
+                        openssl_ver)
+                 missing.append('_hashlib')
+-        if COMPILED_WITH_PYDEBUG or not have_usable_openssl:
++        if True or COMPILED_WITH_PYDEBUG or not have_usable_openssl:
+             # The _sha module implements the SHA1 hash algorithm.
+             exts.append( Extension('_sha', ['shamodule.c']) )
+             # The _md5 module implements the RSA Data Security, Inc. MD5
+@@ -865,7 +865,7 @@
+                             depends = ['md5.h']) )
+ 
+         min_sha2_openssl_ver = 0x00908000
+-        if COMPILED_WITH_PYDEBUG or openssl_ver < min_sha2_openssl_ver:
++        if True or COMPILED_WITH_PYDEBUG or openssl_ver < min_sha2_openssl_ver:
+             # OpenSSL doesn't do these until 0.9.8 so we'll bring our own hash
+             exts.append( Extension('_sha256', ['sha256module.c']) )
+             exts.append( Extension('_sha512', ['sha512module.c']) )

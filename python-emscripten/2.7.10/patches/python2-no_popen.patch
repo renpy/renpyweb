@@ -1,0 +1,21 @@
+Description: Fix popen-related issues with Emscripten
+  warning: unresolved symbol: popen  [emcc]
+  missing function: popen  [_popen->abort at runtime]
+Forwarded: no
+Author: Sylvain Beucler <beuc@beuc.net>
+Last-Update: 2018-10-28
+
+
+--- Python-2.7.10/Modules/posixmodule.c-dist	2015-05-23 18:09:20.000000000 +0200
++++ Python-2.7.10/Modules/posixmodule.c	2018-06-24 22:20:45.802694964 +0200
+@@ -151,8 +151,10 @@
+ #define HAVE_OPENDIR    1
+ #define HAVE_PIPE       1
+ #ifndef __rtems__
++#ifndef __EMSCRIPTEN__
+ #define HAVE_POPEN      1
+ #endif
++#endif
+ #define HAVE_SYSTEM     1
+ #define HAVE_WAIT       1
+ #define HAVE_TTYNAME    1

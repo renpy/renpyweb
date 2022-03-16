@@ -88,7 +88,7 @@ COMMON_LDFLAGS = \
 # Without ASYNCIFY_WHITELIST perfs are now acceptable (unlike with Emterpreter), at the cost of increased .wasm size and compilation time
 ASYNCIFY_LDFLAGS = \
 	-s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=65535 -s ASYNCIFY_IGNORE_INDIRECT=1  \
-	-s ASYNCIFY_WHITELIST='["main", "pyapp_runmain", "SDL_WaitEvent", "SDL_WaitEventTimeout", "SDL_Delay", "SDL_RenderPresent", "GLES2_RenderPresent", "SDL_GL_SwapWindow", "Emscripten_GLES_SwapWindow", "byn$$fpcast-emu$$Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "PyRun_SimpleFileExFlags", "PyRun_FileExFlags", "PyEval_EvalCode", "PyEval_EvalCodeEx", "PyEval_EvalFrameEx", "PyCFunction_Call", "PyObject_Call", "fast_function", "byn$$fpcast-emu$$function_call", "function_call", "instancemethod_call", "byn$$fpcast-emu$$instancemethod_call", "byn$$fpcast-emu$$slot_tp_call", "slot_tp_call", "__pyx_pw_11pygame_sdl2_5event_7wait", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_5event_7wait", "__pyx_pw_11pygame_sdl2_7display_21flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_21flip", "__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "__pyx_pf_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "byn$$fpcast-emu$$__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__pyx_pf_5renpy_3gl2_7gl2draw_7GL2Draw_*draw_screen", "__pyx_pw_5renpy_3gl2_7gl2draw_7GL2Draw_*draw_screen", "byn$$fpcast-emu$$__pyx_pw_5renpy_3gl2_7gl2draw_7GL2Draw_*draw_screen", "__Pyx_PyObject_CallNoArg*", "byn$$fpcast-emu$$__pyx_pw_10emscripten_*sleep", "__pyx_pf_10emscripten_*sleep", "__pyx_pw_10emscripten_*sleep", "gen_send", "gen_send_ex", "gen_iternext", "type_call", "slot_tp_init", "builtin_eval"]'
+	-s ASYNCIFY_ONLY='["main", "pyapp_runmain", "SDL_WaitEvent", "SDL_WaitEventTimeout", "SDL_Delay", "SDL_RenderPresent", "GLES2_RenderPresent", "SDL_GL_SwapWindow", "Emscripten_GLES_SwapWindow", "byn$$fpcast-emu$$Emscripten_GLES_SwapWindow", "SDL_UpdateWindowSurface", "SDL_UpdateWindowSurfaceRects", "Emscripten_UpdateWindowFramebuffer", "PyRun_SimpleFileExFlags", "PyRun_FileExFlags", "PyEval_EvalCode", "PyEval_EvalCodeEx", "PyEval_EvalFrameEx", "PyCFunction_Call", "PyObject_Call", "fast_function", "byn$$fpcast-emu$$function_call", "function_call", "instancemethod_call", "byn$$fpcast-emu$$instancemethod_call", "byn$$fpcast-emu$$slot_tp_call", "slot_tp_call", "__pyx_pw_11pygame_sdl2_5event_7wait", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_5event_7wait", "__pyx_pw_11pygame_sdl2_7display_21flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_21flip", "__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "byn$$fpcast-emu$$__pyx_pw_11pygame_sdl2_7display_6Window_13flip", "__pyx_pf_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "byn$$fpcast-emu$$__pyx_pw_5renpy_2gl_6gldraw_6GLDraw_*draw_screen", "__pyx_pf_5renpy_3gl2_7gl2draw_7GL2Draw_*draw_screen", "__pyx_pw_5renpy_3gl2_7gl2draw_7GL2Draw_*draw_screen", "byn$$fpcast-emu$$__pyx_pw_5renpy_3gl2_7gl2draw_7GL2Draw_*draw_screen", "__Pyx_PyObject_CallNoArg*", "byn$$fpcast-emu$$__pyx_pw_10emscripten_*sleep", "__pyx_pf_10emscripten_*sleep", "__pyx_pw_10emscripten_*sleep", "gen_send", "gen_send_ex", "gen_iternext", "type_call", "slot_tp_init", "builtin_eval"]'
 
 COMMON_PYGAME_EXAMPLE_LDFLAGS = \
 	    -s USE_SDL_MIXER=2 \
@@ -475,15 +475,8 @@ cythonobjclean:
 	rm -rf pygame_sdl2/emscripten*-static/ pygame_sdl2/emscripten*-dynamic/ renpy/module/emscripten*-static/ build/emscripten-*.bc
 	rm -f build/pygame_sdl2-*.built build/renpy.built
 
-python-emscripten:
-	fossil clone https://www.beuc.net/python-emscripten/python python-emscripten.fossil; \
-	mkdir python-emscripten; \
-	cd python-emscripten; \
-	fossil open ../python-emscripten.fossil c90a1d71b9
-
 $(BUILD)/python.built:
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
-	$(MAKE) python-emscripten  # id. wrt directory timestamp
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python-Modules-Setup.local \
 	  $(CURDIR)/python-emscripten/$(PY2VER)/python.sh
@@ -491,7 +484,6 @@ $(BUILD)/python.built:
 
 $(BUILD)/python3.built:
 	$(MAKE) check_emscripten dirs  # not a dep so that we don't rebuild Python every time
-	$(MAKE) python-emscripten  # id. wrt directory timestamp
 	DESTDIR=$(INSTALLDIR) \
 	  SETUPLOCAL=$(CURDIR)/Python3-Modules-Setup.local \
 	  $(CURDIR)/python-emscripten/$(PY3VER)/python.sh

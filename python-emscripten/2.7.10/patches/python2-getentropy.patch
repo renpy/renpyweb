@@ -1,0 +1,14 @@
+Index: Python-2.7.10/Python/random.c
+===================================================================
+--- Python-2.7.10.orig/Python/random.c
++++ Python-2.7.10/Python/random.c
+@@ -3,6 +3,9 @@
+ #include <windows.h>
+ #else
+ #include <fcntl.h>
++#if defined(HAVE_GETENTROPY)
++#include <sys/random.h>
++#endif
+ #endif
+ 
+ #ifdef Py_DEBUG

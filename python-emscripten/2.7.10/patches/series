@@ -1,0 +1,6 @@
+python2-cross_compile.patch
+python2-no_popen.patch
+#python2-static_submodules.patch
+python2-webbrowser.patch
+python2-no-openssl.patch
+python2-getentropy.patch

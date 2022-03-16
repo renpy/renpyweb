@@ -1,0 +1,3 @@
+python2-cross_compile.patch
+python2-no_popen.patch
+python2-webbrowser.patch

@@ -1,0 +1,25 @@
+Description: support static submodules (with dots in their path)
+Forwarded: not-needed
+Author: Gabriel Jacobo, Sylvain Beucler <beuc@beuc.net>
+Origin: https://mdqinc.com/blog/2011/08/statically-linking-python-with-cython-generated-modules-and-packages/
+Last-Update: 2018-10-28
+
+For a pure-Python approach, see:
+https://github.com/renpy/renpyweb/blob/d78e427ddf1f8b8ae8e93d7f1b77aab76036f481/main.c#L230
+
+--- Python-2.7.10/Python/import.c	2015-05-23 18:09:24.000000000 +0200
++++ Python-2.7.10/Python/import.c-patched	2018-06-22 17:59:32.148285493 +0200
+@@ -1362,6 +1362,13 @@
+         Py_DECREF(meta_path);
+     }
+ 
++    // printf("PATCH: find_module(%s)\n", fullname);
++    if (fullname != NULL && is_builtin(fullname)) {
++      // printf("PATCH: submodule %s is built-in!\n", fullname);
++      strcpy(buf, fullname);
++      return &fd_builtin;
++    }
++
+     if (path != NULL && PyString_Check(path)) {
+         /* The only type of submodule allowed inside a "frozen"
+            package are other frozen modules or packages. */

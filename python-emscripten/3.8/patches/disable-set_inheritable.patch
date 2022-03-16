@@ -1,0 +1,20 @@
+Description: Disable set_inheritable
+Forwarded: no
+Author: Sylvain Beucler <beuc@beuc.net>
+Last-Update: 2020-05-08
+
+'set_inheritable' requires iotclt FIOCLEX/21585/0x5451 which is not supported:
+RuntimeError: abort(bad ioctl syscall 21585) at jsStackTrace@http://localhost:6931/index.js:1955:17
+
+--- a/Python/fileutils.c	2020-05-08 16:44:14.563517953 +0200
++++ b/Python/fileutils.c	2020-05-08 16:44:48.875389584 +0200
+@@ -1091,6 +1091,9 @@
+ static int
+ set_inheritable(int fd, int inheritable, int raise, int *atomic_flag_works)
+ {
++#ifdef EMSCRIPTEN
++return 0;
++#endif
+ #ifdef MS_WINDOWS
+     HANDLE handle;
+     DWORD flags;

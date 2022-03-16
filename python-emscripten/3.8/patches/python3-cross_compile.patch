@@ -1,0 +1,68 @@
+Description: Fix build system for Emscripten cross-compilation.
+Forwarded: no
+Author: Sylvain Beucler <beuc@beuc.net>
+Last-Update: 2020-05-08
+
+Index: Python-3.8.3/config.sub
+===================================================================
+--- Python-3.8.3.orig/config.sub
++++ Python-3.8.3/config.sub
+@@ -1394,7 +1394,7 @@ case $os in
+ 	      | -powermax* | -dnix* | -nx6 | -nx7 | -sei* | -dragonfly* \
+ 	      | -skyos* | -haiku* | -rdos* | -toppers* | -drops* | -es* \
+ 	      | -onefs* | -tirtos* | -phoenix* | -fuchsia* | -redox* | -bme* \
+-	      | -midnightbsd*)
++	      | -midnightbsd* | -emscripten*)
+ 	# Remember, each alternative MUST END IN *, to match a version number.
+ 		;;
+ 	-qnx*)
+Index: Python-3.8.3/configure
+===================================================================
+--- Python-3.8.3.orig/configure
++++ Python-3.8.3/configure
+@@ -3278,6 +3278,9 @@ then
+ 	*-*-vxworks*)
+ 	    ac_sys_system=VxWorks
+ 	    ;;
++	*-*-emscripten)
++		ac_sys_system=Emscripten
++		;;
+ 	*)
+ 		# for now, limit cross builds to known configurations
+ 		MACHDEP="unknown"
+@@ -3328,6 +3331,9 @@ if test "$cross_compiling" = yes; then
+ 	*-*-vxworks*)
+ 		_host_cpu=$host_cpu
+ 		;;
++	*-*-emscripten)
++		ac_sys_system=Emscripten
++		;;
+ 	*)
+ 		# for now, limit cross builds to known configurations
+ 		MACHDEP="unknown"
+Index: Python-3.8.3/config-emscripten.site
+===================================================================
+--- /dev/null
++++ Python-3.8.3/config-emscripten.site
+@@ -0,0 +1,5 @@
++# Required by ./configure
++ac_cv_file__dev_ptmx=no
++ac_cv_file__dev_ptc=no
++# Support dynamic linking
++ac_cv_func_dlopen=yes
+--- Python-3.8.3/setup.py	2020-05-13 19:31:54.000000000 +0200
++++ build/Python-3.8.3/setup.py	2020-05-22 10:43:49.189946959 +0200
+@@ -651,10 +651,10 @@
+         if not CROSS_COMPILING:
+             add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
+             add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
++            self.add_multiarch_paths()
+         # only change this for cross builds for 3.3, issues on Mageia
+-        if CROSS_COMPILING:
+-            self.add_cross_compiling_paths()
+-        self.add_multiarch_paths()
++        #if CROSS_COMPILING:
++        #    self.add_cross_compiling_paths()
+         self.add_ldflags_cppflags()
+ 
+     def init_inc_lib_dirs(self):

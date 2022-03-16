@@ -1,0 +1,2 @@
+python3-cross_compile.patch
+disable-set_inheritable.patch
