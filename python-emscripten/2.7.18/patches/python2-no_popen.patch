@@ -1,16 +1,21 @@
 Description: Fix popen-related issues with Emscripten
-  warning: unresolved symbol: popen  [emcc]
+
+From: Tom Rothamel <tom@rothamel.us>
+
+warning: unresolved symbol: popen  [emcc]
   missing function: popen  [_popen->abort at runtime]
 Forwarded: no
 Author: Sylvain Beucler <beuc@beuc.net>
 Last-Update: 2018-10-28
+---
+ Modules/posixmodule.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-
-Index: Python-2.7.18/Modules/posixmodule.c
-===================================================================
---- Python-2.7.18.orig/Modules/posixmodule.c
-+++ Python-2.7.18/Modules/posixmodule.c
-@@ -156,8 +156,10 @@ corresponding Unix manual entries for mo
+diff --git a/Modules/posixmodule.c b/Modules/posixmodule.c
+index 7a1a694..7c81f50 100644
+--- a/Modules/posixmodule.c
++++ b/Modules/posixmodule.c
+@@ -156,8 +156,10 @@ corresponding Unix manual entries for more information on calls.");
  #define HAVE_OPENDIR    1
  #define HAVE_PIPE       1
  #ifndef __rtems__

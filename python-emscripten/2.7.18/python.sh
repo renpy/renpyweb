@@ -28,6 +28,7 @@ unpack () {
     tar xf $CACHEROOT/Python-$VERSION.tgz
     cd Python-$VERSION/
     quilt push -a
+    cp ~/ab/renpy-build/renpyweb/ceval.c Python/ceval.c
 }
 
 # use cases:
@@ -76,7 +77,7 @@ emscripten () {
         # --disable-shared: compile statically for Emscripten perfs + incomplete PIC support
         if [ ! -e config.status ]; then
             CONFIG_SITE=../config.site \
-                BASECFLAGS='-s USE_ZLIB=1' LDFLAGS='-s USE_ZLIB=1' \
+                BASECFLAGS='-O0 -s USE_ZLIB=1' LDFLAGS='-O0 -s USE_ZLIB=1' \
                 PATH=$BUILD/Python-$VERSION/native:$PATH \
                 emconfigure ../configure \
                 --host=asmjs-unknown-emscripten --build=$(../config.guess) \

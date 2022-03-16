@@ -8,3 +8,4 @@ toolchain
 /renpy
 /pygame_sdl2
 /emsdk/
+inittab.c

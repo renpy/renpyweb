@@ -1,3 +1,5 @@
+# This series applies on GIT commit c2c4bc232e999f0bbb46ad080f3270ba5a6fa944
 python2-cross_compile.patch
 python2-no_popen.patch
 python2-webbrowser.patch
+python2-less_aggressive.patch

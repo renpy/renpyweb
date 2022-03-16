@@ -1,0 +1,29 @@
+Reduce register slot consumption by less aggressive inlining.
+
+From: Tom Rothamel <tom@rothamel.us>
+
+Per the discussion at renpy/renpy#3333 and https://bugs.chromium.org/p/chromium/issues/detail?id=1305848.
+---
+ Include/pyport.h |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/Include/pyport.h b/Include/pyport.h
+index 35562a6..f19fc47 100644
+--- a/Include/pyport.h
++++ b/Include/pyport.h
+@@ -288,11 +288,11 @@ typedef Py_intptr_t     Py_ssize_t;
+ #define Py_LOCAL(type) static type __fastcall
+ #define Py_LOCAL_INLINE(type) static __inline type __fastcall
+ #elif defined(USE_INLINE)
+-#define Py_LOCAL(type) static type
+-#define Py_LOCAL_INLINE(type) static inline type
++#define Py_LOCAL(type) static type __attribute__((noinline))
++#define Py_LOCAL_INLINE(type) static type __attribute__((noinline))
+ #else
+-#define Py_LOCAL(type) static type
+-#define Py_LOCAL_INLINE(type) static type
++#define Py_LOCAL(type) static type __attribute__((noinline))
++#define Py_LOCAL_INLINE(type) static type __attribute__((noinline))
+ #endif
+ 
+ /* Py_MEMCPY can be used instead of memcpy in cases where the copied blocks

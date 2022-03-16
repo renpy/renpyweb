@@ -1,12 +1,18 @@
 Description: Support opening new browser tabs from Python/Emscripten
+
+From: Tom Rothamel <tom@rothamel.us>
+
 Forwarded: no
 Author: Sylvain Beucler <beuc@beuc.net>
 Last-Update: 2018-10-28
+---
+ Lib/webbrowser.py |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Index: Python-2.7.18/Lib/webbrowser.py
-===================================================================
---- Python-2.7.18.orig/Lib/webbrowser.py
-+++ Python-2.7.18/Lib/webbrowser.py
+diff --git a/Lib/webbrowser.py b/Lib/webbrowser.py
+index 15eeb66..d4ac00e 100755
+--- a/Lib/webbrowser.py
++++ b/Lib/webbrowser.py
 @@ -6,7 +6,7 @@ import os
  import shlex
  import sys
@@ -16,7 +22,7 @@ Index: Python-2.7.18/Lib/webbrowser.py
  import time
  
  __all__ = ["Error", "open", "open_new", "open_new_tab", "get", "register"]
-@@ -656,6 +656,16 @@ if sys.platform[:3] == "os2" and _iscomm
+@@ -656,6 +656,16 @@ if sys.platform[:3] == "os2" and _iscommand("netscape"):
               GenericBrowser(["start", "netscape", "%s"]), -1)
  
  
