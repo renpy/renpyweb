@@ -77,7 +77,7 @@ emscripten () {
         # --disable-shared: compile statically for Emscripten perfs + incomplete PIC support
         if [ ! -e config.status ]; then
             CONFIG_SITE=../config.site \
-                BASECFLAGS='-O0 -s USE_ZLIB=1' LDFLAGS='-O0 -s USE_ZLIB=1' \
+                BASECFLAGS='-O3 -s USE_ZLIB=1' LDFLAGS='-O3 -s USE_ZLIB=1' \
                 PATH=$BUILD/Python-$VERSION/native:$PATH \
                 emconfigure ../configure \
                 --host=asmjs-unknown-emscripten --build=$(../config.guess) \

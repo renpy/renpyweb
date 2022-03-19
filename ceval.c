@@ -700,7 +700,7 @@ PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
              */
             #define USE_COMPUTED_GOTOS 0
         #else
-            #define USE_COMPUTED_GOTOS 1
+            #define USE_COMPUTED_GOTOS 0
         #endif
     #endif
 #else
