@@ -397,7 +397,7 @@
         var appleWarning = "";
 
         if (/RangeError/.test(event)) {
-            appleWarning = "\n<p>This is a known issue in Safari and Webkit browsers. Please report this issue to Apple.";
+            appleWarning = "\n<p>This is a known issue with this beta and recent changes to some web browsers. Reloading this page with developer tools open may help.";
         }
 
         Module.setStatus('Error: ' + event.split('\n')[0] + ' (see JavaScript console for details)' + appleWarning);
