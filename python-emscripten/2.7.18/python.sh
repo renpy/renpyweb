@@ -28,7 +28,7 @@ unpack () {
     tar xf $CACHEROOT/Python-$VERSION.tgz
     cd Python-$VERSION/
     quilt push -a
-    cp ~/ab/renpy-build/renpyweb/ceval.c Python/ceval.c
+    cp ../../../../ceval.c Python/ceval.c
 }
 
 # use cases:
