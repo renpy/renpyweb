@@ -378,12 +378,13 @@ pygame-example-py3-static: $(BUILD)/python3.built common-pygame-example-py3-stat
 ##
 # renpyweb-static-asyncify
 ##
-asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpy versionmark
+asyncify: $(BUILD)/python.built $(BUILD)/renpy.built common-renpy versionmark $(CURDIR)/js_cmd.js
 	$(EMCC) $(RENPY_OBJS) \
 	    $(RENPY_LDFLAGS) \
 	    $(ASYNCIFY_LDFLAGS) \
 	    -s INITIAL_MEMORY=128MB -s ALLOW_MEMORY_GROWTH=1 \
 	    -o $(BUILD)/t/index.html
+	cp -a $(CURDIR)/js_cmd.js $(BUILD)/t/
 
 
 # Experimental - doesn't work

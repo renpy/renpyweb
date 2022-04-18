@@ -35,7 +35,7 @@ fi
 
 mkdir renpy/web
 
-for i in index.html index.js index.wasm pyapp.data pyapp-data.js pythonhome.data pythonhome-data.js renpyweb-version.txt; do
+for i in index.html index.js index.wasm pyapp.data pyapp-data.js pythonhome.data pythonhome-data.js renpyweb-version.txt js_cmd.js; do
     cp build/t/$i renpy/web/$i
 done
 
