@@ -36,7 +36,7 @@ mkdir -p build
 cd build/
 
 # Disable SIMD/SSE; check -s SIMD=1 for WASM and browser support some day
-emconfigure ../configure --prefix $INSTALLDIR \
+emconfigure ../configure --host asmjs-unknown-none --prefix $INSTALLDIR \
     --disable-shared --disable-threading --disable-sse2 --disable-sse4.1
 emmake make -j$(nproc)
 emmake make install

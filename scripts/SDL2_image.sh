@@ -39,6 +39,7 @@ fi
     cd build/
 
     emconfigure ../configure --prefix $INSTALLDIR \
+      --host asmjs-unknown-none \
       --disable-shared \
       \
       --disable-tif \
