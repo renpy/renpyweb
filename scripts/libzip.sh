@@ -34,6 +34,7 @@ cd libzip-1.7.3/
 
 mkdir -p build
 cd build/
+cp "$PATCHESDIR/libzip-CMakeCache.txt" CMakeCache.txt
 
 CPPFLAGS="-I$INSTALLDIR/include" CFLAGS="-O3" LDFLAGS="-L$INSTALLDIR/lib" \
   emcmake cmake \
