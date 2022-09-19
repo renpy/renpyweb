@@ -35,6 +35,6 @@ cd fribidi-1.0.7/
 mkdir -p build
 cd build/
 
-emconfigure ../configure --prefix $INSTALLDIR --disable-shared
+emconfigure ../configure --prefix $INSTALLDIR --disable-shared --host asmjs-unknown-none
 emmake make -j$(nproc)
 emmake make install

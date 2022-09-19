@@ -41,7 +41,7 @@ sed -i.bak \
     -e 's,/\* #define T1_CONFIG_OPTION_OLD_ENGINE \*/,#define T1_CONFIG_OPTION_OLD_ENGINE,' \
     -e 's,/\* #define CFF_CONFIG_OPTION_OLD_ENGINE \*/,#define CFF_CONFIG_OPTION_OLD_ENGINE,' \
     ../include/freetype/config/ftoption.h
-emconfigure ../configure --prefix $INSTALLDIR --disable-shared --with-harfbuzz=no
+emconfigure ../configure --prefix $INSTALLDIR --disable-shared --with-harfbuzz=no --host asmjs-unknown-none
 
 make CCexe=gcc $(pwd)/apinames  # build tool, don't cross-compile
 emmake make -j$(nproc)

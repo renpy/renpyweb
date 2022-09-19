@@ -111,7 +111,9 @@ emconfigure ../configure --prefix=$INSTALLDIR \
        --disable-avfilter \
        --disable-protocols \
        --disable-network \
-       --arch=emscripten --disable-asm --disable-stripping --ar=emar --ranlib=emranlib
+       --arch=emscripten --disable-asm --disable-stripping --ar=emar --ranlib=emranlib \
+       --host asmjs-unknown-none
+
 # --enable-cross-compile: requests specifying target and host OS,
 #   let's rely on emconfigure instead
 
