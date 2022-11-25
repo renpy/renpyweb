@@ -29,14 +29,14 @@ set -e
 RENPYWEB="$(dirname $(readlink -f $0))/.."
 cd "$RENPYWEB"
 
-if [ -e "renpy/web" ] ; then
-    rm -Rf "renpy/web"
+if [ -e "renpy/web2" ] ; then
+    rm -Rf "renpy/web2"
 fi
 
 mkdir renpy/web
 
 for i in index.html index.js index.wasm pyapp.data pyapp-data.js pythonhome.data pythonhome-data.js renpyweb-version.txt; do
-    cp build/t/$i renpy/web/$i
+    cp build/t/$i renpy/web2/$i
 done
 
-cp htaccess.txt renpy/web/
+cp htaccess.txt renpy/web2/
