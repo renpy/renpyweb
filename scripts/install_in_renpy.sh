@@ -33,7 +33,7 @@ if [ -e "renpy/web2" ] ; then
     rm -Rf "renpy/web2"
 fi
 
-mkdir renpy/web
+mkdir renpy/web2
 
 for i in index.html index.js index.wasm pyapp.data pyapp-data.js pythonhome.data pythonhome-data.js renpyweb-version.txt; do
     cp build/t/$i renpy/web2/$i
