@@ -37,7 +37,7 @@ Module['onRuntimeInitialized'] = function() {
 
 
     var url = DEFAULT_GAME_FILENAME;
-    
+
     if (_GET['game']) {
 	if (_GET['game'].match(/^[0-9a-z._-]+$/i)) {
 	    url = _GET['game'];
