@@ -551,8 +551,12 @@
 
           _renpy_cmd_callback = cmd_callback;
 
+          /** Stubs for web3 functionality. */
           window.loadCache = () => { };
           window.clearCache = () => { };
+          window.webglContextLost = false;
+          window.webglContextRestored = false;
+
 
         })();
     </script>
