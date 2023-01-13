@@ -540,9 +540,9 @@ $(BUILD)/libzip.built: $(CACHEROOT)/libzip-1.7.3.tar.gz
 	$(SCRIPTSDIR)/libzip.sh
 	touch $(BUILD)/libzip.built
 
-# Note: do not mix USE_SDL_IMAGE=2 (2.0.0 and -lSDL2_image (2.0.5)
+# Note: do not mix USE_SDL_IMAGE=2 (2.0.0 and -lSDL2_image (2.6.2)
 # I got weird errors with dynamic linking, possibly they are not 100% compatible
-$(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.0.5.tar.gz $(BUILD)/libpng.built $(BUILD)/libjpeg-turbo.built $(BUILD)/libwebp.built
+$(BUILD)/SDL2_image.built: $(CACHEROOT)/SDL2_image-2.6.2.tar.gz $(BUILD)/libpng.built $(BUILD)/libjpeg-turbo.built $(BUILD)/libwebp.built
 	$(SCRIPTSDIR)/SDL2_image.sh
 	touch $(BUILD)/SDL2_image.built
 
@@ -565,8 +565,8 @@ $(CACHEROOT)/ffmpeg-4.3.1.tar.bz2:
 #	wget https://libsdl.org/release/SDL2-2.0.9.tar.gz -P $(CACHEROOT)
 # => USE_SDL=2 for now, it has lots of Emscripten fixes
 
-$(CACHEROOT)/SDL2_image-2.0.5.tar.gz:
-	wget https://libsdl.org/projects/SDL_image/release/SDL2_image-2.0.5.tar.gz -P $(CACHEROOT)
+$(CACHEROOT)/SDL2_image-2.6.2.tar.gz:
+	wget https://libsdl.org/projects/SDL_image/release/SDL2_image-2.6.2.tar.gz -P $(CACHEROOT)
 
 $(CACHEROOT)/zlib-1.2.11.tar.gz:
 	wget http://prdownloads.sourceforge.net/libpng/zlib-1.2.11.tar.gz -P $(CACHEROOT)

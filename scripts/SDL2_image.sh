@@ -29,11 +29,11 @@ PATCHESDIR=$(dirname $(readlink -f $0))/../patches
 HOSTPYTHON=$BUILD/hostpython/bin/python
 
 cd $BUILD/
-if [ ! -d SDL2_image-2.0.5/ ]; then
-    tar xf $CACHEROOT/SDL2_image-2.0.5.tar.gz
+if [ ! -d SDL2_image-2.6.2/ ]; then
+    tar xf $CACHEROOT/SDL2_image-2.6.2.tar.gz
 fi
 (
-    cd SDL2_image-2.0.5/
+    cd SDL2_image-2.6.2/
 
     mkdir -p build
     cd build/
@@ -58,6 +58,8 @@ fi
       --disable-pcx \
       --disable-tga \
       --disable-bmp \
+      --disable-xcf \
+      --disable-qoi \
       \
       PKG_CONFIG_LIBDIR=$INSTALLDIR/lib/pkgconfig:$(emconfigure env|grep ^PKG_CONFIG_LIBDIR|sed 's/^PKG_CONFIG_LIBDIR=//') \
       CPPFLAGS="-I$INSTALLDIR/include" LDFLAGS="-s USE_SDL=2 -L$INSTALLDIR/lib" CFLAGS="-O3"
