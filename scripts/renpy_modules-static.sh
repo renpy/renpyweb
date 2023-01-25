@@ -44,7 +44,7 @@ unset RENPY_STEAM_SDK
 (
     # Install Python modules needed by Ren'Py.
     $CROSSPYTHON -m ensurepip
-    $CROSSPYTHON -m pip install future==0.18.2 typing
+    $CROSSPYTHON -m pip install future==0.18.2 typing ecdsa==0.18.0
 
     cd $RENPY_MODULES_ROOT/module
     export RENPY_DEPS_INSTALL="$INSTALLDIR"  # doesn't work for emscripten ports, no '*.a'

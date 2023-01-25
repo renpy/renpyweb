@@ -27,7 +27,7 @@ mkdir -p $PACKAGEDIR
 
 # Ren'Py dependencies from pip.
 mkdir -p $PACKAGEDIR
-$HOSTPYTHON -m pip install --target $PACKAGEDIR future==0.18.2 six==1.12.0 typing
+$HOSTPYTHON -m pip install --target $PACKAGEDIR future==0.18.2 six==1.12.0 typing ecdsa==0.18.0
 
 # pygame_sdl2-static
 mkdir -p $PACKAGEDIR/lib/python2.7/site-packages/pygame_sdl2/threads
