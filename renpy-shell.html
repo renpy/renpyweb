@@ -585,6 +585,125 @@
         if (!Module['preRun']) Module['preRun'] = [];
         Module["preRun"].push(create_persistent); // FS is not initialized yet, wait for it
       }
+
+
+
+    /***************************************************************************
+     * Fetch.
+     ***************************************************************************/
+
+    let fetchId = 1;
+    let fetchResult = { };
+
+    /**
+     * Fetch a file from the server.
+     *
+     * @param method The HTTP method to use.
+     * @param url The URL to fetch.
+     * @param inFile The file to send to the server. A string giving the file name, or null for no file.
+     * @param outFile The file to write the response to. A string giving the file name, or null for no file.
+     * @param inContentType The content type of the file to send to the server. A string giving the content type. Ignored if inFile is null.
+     *
+     * @return A string giving the result of the fetch. The first word is the status, which is one of "OK", "ERROR", or "PENDING", followed by the HTTP status code and status text.
+     */
+    function fetchFile(method, url, inFile, outFile, inContentType) {
+
+        let id = fetchId++;
+        fetchResult[id] = "PENDING Fetch in progress.";
+
+        async function fetchFileWork() {
+            try {
+
+                let content = ''
+
+                let options = { method: method };
+
+                if (inFile) {
+                    options.body = FS.readFile(inFile, { encoding: 'binary' });
+                    options.headers = { 'Content-Type': inContentType || 'application/octet-stream' };
+                }
+
+                let response = await fetch(url, options);
+
+                if (response.ok) {
+                    if (outFile) {
+                        let ab = await response.arrayBuffer();
+                        FS.writeFile(outFile, new Uint8Array(ab));
+                    }
+
+                    fetchResult[id] = "OK " + response.status + " " + response.statusText;
+                } else{
+                    fetchResult[id] = "ERROR " + response.status + " " + response.statusText;
+                }
+
+            } catch (err) {
+                fetchResult[id] = "ERROR " + err;
+                console.error(err);
+            }
+
+        }
+
+        fetchFileWork();
+
+        return id;
+    }
+
+    function fetchFileResult(id) {
+        let result = fetchResult[id];
+
+        if (! result.startsWith("PENDING")) {
+            delete fetchResult[id];
+        }
+
+        return result || "ERROR Fetch ID not found.";
+    }
+
+    window.fetchFile = fetchFile;
+    window.fetchFileResult = fetchFileResult;
+
+    /**
+     * Fullscreen support.
+     */
+
+    let lastFullscreenTime = 0;
+
+    function isFullscreen() {
+        let now = +new Date();
+        return document.fullscreenElement ? 1 : 0;
+    }
+
+    window.isFullscreen = isFullscreen;
+
+    function setFullscreen(enable) {
+
+        let current = document.fullscreenElement !== null;
+
+        if (enable == current) {
+            return;
+        }
+
+        let now = +new Date();
+
+        if (lastFullscreenTime + 250 > +new Date()) {
+            return;
+        }
+
+        lastFullscreenTime = now;
+
+        setTimeout(function () {
+            if (enable) {
+                let e = document.getElementsByTagName("html")[0];
+                e.requestFullscreen().catch(function (error) {
+                    lastFullscreenTime = now + 15000;
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }, 0);
+    }
+
+    window.setFullscreen = setFullscreen;
+
     </script>
     {{{ SCRIPT }}}
   </body>
