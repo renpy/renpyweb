@@ -603,24 +603,37 @@
      * @param inFile The file to send to the server. A string giving the file name, or null for no file.
      * @param outFile The file to write the response to. A string giving the file name, or null for no file.
      * @param inContentType The content type of the file to send to the server. A string giving the content type. Ignored if inFile is null.
+     * @param headers A string containing a JSON object that contains the headers to send to the server.
      *
      * @return A string giving the result of the fetch. The first word is the status, which is one of "OK", "ERROR", or "PENDING", followed by the HTTP status code and status text.
      */
-    function fetchFile(method, url, inFile, outFile, inContentType) {
+     function fetchFile(method, url, inFile, outFile, inContentType, headers) {
 
         let id = fetchId++;
         fetchResult[id] = "PENDING Fetch in progress.";
+
+        // Ensure headers exists and is not a copy.
+        if (headers) {
+            headers = JSON.parse(headers)
+        } else {
+            headers = { };
+        }
+
+        headers = { ...headers };
 
         async function fetchFileWork() {
             try {
 
                 let content = ''
 
-                let options = { method: method };
+                if (inFile) {
+                    headers["Content-Type"] = inContentType || 'application/octet-stream';
+                }
+
+                let options = { method: method, headers: headers};
 
                 if (inFile) {
                     options.body = FS.readFile(inFile, { encoding: 'binary' });
-                    options.headers = { 'Content-Type': inContentType || 'application/octet-stream' };
                 }
 
                 let response = await fetch(url, options);
