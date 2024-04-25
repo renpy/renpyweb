@@ -29,16 +29,12 @@ cdef extern from "emscripten.h":
     int emscripten_run_script_int(const char *script)
     char *emscripten_run_script_string(const char *script)
 
-    #void emscripten_async_wget(const char* url, const char* file, em_str_callback_func onload, em_str_callback_func onerror)
     void emscripten_async_wget_data(const char* url, void *arg, em_async_wget_onload_func onload, em_arg_callback_func onerror)
     void emscripten_async_call(em_arg_callback_func func, void *arg, int millis)
 
     void emscripten_sleep(unsigned int ms)
     void emscripten_wget(const char* url, const char* file)
     void emscripten_wget_data(const char* url, void** pbuffer, int* pnum, int *perror)
-
-    # Emterpreter-only
-    #void emscripten_sleep_with_yield(unsigned int ms)
 
     enum:
         EM_LOG_CONSOLE
@@ -63,6 +59,12 @@ LOG_JS_STACK = EM_LOG_JS_STACK
 LOG_DEMANGLE = EM_LOG_DEMANGLE
 LOG_NO_PATHS = EM_LOG_NO_PATHS
 LOG_FUNC_PARAMS = EM_LOG_FUNC_PARAMS
+
+
+cdef extern from "emscripten/html5.h":
+    int emscripten_webgl_enable_extension(int context, const char *extension);
+    int emscripten_webgl_get_current_context();
+    char *emscripten_webgl_get_supported_extensions();
 
 
 # https://cython.readthedocs.io/en/latest/src/tutorial/memory_allocation.html
@@ -341,12 +343,33 @@ cdef class MallocBuffer:
 def wget_data(url):
     cdef char* buf
     cdef int num, error
-    emscripten_wget_data(url.encode('UTF-8'), <void**>&buf, &num, &error)
+    emscripten_wget_data(url.encode('utf-8'), <void**>&buf, &num, &error)
     if error != 0:
         return None
     pybuf = MallocBuffer.from_string_and_size(buf, num)
     return pybuf
-# import emscripten,cStringIO; r = emscripten.wget_data('/hello'); cStringIO.StringIO(r).read(); memoryview(r).tobytes()
+
+
+# WebGL
+
+def webgl_enable_extension(extension):
+    """
+    Tries to enable the given WebGL extension, and returns 1 if it was enabled, 0 otherwise.
+    """
+
+    return emscripten_webgl_enable_extension(emscripten_webgl_get_current_context(), extension.encode('UTF-8'))
+
+def webgl_get_supported_extensions():
+    """
+    Returns a list of extensions that emscripten supports.
+    """
+
+    cdef char *extensions = emscripten_webgl_get_supported_extensions()
+    rv = extensions.split(' ')
+    free(extensions)
+
+    return rv
+
 
 
 # Non-API utility
